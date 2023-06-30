@@ -4,7 +4,8 @@ from typing import Union
 
 import pytest
 
-from db import DataBase, Membership
+from db import DataBase
+from src.model.Membership import Membership
 
 
 # TODO move helper functions to the helper file
