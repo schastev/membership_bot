@@ -1,9 +1,10 @@
 from copy import deepcopy
 from datetime import date, timedelta
+from typing import Union
 
 import pytest
 
-from db import DataBase, Membership, check_membership_validity
+from db import DataBase, Membership
 
 
 # TODO move helper functions to the helper file
@@ -21,6 +22,16 @@ def mb_freeze(mb: Membership, freeze_date: date, freeze_duration: int):
 def mb_unfreeze(mb: Membership, unfreeze_date: date, new_expiry_date: date):
     mb._unfreeze_with_date(unfreeze_date=unfreeze_date)
     assert mb.expiry_date == new_expiry_date
+
+
+def mb_subtract(mb: Membership, activation_date: Union[date, None] = None):
+    old_amount = mb.current_amount
+    total_amount = mb.total_amount
+    mb.subtract()
+    assert mb.current_amount == old_amount - 1
+    assert mb.total_amount == total_amount
+    if activation_date:
+        assert mb.activation_date == activation_date
 
 
 def db_add(db: DataBase, mb: Membership):
@@ -118,16 +129,22 @@ def test_database_update():
     assert len(db.memberships) == 2
 
 
-def test_membership_validity():
+def test_membership_subtract():
     mb_valid = Membership(member_nickname="123", total_amount=4)
-    mb_activate(mb_valid)
-    assert check_membership_validity(mb_valid)
+    mb_subtract(mb_valid, activation_date=date.today())
+
+    mb_valid_repeated_subtract = Membership(member_nickname="123", total_amount=4)
+    activation_date = date.today() - timedelta(days=10)
+    mb_activate(mb_valid_repeated_subtract, activation_date=activation_date)
+    mb_subtract(mb_valid_repeated_subtract, activation_date)
 
     mb_expired = Membership(member_nickname="123", total_amount=4)
     mb_activate(mb_expired, activation_date=date.today() - timedelta(days=31))
-    assert not check_membership_validity(mb_expired)
+    with pytest.raises(expected_exception=ValueError):
+        mb_expired.subtract()
 
     mb_used_up = Membership(member_nickname="123", total_amount=1)
     mb_activate(mb_used_up)
     mb_used_up.subtract()
-    assert not check_membership_validity(mb_used_up)
+    with pytest.raises(expected_exception=ValueError):
+        mb_used_up.subtract()

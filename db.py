@@ -2,10 +2,6 @@ from datetime import date, timedelta
 from typing import Union
 
 
-def check_membership_validity(membership: "Membership") -> bool:
-    return membership.current_amount > 0 and membership.expiry_date > date.today()
-
-
 class DataBase:  # witness my brilliant stub and marvel at its ingeniousness
     memberships: list
 
@@ -76,11 +72,14 @@ class Membership:
     def subtract(self) -> None:
         if not self.activation_date:
             self._activate(date.today())
-        if not check_membership_validity(self):
+        if not self._check_validity():
             raise ValueError("Абонемент полностью использован или истек срок его действия.")
-        self.current_amount -= self.current_amount
+        self.current_amount -= 1
 
     def _activate(self, activation_date: date) -> None:
         self.activation_date = activation_date
         self.expiry_date = activation_date + timedelta(days=30)
         self.original_expiry_date = activation_date + timedelta(days=30)
+
+    def _check_validity(self) -> bool:
+        return self.current_amount > 0 and self.expiry_date > date.today()
