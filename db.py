@@ -63,8 +63,8 @@ class Membership:
         new_expiry_date = self.original_expiry_date + (unfreeze_date - self.freeze_date)
         if new_expiry_date - self.original_expiry_date > timedelta(days=14):
             raise ValueError("Заморозить абонемент можно не более чем на две недели.")
-        if (new_expiry_date - self.original_expiry_date).days < 0:
-            raise ValueError("Отрицательная продолжительность периода заморозки.")
+        if (new_expiry_date - self.original_expiry_date).days <= 0:
+            raise ValueError("Не положительная продолжительность периода заморозки.")
         if self.expiry_date != new_expiry_date:
             self.expiry_date = new_expiry_date
         self.freeze_date = None

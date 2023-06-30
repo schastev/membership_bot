@@ -88,7 +88,7 @@ def test_membership_can_unfreeze_earlier_or_later_than_planned(delta):
     mb_unfreeze(mb, unfreeze_date=unfreeze_date, new_expiry_date=new_expiry_date)
 
 
-@pytest.mark.parametrize("delta", [15, -15], ids=["over two weeks", "negative freeze period"])
+@pytest.mark.parametrize("delta", [8, -7], ids=["over two weeks", "negative freeze period"])
 def test_membership_cannot_unfreeze_to_make_freeze_period_invalid(delta):
     mb = Membership(member_nickname="123", total_amount=4)
     activation_date = date.today()
