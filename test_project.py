@@ -129,22 +129,32 @@ def test_database_update():
     assert len(db.memberships) == 2
 
 
-def test_membership_subtract():
-    mb_valid = Membership(member_nickname="123", total_amount=4)
-    mb_subtract(mb_valid, activation_date=date.today())
+def test_membership_can_subtract():
+    md = Membership(member_nickname="123", total_amount=4)
+    mb_subtract(md, activation_date=date.today())
 
-    mb_valid_repeated_subtract = Membership(member_nickname="123", total_amount=4)
+
+def test_membership_can_subtract_from_activated_membership():
+    md = Membership(member_nickname="123", total_amount=4)
     activation_date = date.today() - timedelta(days=10)
-    mb_activate(mb_valid_repeated_subtract, activation_date=activation_date)
-    mb_subtract(mb_valid_repeated_subtract, activation_date)
+    mb_activate(md, activation_date=activation_date)
+    mb_subtract(md, activation_date)
 
-    mb_expired = Membership(member_nickname="123", total_amount=4)
-    mb_activate(mb_expired, activation_date=date.today() - timedelta(days=31))
-    with pytest.raises(expected_exception=ValueError):
-        mb_expired.subtract()
 
-    mb_used_up = Membership(member_nickname="123", total_amount=1)
-    mb_activate(mb_used_up)
-    mb_used_up.subtract()
+def test_membership_cannot_subtract_from_expired_membership():
+    md = Membership(member_nickname="123", total_amount=4)
+    mb_activate(md, activation_date=date.today() - timedelta(days=31))
     with pytest.raises(expected_exception=ValueError):
-        mb_used_up.subtract()
+        md.subtract()
+
+
+def test_membership_cannot_subtract_from_used_up_membership():
+    md = Membership(member_nickname="123", total_amount=1)
+    mb_activate(md)
+    md.subtract()
+    with pytest.raises(expected_exception=ValueError):
+        md.subtract()
+
+
+
+
