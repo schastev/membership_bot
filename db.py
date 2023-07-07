@@ -1,3 +1,9 @@
+from sqlalchemy import create_engine, select
+from sqlalchemy.orm import Session
+
+from src.model.declarative_models import Base, Membership, User
+
+
 class DataBase:  # witness my brilliant stub and marvel at its ingeniousness
     memberships: list
 
@@ -15,3 +21,20 @@ class DataBase:  # witness my brilliant stub and marvel at its ingeniousness
         index = self.memberships.index(old_membership)
         self.memberships.pop(index)
         self.memberships.append(new_membership)
+
+
+engine = create_engine("sqlite://", echo=True)
+Base.metadata.create_all(engine)
+
+with Session(engine) as session:
+    memb = Membership(total_amount=8)
+    memb.subtract()
+    user_a = User(tg_name="k_emiko", phone_number="123", memberships=[memb])
+    session.add(user_a)
+    session.commit()
+    result = select(User)
+    for user in session.scalars(result):
+        print(user)
+    result_two = select(Membership)
+    for m in session.scalars(result_two):
+        print(m)

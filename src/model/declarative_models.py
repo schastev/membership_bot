@@ -1,24 +1,53 @@
 from datetime import date, timedelta
-from typing import Union
+from typing import Optional, List, Any
+
+from sqlalchemy import ForeignKey, String
+from sqlalchemy.orm import mapped_column, Mapped, relationship, DeclarativeBase
 
 
-class Membership:
-    member_nickname: str
-    purchase_date: date
-    activation_date: Union[date, None] = None
-    expiry_date: Union[date, None] = None
-    original_expiry_date: Union[date, None] = None
-    frozen: bool
-    freeze_date: Union[date, None] = None
-    unfreeze_date: Union[date, None] = None
-    total_amount: int
-    current_amount: int
+class Base(DeclarativeBase):
+    pass
 
-    def __init__(self, member_nickname: str, total_amount: int) -> None:
-        self.member_nickname = member_nickname
-        self.total_amount = total_amount
-        self.current_amount = total_amount
-        self.purchase_date = date.today()
+
+class User(Base):
+    __tablename__ = "user"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tg_name: Mapped[str] = mapped_column(String(30))
+    phone_number: Mapped[str] = mapped_column(String(11))
+
+    memberships: Mapped[List["Membership"]] = relationship(back_populates="user")
+
+    def __repr__(self):
+        return f"User(id={self.id}, tg_name={self.tg_name}, phone_number={self.phone_number})"
+
+
+class Membership(Base):
+    __tablename__ = "memberships"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    member_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    purchase_date: Mapped[date] = date.today()
+    activation_date: Mapped[Optional[date]]
+    expiry_date: Mapped[Optional[date]]
+    original_expiry_date: Mapped[Optional[date]]
+    frozen: Mapped[bool] = False
+    freeze_date: Mapped[Optional[date]]
+    unfreeze_date: Mapped[Optional[date]]
+    total_amount: Mapped[int]
+    current_amount: Mapped[Optional[int]]
+
+    user: Mapped["User"] = relationship(back_populates="memberships")
+
+    def __init__(self, **kw: Any):
+        super().__init__(**kw)
+        self.current_amount = self.total_amount
+
+    def __repr__(self):
+        return f"Membership(id={self.id}, " \
+               f"member_id={self.member_id}, " \
+               f"total_amount={self.total_amount}, " \
+               f"current_amount={self.current_amount}, " \
+               f"activation_date={self.activation_date}, " \
+               f"purchase_date={self.purchase_date})"
 
     def freeze(self, days: int) -> None:
         self._freeze_with_date(date.today(), days=days)

@@ -44,7 +44,7 @@ def db_add(db: DataBase, mb: Membership):
 
 
 def test_membership_freezing_and_unfreezing_delays_expiry():
-    mb = Membership(member_nickname="123", total_amount=4)
+    mb = Membership(total_amount=4)
     activation_date = date.today()
     mb_activate(mb, activation_date)
 
@@ -58,7 +58,7 @@ def test_membership_freezing_and_unfreezing_delays_expiry():
 
 
 def test_membership_cannot_freeze_two_times():
-    mb = Membership(member_nickname="123", total_amount=4)
+    mb = Membership(total_amount=4)
     activation_date = date.today()
     mb_activate(mb, activation_date)
 
@@ -75,7 +75,7 @@ def test_membership_cannot_freeze_two_times():
 
 @pytest.mark.parametrize("delta", [2, -2], ids=["later than planned", "earlier than planned"])
 def test_membership_can_unfreeze_earlier_or_later_than_planned(delta):
-    mb = Membership(member_nickname="123", total_amount=4)
+    mb = Membership(total_amount=4)
     activation_date = date.today()
     mb_activate(mb, activation_date)
 
@@ -91,7 +91,7 @@ def test_membership_can_unfreeze_earlier_or_later_than_planned(delta):
 
 @pytest.mark.parametrize("delta", [8, -7], ids=["over two weeks", "negative freeze period"])
 def test_membership_cannot_unfreeze_to_make_freeze_period_invalid(delta):
-    mb = Membership(member_nickname="123", total_amount=4)
+    mb = Membership(total_amount=4)
     activation_date = date.today()
     mb_activate(mb, activation_date)
 
@@ -107,7 +107,7 @@ def test_membership_cannot_unfreeze_to_make_freeze_period_invalid(delta):
 
 
 def test_membership_cannot_freeze_for_over_two_weeks():
-    mb = Membership(member_nickname="123", total_amount=4)
+    mb = Membership(total_amount=4)
     activation_date = date.today()
     mb_activate(mb, activation_date)
 
@@ -118,8 +118,8 @@ def test_membership_cannot_freeze_for_over_two_weeks():
 
 
 def test_database_update():
-    mb_one = Membership(member_nickname="123", total_amount=8)
-    mb_two = Membership(member_nickname="234", total_amount=8)
+    mb_one = Membership(total_amount=8)
+    mb_two = Membership(total_amount=8)
     db = DataBase()
     deepcopy_one = db_add(db, mb_one)
     db_add(db, mb_two)
@@ -131,26 +131,26 @@ def test_database_update():
 
 
 def test_membership_can_subtract():
-    md = Membership(member_nickname="123", total_amount=4)
+    md = Membership(total_amount=4)
     mb_subtract(md, activation_date=date.today())
 
 
 def test_membership_can_subtract_from_activated_membership():
-    md = Membership(member_nickname="123", total_amount=4)
+    md = Membership(total_amount=4)
     activation_date = date.today() - timedelta(days=10)
     mb_activate(md, activation_date=activation_date)
     mb_subtract(md, activation_date)
 
 
 def test_membership_cannot_subtract_from_expired_membership():
-    md = Membership(member_nickname="123", total_amount=4)
+    md = Membership(total_amount=4)
     mb_activate(md, activation_date=date.today() - timedelta(days=31))
     with pytest.raises(expected_exception=ValueError):
         md.subtract()
 
 
 def test_membership_cannot_subtract_from_used_up_membership():
-    md = Membership(member_nickname="123", total_amount=1)
+    md = Membership(total_amount=1)
     mb_activate(md)
     md.subtract()
     with pytest.raises(expected_exception=ValueError):
