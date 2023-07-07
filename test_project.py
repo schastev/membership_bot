@@ -1,11 +1,11 @@
-from copy import deepcopy
 from datetime import date, timedelta
 from typing import Union
 
 import pytest
+from sqlalchemy.orm import Session
 
 from db import DataBase
-from src.model.Membership import Membership
+from src.model.declarative_models import Membership, User
 
 
 # TODO move helper functions to the helper file
@@ -35,12 +35,10 @@ def mb_subtract(mb: Membership, activation_date: Union[date, None] = None):
         assert mb.activation_date == activation_date
 
 
-def db_add(db: DataBase, mb: Membership):
-    deepcopy_one = deepcopy(mb)
-    old_len = len(db.memberships)
-    db.add_membership(deepcopy_one)
-    assert len(db.memberships) == old_len + 1
-    return deepcopy_one
+def db_add(db: DataBase, item: Union[Membership, User]):
+    old_len = len(db.all_items(item))
+    db.add_item(item)
+    assert len(db.all_items(item)) == old_len + 1
 
 
 def test_membership_freezing_and_unfreezing_delays_expiry():
@@ -121,13 +119,18 @@ def test_database_update():
     mb_one = Membership(total_amount=8)
     mb_two = Membership(total_amount=8)
     db = DataBase()
-    deepcopy_one = db_add(db, mb_one)
-    db_add(db, mb_two)
+    user = User(tg_name="sdsgsfds", memberships=[mb_one, mb_two])
+    db.add_item(user)
+    with Session(db.engine) as s:
+        user = db.all_items(user, ses=s)[0]
+        mb_one = user.memberships[0]
+        mb_activate(mb_one, date.today())
+        db.update_item(mb_one)
 
-    mb_activate(mb_one, date.today())
-    db.update_membership(old_membership=deepcopy_one, new_membership=mb_one)
-    assert db.memberships[1] == mb_one
-    assert len(db.memberships) == 2
+        all_memberships = db.all_items(mb_one, s)
+        assert all_memberships[0].activation_date == date.today()
+        assert all_memberships[1].activation_date is None
+        assert len(all_memberships) == 2
 
 
 def test_membership_can_subtract():

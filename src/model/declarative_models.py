@@ -13,7 +13,7 @@ class User(Base):
     __tablename__ = "user"
     id: Mapped[int] = mapped_column(primary_key=True)
     tg_name: Mapped[str] = mapped_column(String(30))
-    phone_number: Mapped[str] = mapped_column(String(11))
+    phone_number: Mapped[Optional[str]] = mapped_column(String(11))
 
     memberships: Mapped[List["Membership"]] = relationship(back_populates="user")
 

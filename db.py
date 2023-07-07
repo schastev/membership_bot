@@ -1,40 +1,45 @@
-from sqlalchemy import create_engine, select
+from typing import Union
+
+from sqlalchemy import create_engine, select, Engine
 from sqlalchemy.orm import Session
 
 from src.model.declarative_models import Base, Membership, User
 
 
 class DataBase:  # witness my brilliant stub and marvel at its ingeniousness
-    memberships: list
+    engine: Engine
 
     def __init__(self) -> None:
-        self.memberships = []
+        self.engine = create_engine("sqlite://", echo=True)
+        Base.metadata.create_all(self.engine)
 
-    def add_membership(self, membership: "Membership") -> None:
-        self.memberships.append(membership)
+    def add_item(self, item: Union["Membership", "User"]) -> None:
+        with Session(self.engine) as session:
+            session.add(item)
+            session.commit()
 
-    def remove_membership(self, membership: "Membership") -> None:
-        self.memberships.remove(membership)
+    def remove_item(self, item: Union["Membership", "User"]) -> None:
+        with Session(self.engine) as session:
+            session.delete(item)
+            session.commit()
 
-    def update_membership(self, old_membership: "Membership", new_membership: "Membership"):
-        # todo will need to replace this with select by id once I move on to an actual database
-        index = self.memberships.index(old_membership)
-        self.memberships.pop(index)
-        self.memberships.append(new_membership)
+    def update_item(self, item: Union["Membership", "User"], ses: Session = None):
+        close_session = False
+        if ses is None:
+            close_session = True
+            ses = Session(self.engine)
+        query = select(type(item)).where(type(item).id == item.id)
+        memb = ses.scalar(query)
+        memb = item
+        if close_session:
+            ses.close()
 
-
-engine = create_engine("sqlite://", echo=True)
-Base.metadata.create_all(engine)
-
-with Session(engine) as session:
-    memb = Membership(total_amount=8)
-    memb.subtract()
-    user_a = User(tg_name="k_emiko", phone_number="123", memberships=[memb])
-    session.add(user_a)
-    session.commit()
-    result = select(User)
-    for user in session.scalars(result):
-        print(user)
-    result_two = select(Membership)
-    for m in session.scalars(result_two):
-        print(m)
+    def all_items(self, item: Union["Membership", "User"], ses: Session = None):
+        close_session = False
+        if ses is None:
+            close_session = True
+            ses = Session(self.engine)
+        query = select(type(item))
+        if close_session:
+            ses.close()
+        return ses.scalars(query).all()
