@@ -29,7 +29,7 @@ Base.metadata.create_all(engine)
 with Session(engine) as session:
     memb = Membership(total_amount=8)
     memb.subtract()
-    user_a = User(tg_name="ljdhskjhdf", phone_number="123", memberships=[memb])
+    user_a = User(tg_name="k_emiko", phone_number="123", memberships=[memb])
     session.add(user_a)
     session.commit()
     result = select(User)
