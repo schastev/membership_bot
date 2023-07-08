@@ -9,6 +9,16 @@ from src.model.declarative_models import Membership, User
 
 
 # TODO move helper functions to the helper file
+
+
+@pytest.fixture()
+def database():
+    db = DataBase()
+    yield db
+    with Session(db.engine) as session:
+        session.close()
+
+
 def mb_activate(mb: Membership, activation_date: date = date.today()):
     mb._activate(activation_date)
     assert mb.expiry_date == activation_date + timedelta(days=30)
@@ -33,12 +43,6 @@ def mb_subtract(mb: Membership, activation_date: Union[date, None] = None):
     assert mb.total_amount == total_amount
     if activation_date:
         assert mb.activation_date == activation_date
-
-
-def db_add(db: DataBase, item: Union[Membership, User]):
-    old_len = len(db.all_items(item))
-    db.add_item(item)
-    assert len(db.all_items(item)) == old_len + 1
 
 
 def test_membership_freezing_and_unfreezing_delays_expiry():
@@ -115,19 +119,17 @@ def test_membership_cannot_freeze_for_over_two_weeks():
         mb_freeze(mb, freeze_date, planned_freeze_duration)
 
 
-def test_database_update():
+def test_database_update(database):
     mb_one = Membership(total_amount=8)
     mb_two = Membership(total_amount=8)
-    db = DataBase()
     user = User(tg_name="sdsgsfds", memberships=[mb_one, mb_two])
-    db.add_item(user)
-    with Session(db.engine) as s:
-        user = db.all_items(user, ses=s)[0]
-        mb_one = user.memberships[0]
+    with Session(database.engine) as session_one:
+        session_one.add(user)
         mb_activate(mb_one, date.today())
-        db.update_item(mb_one)
-
-        all_memberships = db.all_items(mb_one, s)
+        database.update_item(mb_one, session_one)
+        session_one.commit()
+    with Session(database.engine) as session_two:
+        all_memberships = database.all_items(mb_one, session_two)
         assert all_memberships[0].activation_date == date.today()
         assert all_memberships[1].activation_date is None
         assert len(all_memberships) == 2
@@ -158,7 +160,3 @@ def test_membership_cannot_subtract_from_used_up_membership():
     md.subtract()
     with pytest.raises(expected_exception=ValueError):
         md.subtract()
-
-
-
-
