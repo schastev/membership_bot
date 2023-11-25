@@ -61,10 +61,10 @@ def test_membership_freezing_and_unfreezing_delays_expiry():
 
 def test_membership_cannot_freeze_two_times():
     mb = Membership(total_amount=4)
-    activation_date = date.today()
-    mb_activate(mb, activation_date)
+    mb_activate(mb)
+    assert mb.activation_date == date.today()
 
-    freeze_date = activation_date - timedelta(days=5)
+    freeze_date = date.today() - timedelta(days=5)
     freeze_duration = 7
     mb_freeze(mb, freeze_date, freeze_duration)
 

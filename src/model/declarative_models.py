@@ -29,7 +29,7 @@ class Membership(Base):
     activation_date: Mapped[Optional[date]]
     expiry_date: Mapped[Optional[date]]
     original_expiry_date: Mapped[Optional[date]]
-    frozen: Mapped[bool] = False
+    _frozen: Mapped[bool] = None
     freeze_date: Mapped[Optional[date]]
     unfreeze_date: Mapped[Optional[date]]
     total_amount: Mapped[int]
@@ -58,18 +58,22 @@ class Membership(Base):
     def _freeze_with_date(self, freeze_date: date, days: int) -> None:
         if days > 14:
             raise ValueError("Заморозить абонемент можно не более чем на две недели.")
-        if self.unfreeze_date:
+        if days <= 0:
+            raise ValueError("Не положительная продолжительность периода заморозки.")
+        if self._frozen is not None:
             raise ValueError("Заморозить один абонемент можно только один раз.")
-        self.frozen = True
+        self._frozen = True
         self.freeze_date = freeze_date
         self.unfreeze_date = freeze_date + timedelta(days=days)
-        self.expiry_date += self.unfreeze_date - self.freeze_date
+        self.expiry_date += timedelta(days=days)
 
     def _unfreeze_with_date(self, unfreeze_date: date) -> None:
-        if not self.frozen:
+        if not self._frozen:
             raise ValueError("Указанный абонемент не был заморожен.")
+        if self.unfreeze_date <= self.freeze_date:
+            raise ValueError("Дата разморозки должна быть позже даты заморозки.")
         self.unfreeze_date = unfreeze_date
-        self.frozen = False
+        self._frozen = False
         new_expiry_date = self.original_expiry_date + (unfreeze_date - self.freeze_date)
         if new_expiry_date - self.original_expiry_date > timedelta(days=14):
             raise ValueError("Заморозить абонемент можно не более чем на две недели.")
@@ -77,7 +81,6 @@ class Membership(Base):
             raise ValueError("Не положительная продолжительность периода заморозки.")
         if self.expiry_date != new_expiry_date:
             self.expiry_date = new_expiry_date
-        self.freeze_date = None
 
     def subtract(self) -> None:
         if not self.activation_date:
