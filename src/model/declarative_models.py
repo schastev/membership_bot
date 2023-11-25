@@ -49,13 +49,7 @@ class Membership(Base):
                f"activation_date={self.activation_date}, " \
                f"purchase_date={self.purchase_date})"
 
-    def freeze(self, days: int) -> None:
-        self._freeze_with_date(date.today(), days=days)
-
-    def unfreeze(self) -> None:
-        self._unfreeze_with_date(unfreeze_date=date.today())
-
-    def _freeze_with_date(self, freeze_date: date, days: int) -> None:
+    def freeze(self, days: int, freeze_date: date = date.today()) -> None:
         if days > 14:
             raise ValueError("Заморозить абонемент можно не более чем на две недели.")
         if days <= 0:
@@ -67,7 +61,7 @@ class Membership(Base):
         self.unfreeze_date = freeze_date + timedelta(days=days)
         self.expiry_date += timedelta(days=days)
 
-    def _unfreeze_with_date(self, unfreeze_date: date) -> None:
+    def unfreeze(self, unfreeze_date: date = date.today()) -> None:
         if not self._frozen:
             raise ValueError("Указанный абонемент не был заморожен.")
         if self.unfreeze_date <= self.freeze_date:
@@ -88,6 +82,8 @@ class Membership(Base):
         if not self._check_validity():
             raise ValueError("Абонемент полностью использован или истек срок его действия.")
         self.current_amount -= 1
+        if self.activation_date is None:
+            self._activate(activation_date=date.today())
 
     def _activate(self, activation_date: date) -> None:
         self.activation_date = activation_date
