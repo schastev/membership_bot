@@ -1,4 +1,5 @@
 """All of these are stubs until I figure out the database stuff"""
+from config_reader import config
 
 
 def register_user(tg_id: int, name: str, phone: str):
@@ -14,4 +15,8 @@ def update_phone(tg_id: int, new_phone: str):
 
 
 def check_user_registration_state(tg_id: int) -> bool:
-    return False
+    return True
+
+
+def check_admin(tg_id: int) -> bool:
+    return tg_id in config.admin_ids
