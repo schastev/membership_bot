@@ -8,13 +8,14 @@ from src.routers import misc
 from src.routers import user_actions
 from src.routers import membership_management
 
+BOT = Bot(token=config.bot_token.get_secret_value())
+
 
 async def main():
     logging.basicConfig(level=logging.INFO)
-    bot = Bot(token=config.bot_token.get_secret_value())
     dp = Dispatcher()
     dp.include_routers(user_actions.router, membership_management.router, misc.router)
-    await dp.start_polling(bot)
+    await dp.start_polling(BOT)
 
 
 if __name__ == "__main__":
