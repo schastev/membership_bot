@@ -1,6 +1,8 @@
 from sqlalchemy import create_engine, select
 
-from src.model.declarative_models import Base, User, Membership
+from src.model.declarative_models import Base
+from src.model.membership import Membership
+from src.model.user import User
 
 ENGINE = create_engine("sqlite+pysqlite:///:memory:", echo=True)
 

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from config_reader import config
 
-from src.model.declarative_models import User
+from src.model.user import User
 from src.utils.database import ENGINE, get_user_by_tg_id
 
 

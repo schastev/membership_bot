@@ -2,7 +2,7 @@ from typing import List
 
 from sqlalchemy.orm import Session
 
-from src.model.declarative_models import Membership
+from src.model.membership import Membership
 from src.utils.database import ENGINE, get_memberships_by_tg_id
 
 

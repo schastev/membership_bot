@@ -3,7 +3,9 @@ from typing import Union
 from sqlalchemy import create_engine, select, Engine
 from sqlalchemy.orm import Session
 
-from src.model.declarative_models import Base, Membership, User
+from src.model.declarative_models import Base
+from src.model.membership import Membership
+from src.model.user import User
 
 
 class DataBase:  # witness my brilliant stub and marvel at its ingeniousness
