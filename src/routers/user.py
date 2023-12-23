@@ -30,9 +30,9 @@ class UserUpdateStates(StatesGroup):
 async def register_handler(message: Message, state: FSMContext):
     if not user_action_utils.check_user_registration_state(tg_id=message.from_user.id):
         await state.set_state(RegistrationStates.GET_NAME)
-        await message.answer(locale.welcome, reply_markup=ReplyKeyboardRemove()),
+        await message.answer(text=locale.welcome, reply_markup=ReplyKeyboardRemove()),
     else:
-        await message.answer(locale.already_registered)
+        await message.answer(text=locale.already_registered)
 
 
 @router.message(Command(locale.cancel))
