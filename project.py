@@ -13,7 +13,7 @@ async def main():
     logging.basicConfig(level=logging.INFO)
     bot = Bot(token=config.bot_token.get_secret_value())
     dp = Dispatcher()
-    dp.include_routers(misc, user_actions, mb_management)
+    dp.include_routers(user_actions, mb_management, misc)
     await dp.start_polling(bot)
 
 

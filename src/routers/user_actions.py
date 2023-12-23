@@ -25,7 +25,7 @@ class UserUpdateStates(StatesGroup):
 
 
 @user_actions.message(Command(locale.register_button))
-@user_actions.message(F.text.casefold() == locale.register_button)
+@user_actions.message(F.text.casefold() == locale.register_button.casefold())
 async def register_handler(message: Message, state: FSMContext):
     if not user_action_utils.check_user_registration_state(tg_id=message.from_user.id):
         await state.set_state(RegistrationStates.GET_NAME)
@@ -35,7 +35,7 @@ async def register_handler(message: Message, state: FSMContext):
 
 
 @user_actions.message(Command(locale.cancel))
-@user_actions.message(F.text.casefold() == locale.cancel)
+@user_actions.message(F.text.casefold() == locale.cancel.casefold())
 async def cancel_handler(message: Message, state: FSMContext) -> None:
     current_state = await state.get_state()
     if current_state is None:
@@ -63,14 +63,14 @@ async def process_phone(message: Message, state: FSMContext):
     
 
 @user_actions.message(Command(locale.change_name_button))
-@user_actions.message(F.text.casefold() == locale.change_name_button)
+@user_actions.message(F.text.casefold() == locale.change_name_button.casefold())
 async def change_name_handler(message: Message, state: FSMContext):
     await state.set_state(UserUpdateStates.GET_NAME)
     await message.answer(locale.enter_info.format(locale.name), reply_markup=ReplyKeyboardRemove())
 
 
 @user_actions.message(Command(locale.change_phone_button))
-@user_actions.message(F.text.casefold() == locale.change_phone_button)
+@user_actions.message(F.text.casefold() == locale.change_phone_button.casefold())
 async def change_phone_handler(message: Message, state: FSMContext):
     await state.set_state(UserUpdateStates.GET_PHONE)
     await message.answer(locale.enter_info.format(locale.phone), reply_markup=ReplyKeyboardRemove())

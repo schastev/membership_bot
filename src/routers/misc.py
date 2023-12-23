@@ -24,3 +24,8 @@ async def start_handler(message: Message):
         locale.greeting.format(locale.company_name),
         reply_markup=ReplyKeyboardMarkup(keyboard=[menu_buttons], resize_keyboard=True)
     )
+
+
+@misc.message(F.text.len() > 0)
+async def gotta_catch_them_all(message: Message):
+    print(message.text)
