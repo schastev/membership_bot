@@ -1,31 +1,24 @@
 from aiogram import Router, F
 from aiogram.filters import CommandStart
-from aiogram.types import Message, KeyboardButton, ReplyKeyboardMarkup
+from aiogram.types import Message, ReplyKeyboardMarkup
 
 from config_reader import config
-from src.utils.user_actions import check_admin, check_user_registration_state
+from src.utils.menu_utils import compile_menu
 
-misc = Router()
+router = Router()
 locale = config
 
 
-@misc.message(CommandStart())
-@misc.message(F.text.casefold() == "start")
+@router.message(CommandStart())
+@router.message(F.text.casefold() == "start")
 async def start_handler(message: Message):
-    menu_buttons = []
-    if check_admin(message.from_user.id):
-        menu_buttons.append(KeyboardButton(text=locale.manage_button))
-    elif not check_user_registration_state(message.from_user.id):
-        menu_buttons.append(KeyboardButton(text=locale.register_button))
-    menu_buttons.extend(
-        [KeyboardButton(text=locale.change_name_button), KeyboardButton(text=locale.change_phone_button)]
-    )
+    menu_buttons = compile_menu(message)
     await message.answer(
         locale.greeting.format(locale.company_name),
         reply_markup=ReplyKeyboardMarkup(keyboard=[menu_buttons], resize_keyboard=True)
     )
 
 
-@misc.message(F.text.len() > 0)
+@router.message(F.text)
 async def gotta_catch_them_all(message: Message):
     print(message.text)
