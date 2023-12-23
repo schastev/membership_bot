@@ -27,15 +27,15 @@ async def manage_memberships(message: Message, state: FSMContext):
         await message.answer(locale.not_admin)
         return
     await message.answer(locale.polling)
-    membership_addition_requests = mb_management_utils.poll_for_membership_requests()
-    if len(membership_addition_requests) == 0:
+    requests = mb_management_utils.poll_for_membership_requests()
+    if len(requests) == 0:
         await message.answer(locale.polling_timeout)
     else:
-        await state.update_data(requests=membership_addition_requests)
-        membership_request_buttons = menu_utils.compile_membership_request_list_menu(membership_addition_requests)
+        await state.update_data(requests=requests)
+        request_buttons = menu_utils.compile_membership_request_list_menu(requests)
         await message.answer(
-            text="Here are pending membership requests:",
-            reply_markup=ReplyKeyboardMarkup(keyboard=[membership_request_buttons], resize_keyboard=True)
+            text=locale.pending_requests,
+            reply_markup=ReplyKeyboardMarkup(keyboard=[request_buttons], resize_keyboard=True)
         )
         await state.set_state(MembershipManagementStates.SELECT_MEMBER)
 
@@ -56,6 +56,7 @@ async def view_memberships(message: Message):
 async def request_to_add_membership(message: Message, state: FSMContext):
     mb_management_utils.request_to_add_membership(tg_id=message.from_user.id)
     await message.answer(locale.request_sent)
+    # todo add poling instead of crutching with BOT in add_membership_select_value
 
 
 @router.message(MembershipManagementStates.SELECT_MEMBER)
@@ -68,7 +69,7 @@ async def add_membership_select_member(message: Message, state: FSMContext):
     await state.update_data(request=request[0])
     membership_values = compile_membership_value_list_menu()
     await message.answer(
-        text="Please select membership value from the list below:",
+        text=locale.select_value,
         reply_markup=ReplyKeyboardMarkup(keyboard=[membership_values], resize_keyboard=True)
     )
     await state.set_state(MembershipManagementStates.SELECT_VALUE)
@@ -79,10 +80,10 @@ async def add_membership_select_value(message: Message, state: FSMContext):
     data = await state.get_data()
     value = int(message.text)
     request = data.get("request")
-    member_tg_id = request.get("tg_id")
+    member_tg_id = request["tg_id"]
     member_name = request["name"]
     mb_management_utils.add_membership(tg_id=member_tg_id, membership_value=value)
-    await message.answer(text=f"Membership with value {value} for {member_name} added successfully.")
-    await BOT.send_message(chat_id=request["chat_id"], text=f"A membership with value {value} wa added for you.")
+    await message.answer(text=locale.membership_added_admin.format(value, member_name))
+    await BOT.send_message(chat_id=request["chat_id"], text=locale.membership_added_member.format(value))
     await state.clear()
 
