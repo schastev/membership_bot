@@ -2,14 +2,14 @@ import logging
 
 from aiogram import Router, F
 
-from src.utils import user_actions as user_action_utils
+from src.utils import user as user_action_utils
 
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import ReplyKeyboardRemove, Message, ReplyKeyboardMarkup
 from config_reader import config
-from src.utils.menu_utils import compile_main_menu
+from src.utils.menu import main_buttons
 
 router = Router()
 locale = config
@@ -43,7 +43,7 @@ async def cancel_handler(message: Message, state: FSMContext) -> None:
         return
     logging.info(locale.cancelled_state_log.format(current_state))
     await state.clear()
-    menu_buttons = compile_main_menu(message.from_user.id)
+    menu_buttons = main_buttons(message.from_user.id)
     await message.answer(
         locale.cancelled, reply_markup=ReplyKeyboardMarkup(keyboard=[menu_buttons], resize_keyboard=True)
     )
@@ -63,7 +63,7 @@ async def process_phone(message: Message, state: FSMContext):
     phone = data.get(locale.phone)
     await state.clear()
     user_action_utils.register_user(name=name, phone=phone, tg_id=message.from_user.id)
-    menu_buttons = compile_main_menu(message.from_user.id)
+    menu_buttons = main_buttons(message.from_user.id)
     await message.answer(
         locale.successful_registration.format(name, phone),
         reply_markup=ReplyKeyboardMarkup(keyboard=[menu_buttons], resize_keyboard=True)

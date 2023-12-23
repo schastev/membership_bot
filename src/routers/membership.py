@@ -3,13 +3,12 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, ReplyKeyboardMarkup
-import src.utils.membership_management as mb_management_utils
+import src.utils.membership as mb_management_utils
 from project import BOT
-from src.utils import menu_utils
+from src.utils import menu
 
 from config_reader import config
-from src.utils.menu_utils import compile_membership_value_list_menu
-from src.utils.user_actions import check_admin
+from src.utils.user import check_admin
 
 router = Router()
 locale = config
@@ -32,7 +31,7 @@ async def manage_memberships(message: Message, state: FSMContext):
         await message.answer(locale.polling_timeout)
     else:
         await state.update_data(requests=requests)
-        request_buttons = menu_utils.compile_membership_request_list_menu(requests)
+        request_buttons = menu.membership_request_buttons(requests)
         await message.answer(
             text=locale.pending_requests,
             reply_markup=ReplyKeyboardMarkup(keyboard=[request_buttons], resize_keyboard=True)
@@ -67,7 +66,7 @@ async def add_membership_select_member(message: Message, state: FSMContext):
     request = [r for r in requests if r["name"] == member_name and r["phone"] == member_phone]
     await state.update_data(request_tg_id=request[0]["tg_id"])
     await state.update_data(request=request[0])
-    membership_values = compile_membership_value_list_menu()
+    membership_values = menu.membership_value_buttons()
     await message.answer(
         text=locale.select_value,
         reply_markup=ReplyKeyboardMarkup(keyboard=[membership_values], resize_keyboard=True)
