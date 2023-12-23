@@ -9,10 +9,10 @@ locale = config
 def main_buttons(user_id: int) -> list:
     menu_buttons = []
     user_is_registered = check_user_registration_state(user_id)
-    user_is_admin = False #check_admin(user_id) todo remove the hardcode once debug is done
+    user_is_admin = check_admin(user_id)
     if user_is_admin:
         menu_buttons.append(KeyboardButton(text=locale.manage_button))
-    elif user_is_registered:
+    if user_is_registered:
         menu_buttons.extend(
             [
                 KeyboardButton(text=locale.change_name_button),
@@ -29,7 +29,7 @@ def main_buttons(user_id: int) -> list:
 def membership_request_buttons(request_list: List[dict]) -> list:
     menu_buttons = []
     for request in request_list:
-        menu_buttons.append(KeyboardButton(text=f'{request["name"]}: {request["phone"]}'))
+        menu_buttons.append(KeyboardButton(text=f'{request["member"].name}: {int(request["member"].phone)}'))
     return menu_buttons
 
 

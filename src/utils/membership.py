@@ -1,9 +1,17 @@
+import time
 from typing import List
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from config_reader import config
 from src.model.membership import Membership
-from src.utils.database import ENGINE, get_memberships_by_tg_id
+from src.model.request import MembershipRequest
+from src.model.user import User
+from src.utils.database import ENGINE, get_memberships_by_tg_id, get_membership_requests_for_user
+
+
+TIMER = config.polling_timeout_seconds
 
 
 def view_memberships_by_user_id(tg_id: int) -> List[Membership]:
@@ -12,23 +20,54 @@ def view_memberships_by_user_id(tg_id: int) -> List[Membership]:
     return memberships
 
 
-def request_to_add_membership(tg_id: int) -> None:
-    add_membership(tg_id=tg_id, membership_value=8)
-    # todo this is for debug purposes, make some sort of storage for requests
+def check_existing_requests(tg_id: int) -> List[MembershipRequest]:
+    with Session(ENGINE) as session:
+        requests = session.scalars(get_membership_requests_for_user(tg_id=tg_id)).all()
+    return requests
 
 
-def poll_for_membership_resolution(tg_id: int) -> Membership:
-    # fixme this is for debug, add a 1-minute poll
-    # todo add filters by active membership
-    return view_memberships_by_user_id(tg_id=tg_id)[0]
+def request_to_add_membership(tg_id: int, chat_id: int) -> MembershipRequest:
+    with Session(ENGINE) as session:
+        request = MembershipRequest(tg_id=tg_id, chat_id=chat_id)
+        session.add(request)
+        session.commit()
+    with Session(ENGINE) as session:
+        query = select(MembershipRequest).where(MembershipRequest.tg_id == tg_id)
+        request = session.scalars(query).first()
+    assert request is not None
+    return request
+
+
+def poll_for_membership_resolution(request: MembershipRequest) -> Membership:
+    tg_id = request.tg_id
+    query = select(MembershipRequest).where(MembershipRequest.tg_id == tg_id)
+    timer = TIMER
+    with Session(ENGINE) as session:
+        request = session.scalars(query).first()
+        while request and timer > 0:
+            request = session.scalars(query).first()
+            timer = timer - 10
+            time.sleep(10)
+    if not request:
+        return view_memberships_by_user_id(tg_id=tg_id)[0]
+    return None
 
 
 def poll_for_membership_requests() -> list:
-    # fixme this is for debug, add a 1-minute poll, also make some sort of storage for requests
-    return [
-        {"tg_id": 256981966, "name": "Jane", "phone": "1234", "chat_id": 256981966},
-        {"tg_id": 256981966, "name": "Alice", "phone": "5678", "chat_id": 256981966}
-    ]
+    query_for_requests = select(MembershipRequest)
+    result = []
+    timer = TIMER
+    with Session(ENGINE) as session:
+        requests = session.scalars(query_for_requests).all()
+        while len(requests) == 0 and timer > 0:
+            requests = session.scalars(query_for_requests).all()
+            timer = timer - 10
+            time.sleep(10)
+        for request in requests:
+            query_for_requesting_members = select(User).where(User.tg_id == request.tg_id)
+            member = session.scalars(query_for_requesting_members).first()
+            result.append({"request": request, "member": member})
+    return result
 
 
 def add_membership(tg_id: int, membership_value: int) -> Membership:

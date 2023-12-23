@@ -58,9 +58,13 @@ async def view_memberships(message: Message):
 @router.message(Command(locale.add_membership))
 @router.message(F.text.casefold() == locale.add_membership.casefold())
 async def request_to_add_membership(message: Message):
-    membership_utils.request_to_add_membership(tg_id=message.from_user.id)
+    existing_requests = membership_utils.check_existing_requests(tg_id=message.from_user.id)
+    if len(existing_requests) == 0:
+        request = membership_utils.request_to_add_membership(tg_id=message.from_user.id, chat_id=message.chat.id)
+    else:
+        request = existing_requests[0]
     await message.answer(text=locale.request_sent)
-    membership = membership_utils.poll_for_membership_resolution(message.from_user.id)
+    membership = membership_utils.poll_for_membership_resolution(request=request)
     menu_buttons = main_buttons(message.from_user.id)
     if membership:
         await message.answer(
@@ -79,8 +83,8 @@ async def add_membership_select_member(message: Message, state: FSMContext):
     data = await state.get_data()
     requests = data.get("requests")
     member_name, member_phone = message.text.split(": ")
-    request = [r for r in requests if r["name"] == member_name and r["phone"] == member_phone]
-    await state.update_data(request_tg_id=request[0]["tg_id"])
+    request = [r for r in requests if r["member"].name == member_name and r["member"].phone == float(member_phone)]
+    await state.update_data(request_tg_id=request[0]["request"].tg_id)
     await state.update_data(request=request[0])
     membership_values = menu.membership_value_buttons()
     await message.answer(
@@ -95,8 +99,8 @@ async def add_membership_select_value(message: Message, state: FSMContext):
     data = await state.get_data()
     value = int(message.text)
     request = data.get("request")
-    member_tg_id = request["tg_id"]
-    member_name = request["name"]
+    member_tg_id = request["request"].tg_id
+    member_name = request["member"].name
     membership = membership_utils.add_membership(tg_id=member_tg_id, membership_value=value)
     await message.answer(
         text=locale.membership_added_admin.format(membership.total_amount, member_name),

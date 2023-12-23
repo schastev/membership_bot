@@ -9,6 +9,7 @@ class Settings(BaseSettings, extra=Extra.allow):
     model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8')
     admin_ids: List[int]
     membership_values: List[int]
+    polling_timeout_seconds: int
 
 
 config = Settings()
