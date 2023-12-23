@@ -1,10 +1,9 @@
 import logging
 
-from aiogram import Router
+from aiogram import Router, F
 
 from src.utils import user_actions as user_action_utils
 
-from aiogram import F
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
