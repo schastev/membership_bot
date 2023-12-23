@@ -62,10 +62,10 @@ async def process_phone(message: Message, state: FSMContext):
     name = data.get(locale.name)
     phone = data.get(locale.phone)
     await state.clear()
-    user_action_utils.register_user(name=name, phone=phone, tg_id=message.from_user.id)
+    added_user = user_action_utils.register_user(name=name, phone=phone, tg_id=message.from_user.id)
     menu_buttons = main_buttons(message.from_user.id)
     await message.answer(
-        locale.successful_registration.format(name, phone),
+        locale.successful_registration.format(added_user.name, int(added_user.phone)),
         reply_markup=ReplyKeyboardMarkup(keyboard=[menu_buttons], resize_keyboard=True)
     )
     
@@ -89,15 +89,23 @@ async def process_change_name(message: Message, state: FSMContext):
     data = await state.update_data(name=message.text)
     await state.clear()
     name = data.get(locale.name)
-    await message.answer(locale.updated_info.format(name, locale.name))
-    user_action_utils.update_name(new_name=name, tg_id=message.from_user.id)
+    updated_user = user_action_utils.update_name(new_name=name, tg_id=message.from_user.id)
+    menu_buttons = main_buttons(message.from_user.id)
+    await message.answer(
+        locale.updated_info.format(updated_user.name, locale.name),
+        reply_markup=ReplyKeyboardMarkup(keyboard=[menu_buttons], resize_keyboard=True)
+    )
 
 
 @router.message(UserUpdateStates.GET_PHONE)
 async def process_change_phone(message: Message, state: FSMContext):
     data = await state.update_data(phone=message.text)
     await state.clear()
-    phone = data.get(locale.phone)
-    await message.answer(locale.updated_info.format(phone, locale.phone))  # fixme get user's name and address them here
-    user_action_utils.update_phone(new_phone=phone, tg_id=message.from_user.id)
+    phone = int(data.get(locale.phone))
+    updated_user = user_action_utils.update_phone(new_phone=phone, tg_id=message.from_user.id)
+    menu_buttons = main_buttons(message.from_user.id)
+    await message.answer(
+        locale.updated_info.format(updated_user.name, locale.phone),
+        reply_markup=ReplyKeyboardMarkup(keyboard=[menu_buttons], resize_keyboard=True)
+    )
     

@@ -1,7 +1,7 @@
 from datetime import date, timedelta
-from typing import Optional, List, Any
+from typing import Optional, Any
 
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import ForeignKey, Numeric
 from sqlalchemy.orm import mapped_column, Mapped, relationship, DeclarativeBase
 
 
@@ -11,20 +11,18 @@ class Base(DeclarativeBase):
 
 class User(Base):
     __tablename__ = "user"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    tg_name: Mapped[str] = mapped_column(String(30))
-    phone_number: Mapped[Optional[str]] = mapped_column(String(11))
-
-    memberships: Mapped[List["Membership"]] = relationship(back_populates="user")
+    tg_id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    phone: Mapped[int] = mapped_column(Numeric(11))
 
     def __repr__(self):
-        return f"User(id={self.id}, tg_name={self.tg_name}, phone_number={self.phone_number})"
+        return f"User(tg_id={self.tg_id}, tg_name={self.name}, phone={self.phone})"
 
 
 class Membership(Base):
     __tablename__ = "memberships"
     id: Mapped[int] = mapped_column(primary_key=True)
-    member_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    # member_id: Mapped[int] = mapped_column(ForeignKey("user.tg_id"))
     purchase_date: Mapped[date] = date.today()
     activation_date: Mapped[Optional[date]]
     expiry_date: Mapped[Optional[date]]
@@ -35,7 +33,7 @@ class Membership(Base):
     total_amount: Mapped[int]
     current_amount: Mapped[Optional[int]]
 
-    user: Mapped["User"] = relationship(back_populates="memberships")
+    # user: Mapped["User"] = relationship(back_populates="memberships")
 
     def __init__(self, **kw: Any):
         super().__init__(**kw)
@@ -43,7 +41,6 @@ class Membership(Base):
 
     def __repr__(self):
         return f"Membership(id={self.id}, " \
-               f"member_id={self.member_id}, " \
                f"total_amount={self.total_amount}, " \
                f"current_amount={self.current_amount}, " \
                f"activation_date={self.activation_date}, " \

@@ -49,7 +49,7 @@ async def view_memberships(message: Message):
         text = f"{locale.membership_info}\n" \
                f"purchase date: {membership['purchase date']}\n" \
                f"activation date: {membership['activation date']}\n" \
-               f"expiration date: {membership['expiration date']}" \
+               f"expiration date: {membership['expiration date']}\n" \
                f"remaining value: {membership['remaining']}\n"
     await message.answer(text)
 
