@@ -2,7 +2,7 @@ from datetime import date, timedelta
 from typing import Optional, Any
 
 from sqlalchemy import ForeignKey, Numeric
-from sqlalchemy.orm import mapped_column, Mapped, relationship, DeclarativeBase
+from sqlalchemy.orm import mapped_column, Mapped, DeclarativeBase
 
 
 class Base(DeclarativeBase):
@@ -22,25 +22,25 @@ class User(Base):
 class Membership(Base):
     __tablename__ = "memberships"
     id: Mapped[int] = mapped_column(primary_key=True)
-    # member_id: Mapped[int] = mapped_column(ForeignKey("user.tg_id"))
+    member_id: Mapped[int] = mapped_column(ForeignKey("user.tg_id"))
     purchase_date: Mapped[date] = date.today()
     activation_date: Mapped[Optional[date]]
     expiry_date: Mapped[Optional[date]]
     original_expiry_date: Mapped[Optional[date]]
-    _frozen: Mapped[bool] = None
+    _frozen: Mapped[Optional[bool]] = False
     freeze_date: Mapped[Optional[date]]
     unfreeze_date: Mapped[Optional[date]]
     total_amount: Mapped[int]
     current_amount: Mapped[Optional[int]]
 
-    # user: Mapped["User"] = relationship(back_populates="memberships")
-
-    def __init__(self, **kw: Any):
+    def __init__(self, member_id: int, **kw: Any):
         super().__init__(**kw)
+        self.purchase_date = date.today()
         self.current_amount = self.total_amount
+        self.member_id = member_id
 
     def __repr__(self):
-        return f"Membership(id={self.id}, " \
+        return f"Membership(" \
                f"total_amount={self.total_amount}, " \
                f"current_amount={self.current_amount}, " \
                f"activation_date={self.activation_date}, " \
@@ -81,6 +81,7 @@ class Membership(Base):
         self.current_amount -= 1
         if self.activation_date is None:
             self._activate(activation_date=date.today())
+            self._frozen = False
 
     def _activate(self, activation_date: date) -> None:
         self.activation_date = activation_date

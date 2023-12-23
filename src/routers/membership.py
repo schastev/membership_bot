@@ -3,10 +3,11 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, ReplyKeyboardMarkup, ReplyKeyboardRemove
-import src.utils.membership as mb_management_utils
+import src.utils.membership as membership_utils
 from src.utils import menu
 
 from config_reader import config
+from src.utils.menu import main_buttons
 from src.utils.user import check_admin
 
 router = Router()
@@ -25,7 +26,7 @@ async def manage_memberships(message: Message, state: FSMContext):
         await message.answer(locale.not_admin)
         return
     await message.answer(locale.polling)
-    requests = mb_management_utils.poll_for_membership_requests()
+    requests = membership_utils.poll_for_membership_requests()
     if len(requests) == 0:
         await message.answer(locale.polling_timeout)
     else:
@@ -41,31 +42,36 @@ async def manage_memberships(message: Message, state: FSMContext):
 @router.message(Command(locale.view_membership_button))
 @router.message(F.text.casefold() == locale.view_membership_button.casefold())
 async def view_memberships(message: Message):
-    membership_list = mb_management_utils.view_memberships_by_user_id(tg_id=message.from_user.id)
+    membership_list = membership_utils.view_memberships_by_user_id(tg_id=message.from_user.id)
     if len(membership_list) == 0:
         text = locale.no_memberships
     else:
         membership = membership_list[0]
         text = f"{locale.membership_info}\n" \
-               f"purchase date: {membership['purchase date']}\n" \
-               f"activation date: {membership['activation date']}\n" \
-               f"expiration date: {membership['expiration date']}\n" \
-               f"remaining value: {membership['remaining']}\n"
+               f"purchase date: {membership.purchase_date}\n" \
+               f"activation date: {membership.activation_date}\n" \
+               f"expiration date: {membership.expiry_date}\n" \
+               f"remaining value: {membership.current_amount}\n"
     await message.answer(text)
 
 
 @router.message(Command(locale.add_membership))
 @router.message(F.text.casefold() == locale.add_membership.casefold())
 async def request_to_add_membership(message: Message):
-    mb_management_utils.request_to_add_membership(tg_id=message.from_user.id)
+    membership_utils.request_to_add_membership(tg_id=message.from_user.id)
     await message.answer(text=locale.request_sent)
-    membership = mb_management_utils.poll_for_membership_resolution(message.from_user.id)
+    membership = membership_utils.poll_for_membership_resolution(message.from_user.id)
+    menu_buttons = main_buttons(message.from_user.id)
     if membership:
         await message.answer(
-            text=locale.membership_added_member.format(membership["total"]), reply_markup=ReplyKeyboardRemove()
+            text=locale.membership_added_member.format(membership.total_amount),
+            reply_markup=ReplyKeyboardMarkup(keyboard=[menu_buttons], resize_keyboard=True)
         )
     else:
-        await message.answer(text=locale.membership_not_added_member, reply_markup=ReplyKeyboardRemove())
+        await message.answer(
+            text=locale.membership_not_added_member,
+            reply_markup=ReplyKeyboardMarkup(keyboard=[menu_buttons], resize_keyboard=True)
+        )
 
 
 @router.message(MembershipManagementStates.SELECT_MEMBER)
@@ -91,9 +97,10 @@ async def add_membership_select_value(message: Message, state: FSMContext):
     request = data.get("request")
     member_tg_id = request["tg_id"]
     member_name = request["name"]
-    mb_management_utils.add_membership(tg_id=member_tg_id, membership_value=value)
+    membership = membership_utils.add_membership(tg_id=member_tg_id, membership_value=value)
     await message.answer(
-        text=locale.membership_added_admin.format(value, member_name), reply_markup=ReplyKeyboardRemove()
+        text=locale.membership_added_admin.format(membership.total_amount, member_name),
+        reply_markup=ReplyKeyboardRemove(),
     )
     await state.clear()
 

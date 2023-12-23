@@ -9,7 +9,7 @@ locale = config
 def main_buttons(user_id: int) -> list:
     menu_buttons = []
     user_is_registered = check_user_registration_state(user_id)
-    user_is_admin = check_admin(user_id)
+    user_is_admin = False #check_admin(user_id) todo remove the hardcode once debug is done
     if user_is_admin:
         menu_buttons.append(KeyboardButton(text=locale.manage_button))
     elif user_is_registered:
