@@ -38,4 +38,5 @@ def membership_value_buttons() -> list:
     membership_values = config.membership_values
     for value in membership_values:
         menu_buttons.append(KeyboardButton(text=str(value)))
+    menu_buttons.append(KeyboardButton(text=locale.decline))
     return menu_buttons

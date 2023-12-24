@@ -1,4 +1,4 @@
-from aiogram import Router, F
+from aiogram import Router, F, Bot
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
@@ -25,8 +25,8 @@ async def manage_memberships(message: Message, state: FSMContext):
     if not check_admin(message.from_user.id):
         await message.answer(locale.not_admin)
         return
-    await message.answer(locale.polling)
-    requests = membership_utils.poll_for_membership_requests()
+    await message.answer(locale.polling.format(config.polling_timeout_seconds))
+    requests = await membership_utils.poll_for_membership_requests()
     if len(requests) == 0:
         await message.answer(locale.polling_timeout)
     else:
@@ -59,21 +59,16 @@ async def view_memberships(message: Message):
 @router.message(F.text.casefold() == locale.add_membership.casefold())
 async def request_to_add_membership(message: Message):
     existing_requests = membership_utils.check_existing_requests(tg_id=message.from_user.id)
-    if len(existing_requests) == 0:
-        request = membership_utils.request_to_add_membership(tg_id=message.from_user.id, chat_id=message.chat.id)
-    else:
-        request = existing_requests[0]
-    await message.answer(text=locale.request_sent)
-    membership = membership_utils.poll_for_membership_resolution(request=request)
     menu_buttons = main_buttons(message.from_user.id)
-    if membership:
+    if len(existing_requests) == 0:
+        membership_utils.request_to_add_membership(tg_id=message.from_user.id, chat_id=message.chat.id)
         await message.answer(
-            text=locale.membership_added_member.format(membership.total_amount),
+            text=locale.request_sent,
             reply_markup=ReplyKeyboardMarkup(keyboard=[menu_buttons], resize_keyboard=True)
         )
     else:
         await message.answer(
-            text=locale.membership_not_added_member,
+            text=locale.request_already_existed,
             reply_markup=ReplyKeyboardMarkup(keyboard=[menu_buttons], resize_keyboard=True)
         )
 
@@ -95,7 +90,22 @@ async def add_membership_select_member(message: Message, state: FSMContext):
 
 
 @router.message(MembershipManagementStates.SELECT_VALUE)
-async def add_membership_select_value(message: Message, state: FSMContext):
+@router.message(F.text.casefold() == locale.decline.casefold())
+async def decline_request(message: Message, state: FSMContext, bot: Bot):
+    data = await state.get_data()
+    request = data.get("request")
+    membership_utils.decline_membership_request(request=request["request"])
+    menu_buttons = main_buttons(message.from_user.id)
+    await bot.send_message(
+        chat_id=request["request"].chat_id,
+        text=locale.membership_not_added_member,
+        reply_markup=ReplyKeyboardMarkup(keyboard=[menu_buttons], resize_keyboard=True)
+    )
+
+
+@router.message(MembershipManagementStates.SELECT_VALUE)
+@router.message(F.text.in_(config.membership_values))
+async def add_membership_select_value(message: Message, state: FSMContext, bot: Bot):
     data = await state.get_data()
     value = int(message.text)
     request = data.get("request")
@@ -107,4 +117,6 @@ async def add_membership_select_value(message: Message, state: FSMContext):
         reply_markup=ReplyKeyboardRemove(),
     )
     await state.clear()
-
+    await bot.send_message(
+        chat_id=request["request"].chat_id, text=locale.membership_added_member.format(membership.total_amount)
+    )

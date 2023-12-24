@@ -38,22 +38,7 @@ def request_to_add_membership(tg_id: int, chat_id: int) -> MembershipRequest:
     return request
 
 
-def poll_for_membership_resolution(request: MembershipRequest) -> Membership:
-    tg_id = request.tg_id
-    query = select(MembershipRequest).where(MembershipRequest.tg_id == tg_id)
-    timer = TIMER
-    with Session(ENGINE) as session:
-        request = session.scalars(query).first()
-        while request and timer > 0:
-            request = session.scalars(query).first()
-            timer = timer - 10
-            time.sleep(10)
-    if not request:
-        return view_memberships_by_user_id(tg_id=tg_id)[0]
-    return None
-
-
-def poll_for_membership_requests() -> list:
+async def poll_for_membership_requests() -> list:
     query_for_requests = select(MembershipRequest)
     result = []
     timer = TIMER
@@ -78,3 +63,11 @@ def add_membership(tg_id: int, membership_value: int) -> Membership:
     with Session(ENGINE) as session:
         added_membership = session.scalars(get_memberships_by_tg_id(tg_id=tg_id)).one()
     return added_membership
+
+
+def decline_membership_request(request: dict) -> None:
+    with Session(ENGINE) as session:
+        query = select(MembershipRequest).where(MembershipRequest.id == request.id)
+        db_request = session.scalars(query).first()
+        session.delete(db_request)
+        session.commit()
