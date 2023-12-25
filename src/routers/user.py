@@ -7,9 +7,9 @@ from src.utils import db_user as user_action_utils
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import ReplyKeyboardRemove, Message, ReplyKeyboardMarkup
+from aiogram.types import ReplyKeyboardRemove, Message
 from config_reader import config
-from src.utils.menu import main_buttons
+from src.utils.misc import FullMenuMarkup
 
 router = Router()
 locale = config
@@ -43,9 +43,8 @@ async def cancel_handler(message: Message, state: FSMContext) -> None:
         return
     logging.info(locale.cancelled_state_log.format(current_state))
     await state.clear()
-    menu_buttons = main_buttons(message.from_user.id)
     await message.answer(
-        locale.cancelled, reply_markup=ReplyKeyboardMarkup(keyboard=[menu_buttons], resize_keyboard=True)
+        locale.cancelled, reply_markup=FullMenuMarkup(user_id=message.from_user.id)
     )
 
 
@@ -63,10 +62,9 @@ async def process_phone(message: Message, state: FSMContext):
     phone = data.get(locale.phone)
     await state.clear()
     added_user = user_action_utils.register_user(name=name, phone=phone, tg_id=message.from_user.id)
-    menu_buttons = main_buttons(message.from_user.id)
     await message.answer(
         locale.successful_registration.format(added_user.name, int(added_user.phone)),
-        reply_markup=ReplyKeyboardMarkup(keyboard=[menu_buttons], resize_keyboard=True)
+        reply_markup=FullMenuMarkup(user_id=message.from_user.id)
     )
     
 
@@ -90,10 +88,9 @@ async def process_change_name(message: Message, state: FSMContext):
     await state.clear()
     name = data.get(locale.name)
     updated_user = user_action_utils.update_name(new_name=name, tg_id=message.from_user.id)
-    menu_buttons = main_buttons(message.from_user.id)
     await message.answer(
         locale.updated_info.format(updated_user.name, locale.name),
-        reply_markup=ReplyKeyboardMarkup(keyboard=[menu_buttons], resize_keyboard=True)
+        reply_markup=FullMenuMarkup(user_id=message.from_user.id)
     )
 
 
@@ -103,9 +100,8 @@ async def process_change_phone(message: Message, state: FSMContext):
     await state.clear()
     phone = int(data.get(locale.phone))
     updated_user = user_action_utils.update_phone(new_phone=phone, tg_id=message.from_user.id)
-    menu_buttons = main_buttons(message.from_user.id)
     await message.answer(
         locale.updated_info.format(updated_user.name, locale.phone),
-        reply_markup=ReplyKeyboardMarkup(keyboard=[menu_buttons], resize_keyboard=True)
+        reply_markup=FullMenuMarkup(user_id=message.from_user.id)
     )
     

@@ -1,7 +1,7 @@
 from typing import List
 
 from config_reader import config
-from src.utils.user import check_admin, check_user_registration_state
+from src.utils.db_user import check_admin, check_user_registration_state
 from aiogram.types import KeyboardButton
 locale = config
 

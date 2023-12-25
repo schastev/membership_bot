@@ -6,8 +6,8 @@ from aiogram.types import Message, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from src.utils import menu, db_mb_for_admin
 
 from config_reader import config
-from src.utils.menu import main_buttons
 from src.utils.db_user import check_admin
+from src.utils.misc import FullMenuMarkup
 
 router = Router()
 locale = config
@@ -60,11 +60,10 @@ async def decline_request(message: Message, state: FSMContext, bot: Bot):
     data = await state.get_data()
     request = data.get("request")
     db_mb_for_admin.decline_membership_request(request=request["request"])
-    menu_buttons = main_buttons(message.from_user.id)
     await bot.send_message(
         chat_id=request["request"].chat_id,
         text=locale.membership_not_added_member,
-        reply_markup=ReplyKeyboardMarkup(keyboard=[menu_buttons], resize_keyboard=True)
+        reply_markup=FullMenuMarkup(user_id=message.from_user.id)
     )
 
 
