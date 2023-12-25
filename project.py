@@ -4,15 +4,13 @@ import logging
 from aiogram import Bot, Dispatcher
 
 from config_reader import config
-from src.routers import misc
-from src.routers import user
-from src.routers import membership
+from src.routers import misc, user, mb_for_admin, mb_for_member
 
 
 async def main():
     logging.basicConfig(level=logging.INFO)
     dp = Dispatcher()
-    dp.include_routers(user.router, membership.router, misc.router)
+    dp.include_routers(user.router, mb_for_admin.router, mb_for_member.router, misc.router)
     bot = Bot(token=config.bot_token.get_secret_value())
     await dp.start_polling(bot)
 

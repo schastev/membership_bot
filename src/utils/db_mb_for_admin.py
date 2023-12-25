@@ -14,28 +14,10 @@ from src.utils.database import ENGINE, get_memberships_by_tg_id, get_membership_
 TIMER = config.polling_timeout_seconds
 
 
-def view_memberships_by_user_id(tg_id: int) -> List[Membership]:
-    with Session(ENGINE) as session:
-        memberships = session.scalars(get_memberships_by_tg_id(tg_id=tg_id)).all()
-    return memberships
-
-
 def check_existing_requests(tg_id: int) -> List[MembershipRequest]:
     with Session(ENGINE) as session:
         requests = session.scalars(get_membership_requests_for_user(tg_id=tg_id)).all()
     return requests
-
-
-def request_to_add_membership(tg_id: int, chat_id: int) -> MembershipRequest:
-    with Session(ENGINE) as session:
-        request = MembershipRequest(tg_id=tg_id, chat_id=chat_id)
-        session.add(request)
-        session.commit()
-    with Session(ENGINE) as session:
-        query = select(MembershipRequest).where(MembershipRequest.tg_id == tg_id)
-        request = session.scalars(query).first()
-    assert request is not None
-    return request
 
 
 async def poll_for_membership_requests() -> list:

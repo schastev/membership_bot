@@ -2,7 +2,7 @@ import logging
 
 from aiogram import Router, F
 
-from src.utils import user as user_action_utils
+from src.utils import db_user as user_action_utils
 
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext

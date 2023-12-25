@@ -1,4 +1,3 @@
-"""All of these are stubs until I figure out the database stuff"""
 from sqlalchemy.orm import Session
 
 from config_reader import config
