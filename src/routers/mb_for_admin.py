@@ -55,32 +55,27 @@ async def add_membership_select_member(message: Message, state: FSMContext):
 
 
 @router.message(MembershipManagementStates.SELECT_VALUE)
-@router.message(F.text.casefold() == locale.decline.casefold())
-async def decline_request(message: Message, state: FSMContext, bot: Bot):
+async def process_membership(message: Message, state: FSMContext, bot: Bot):
     data = await state.get_data()
     request = data.get("request")
-    db_mb_for_admin.decline_membership_request(request=request["request"])
-    await bot.send_message(
-        chat_id=request["request"].chat_id,
-        text=locale.membership_not_added_member,
-        reply_markup=FullMenuMarkup(user_id=message.from_user.id)
-    )
-
-
-@router.message(MembershipManagementStates.SELECT_VALUE)
-@router.message(F.text.in_(config.membership_values))
-async def add_membership_select_value(message: Message, state: FSMContext, bot: Bot):
-    data = await state.get_data()
-    value = int(message.text)
-    request = data.get("request")
-    member_tg_id = request["request"].tg_id
-    member_name = request["member"].name
-    membership = db_mb_for_admin.add_membership(tg_id=member_tg_id, membership_value=value)
-    await message.answer(
-        text=locale.membership_added_admin.format(membership.total_amount, member_name),
-        reply_markup=ReplyKeyboardRemove(),
-    )
+    if message.text.casefold() == locale.decline.casefold():
+        await bot.send_message(
+            chat_id=request["request"].chat_id,
+            text=locale.membership_not_added_member,
+            reply_markup=FullMenuMarkup(user_id=message.from_user.id)
+        )
+    else:
+        value = int(message.text)
+        member_tg_id = request["request"].tg_id
+        member_name = request["member"].name
+        membership = db_mb_for_admin.add_membership(tg_id=member_tg_id, membership_value=value)
+        await message.answer(
+            text=locale.membership_added_admin.format(membership.total_amount, member_name),
+            reply_markup=ReplyKeyboardRemove(),
+        )
+        await bot.send_message(
+            chat_id=request["request"].chat_id, text=locale.membership_added_member.format(membership.total_amount)
+        )
+    db_mb_for_admin.delete_membership_request(request=request["request"])
     await state.clear()
-    await bot.send_message(
-        chat_id=request["request"].chat_id, text=locale.membership_added_member.format(membership.total_amount)
-    )
+
