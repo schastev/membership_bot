@@ -1,16 +1,20 @@
+from gettext import gettext as _
+
 from aiogram import Router, F, Bot
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, ReplyKeyboardMarkup, ReplyKeyboardRemove
-from src.utils import menu, db_mb_for_admin
 
 from config_reader import config
+from translation import t
+from src.utils import menu, db_mb_for_admin
 from src.utils.db_user import check_admin
 from src.utils.misc import FullMenuMarkup
 
 router = Router()
 locale = config
+_ = t.gettext
 
 
 class MembershipManagementStates(StatesGroup):
@@ -18,21 +22,21 @@ class MembershipManagementStates(StatesGroup):
     SELECT_VALUE = State()
 
 
-@router.message(Command(locale.manage_button))
-@router.message(F.text.casefold() == locale.manage_button.casefold())
+@router.message(Command(_("manage_button")))
+@router.message(F.text.casefold() == (_("manage_button").casefold()))
 async def manage_memberships(message: Message, state: FSMContext):
     if not check_admin(message.from_user.id):
-        await message.answer(locale.not_admin)
+        await message.answer(_("not_admin"))
         return
-    await message.answer(locale.polling.format(config.polling_timeout_seconds))
+    await message.answer(_('polling').format(config.polling_timeout_seconds))
     requests = await db_mb_for_admin.poll_for_membership_requests()
     if len(requests) == 0:
-        await message.answer(locale.polling_timeout)
+        await message.answer(_('polling_timeout'))
     else:
         await state.update_data(requests=requests)
         request_buttons = menu.membership_request_buttons(requests)
         await message.answer(
-            text=locale.pending_requests,
+            text=_("pending_requests"),
             reply_markup=ReplyKeyboardMarkup(keyboard=[request_buttons], resize_keyboard=True)
         )
         await state.set_state(MembershipManagementStates.SELECT_MEMBER)
@@ -48,7 +52,7 @@ async def add_membership_select_member(message: Message, state: FSMContext):
     await state.update_data(request=request[0])
     membership_values = menu.membership_value_buttons()
     await message.answer(
-        text=locale.select_value,
+        text=_("select_value"),
         reply_markup=ReplyKeyboardMarkup(keyboard=[membership_values], resize_keyboard=True)
     )
     await state.set_state(MembershipManagementStates.SELECT_VALUE)
@@ -58,10 +62,10 @@ async def add_membership_select_member(message: Message, state: FSMContext):
 async def process_membership(message: Message, state: FSMContext, bot: Bot):
     data = await state.get_data()
     request = data.get("request")
-    if message.text.casefold() == locale.decline.casefold():
+    if message.text.casefold() == _("decline").casefold():
         await bot.send_message(
             chat_id=request["request"].chat_id,
-            text=locale.membership_not_added_member,
+            text=_("membership_not_added_member"),
             reply_markup=FullMenuMarkup(user_id=message.from_user.id)
         )
     else:
@@ -70,11 +74,11 @@ async def process_membership(message: Message, state: FSMContext, bot: Bot):
         member_name = request["member"].name
         membership = db_mb_for_admin.add_membership(tg_id=member_tg_id, membership_value=value)
         await message.answer(
-            text=locale.membership_added_admin.format(membership.total_amount, member_name),
+            text=_("membership_added_admin").format(membership.total_amount, member_name),
             reply_markup=ReplyKeyboardRemove(),
         )
         await bot.send_message(
-            chat_id=request["request"].chat_id, text=locale.membership_added_member.format(membership.total_amount)
+            chat_id=request["request"].chat_id, text=_("membership_added_member").format(membership.total_amount)
         )
     db_mb_for_admin.delete_membership_request(request=request["request"])
     await state.clear()
