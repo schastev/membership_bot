@@ -7,9 +7,9 @@ from src.utils import db_mb_for_member
 from src.utils.database import ENGINE, get_user_by_tg_id
 
 
-def register_user(tg_id: int, name: str, phone: str) -> User:
+def register_user(tg_id: int, name: str, phone: str, language: str) -> User:
     with Session(ENGINE) as session:
-        user = User(name=name, phone=phone, tg_id=tg_id)
+        user = User(name=name, phone=phone, tg_id=tg_id, language=language)
         session.add(user)
         session.commit()
     with Session(ENGINE) as session:

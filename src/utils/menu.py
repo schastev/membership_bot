@@ -2,11 +2,19 @@ from typing import List
 
 from aiogram.types import KeyboardButton
 
+import translation
+
 from config_reader import config
 from src.utils.db_user import check_admin, check_user_registration_state, check_no_memberships
-from translation import t
 
-_ = t.gettext
+
+__ = translation.i18n.lazy_gettext
+_ = translation.i18n.gettext
+
+
+def language_buttons() -> list:
+    return [KeyboardButton(text=lang) for lang in config.languages]
+
 
 def main_buttons(user_id: int) -> list:
     menu_buttons = []
@@ -21,7 +29,10 @@ def main_buttons(user_id: int) -> list:
         menu_buttons.append(KeyboardButton(text=_("view_membership_button")))
     if user_is_registered:
         menu_buttons.extend(
-            [KeyboardButton(text=_("change_name_button")), KeyboardButton(text=_("change_phone_button"))]
+            [
+                KeyboardButton(text=_("change_name_button")),
+                KeyboardButton(text=_("change_phone_button"))
+            ]
         )
     else:
         menu_buttons.append(KeyboardButton(text=_("register_button")))

@@ -1,20 +1,18 @@
-from gettext import gettext as _
-
 from aiogram import Router, F, Bot
-from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, ReplyKeyboardMarkup, ReplyKeyboardRemove
 
+import translation
 from config_reader import config
-from translation import t
 from src.utils import menu, db_mb_for_admin
 from src.utils.db_user import check_admin
 from src.utils.misc import FullMenuMarkup
 
 router = Router()
 locale = config
-_ = t.gettext
+__ = translation.i18n.lazy_gettext
+_ = translation.i18n.gettext
 
 
 class MembershipManagementStates(StatesGroup):
@@ -22,7 +20,6 @@ class MembershipManagementStates(StatesGroup):
     SELECT_VALUE = State()
 
 
-@router.message(Command(_("manage_button")))
 @router.message(F.text.casefold() == (_("manage_button").casefold()))
 async def manage_memberships(message: Message, state: FSMContext):
     if not check_admin(message.from_user.id):
@@ -78,8 +75,8 @@ async def process_membership(message: Message, state: FSMContext, bot: Bot):
             reply_markup=ReplyKeyboardRemove(),
         )
         await bot.send_message(
-            chat_id=request["request"].chat_id, text=_("membership_added_member").format(membership.total_amount)
+            chat_id=request["request"].chat_id,
+            text=_("membership_added_member").format(membership.total_amount)
         )
     db_mb_for_admin.delete_membership_request(request=request["request"])
     await state.clear()
-

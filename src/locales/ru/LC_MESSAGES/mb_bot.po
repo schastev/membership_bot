@@ -62,7 +62,7 @@ msgstr "Ожидаем новые запросы на абонементы. Кл
 #: src/routers/mb_for_admin.py:35
 msgid "polling_timeout"
 msgstr "Новых запросов не найдено. Убедитесь, что клиент нажал на кнопку \"Добавить абонемент\""
-"в чате с этим ботом."
+" в чате с этим ботом."
 
 #: src/routers/mb_for_admin.py:40
 msgid "pending_requests"

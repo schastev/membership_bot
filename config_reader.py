@@ -10,6 +10,7 @@ class Settings(BaseSettings, extra=Extra.allow):
     admin_ids: List[int]
     membership_values: List[int]
     polling_timeout_seconds: int
+    languages: List[str]
 
 
 config = Settings()
