@@ -118,7 +118,7 @@ msgstr "Отменено."
 
 #: src/routers/user.py:58 src/routers/user.py:78 src/routers/user.py:85
 msgid "enter_info"
-msgstr "Пожалуйста, введите ваш {}."
+msgstr "Пожалуйста, введите ваш {} {}."
 
 #: src/routers/user.py:58 src/routers/user.py:65 src/routers/user.py:85
 #: src/routers/user.py:104 src/routers/user.py:107

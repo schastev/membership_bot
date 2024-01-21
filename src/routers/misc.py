@@ -1,24 +1,23 @@
 from aiogram import Router, F
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, ReplyKeyboardMarkup
+from aiogram.types import Message, CallbackQuery
 
+import translation
 from config_reader import config
 from src.utils.db_user import check_user_registration_state
-import translation
 from src.utils.menu import main_buttons, language_buttons
 
-
 router = Router()
-__ = translation.i18n.lazy_gettext
+_ = translation.i18n.gettext
 
 
-@router.message(F.text.in_(config.languages))
-async def handle_language(message: Message, state: FSMContext):
-    await state.update_data(locale=message.text)
-    await translation.locale.set_locale(state=state, locale=message.text)
-    await state.update_data(lang=message.text)
-    await greeting(message=message)
+@router.callback_query(F.data.in_(config.languages))
+async def handle_language(callback: CallbackQuery, state: FSMContext):
+    await translation.locale.set_locale(state=state, locale=callback.data)
+    await state.update_data(lang=callback.data)
+    await greeting(message=callback.message)
+    await callback.answer()
 
 
 @router.message(CommandStart())
@@ -30,8 +29,7 @@ async def start_handler(message: Message, state: FSMContext):
         menu_buttons = language_buttons()
         await message.answer("Hello! Please select your language from the list below.\n"
                              "Здравствуйте! Выберите язык из списка ниже.",
-                             reply_markup=ReplyKeyboardMarkup(keyboard=[menu_buttons], resize_keyboard=True)
-                             )
+                             reply_markup=menu_buttons, resize_keyboard=True)
     else:
         await greeting(message=message)
 
@@ -39,11 +37,15 @@ async def start_handler(message: Message, state: FSMContext):
 async def greeting(message: Message):
     menu_buttons = main_buttons(message.from_user.id)
     await message.answer(
-        __("greeting").format(config.company_name),
-        reply_markup=ReplyKeyboardMarkup(keyboard=[menu_buttons], resize_keyboard=True)
+        _("greeting").format(config.company_name), reply_markup=menu_buttons, resize_keyboard=True
     )
 
 
 @router.message(F.text)
 async def gotta_catch_them_all(message: Message):
     print(message.text)
+
+
+@router.callback_query(F.data)
+async def gotta_catch_all_of_them(callback: CallbackQuery):
+    print(callback.data)

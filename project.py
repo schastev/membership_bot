@@ -12,7 +12,6 @@ async def main():
     logging.basicConfig(level=logging.INFO)
     dp = Dispatcher()
     locale.setup(dp)
-    dp.message.outer_middleware(locale)
     dp.include_routers(user.router, mb_for_admin.router, mb_for_member.router, misc.router)
     bot = Bot(token=config.bot_token.get_secret_value())
     await dp.start_polling(bot)

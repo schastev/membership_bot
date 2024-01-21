@@ -3,14 +3,13 @@ import logging
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import ReplyKeyboardRemove, Message
+from aiogram.types import ReplyKeyboardRemove, Message, CallbackQuery
 
 import translation
+from src.routers.mb_for_admin import main_buttons
 from src.utils import db_user as user_action_utils
-from src.utils.misc import FullMenuMarkup
 
 router = Router()
-__ = translation.i18n.lazy_gettext
 _ = translation.i18n.gettext
 
 
@@ -24,25 +23,27 @@ class UserUpdateStates(StatesGroup):
     GET_PHONE = State()
 
 
-@router.message(F.text.casefold() == __("register_button").casefold())
-async def register_handler(message: Message, state: FSMContext):
-    if not user_action_utils.check_user_registration_state(tg_id=message.from_user.id):
+@router.callback_query(F.data == "button_register")
+async def register_handler(callback: CallbackQuery, state: FSMContext):
+    if not user_action_utils.check_user_registration_state(tg_id=callback.from_user.id):
         await state.set_state(RegistrationStates.GET_NAME)
-        await message.answer(text=_("welcome"), reply_markup=ReplyKeyboardRemove()),
+        await callback.message.answer(text=_("welcome"), reply_markup=ReplyKeyboardRemove()),
     else:
-        await message.answer(text=_("already_registered"))
+        await callback.message.answer(
+            text=_("already_registered"), reply_markup=main_buttons(user_id=callback.from_user.id)
+        )
+    await callback.answer()
 
 
-@router.message(F.text.casefold() == __("cancel").casefold())
-async def cancel_handler(message: Message, state: FSMContext) -> None:
+@router.callback_query(F.data == "button_cancel")
+async def cancel_handler(callback: CallbackQuery, state: FSMContext) -> None:
     current_state = await state.get_state()
     if current_state is None:
         return
     logging.info(_("cancelled_state_log").format(current_state))
     await state.clear()
-    await message.answer(
-        _("cancelled"), reply_markup=FullMenuMarkup(user_id=message.from_user.id)
-    )
+    await callback.message.answer(_("cancelled"), reply_markup=main_buttons(user_id=callback.from_user.id))
+    await callback.answer()
 
 
 @router.message(RegistrationStates.GET_NAME)
@@ -62,26 +63,22 @@ async def process_phone(message: Message, state: FSMContext):
     added_user = user_action_utils.register_user(name=name, phone=phone, tg_id=message.from_user.id, language=lang)
     await message.answer(
         _("successful_registration").format(added_user.name, int(added_user.phone)),
-        reply_markup=FullMenuMarkup(user_id=message.from_user.id)
+        reply_markup=main_buttons(user_id=message.from_user.id)
     )
 
 
-@router.message(F.text.casefold() == __("change_name_button").casefold())
-async def change_name_handler(message: Message, state: FSMContext):
+@router.callback_query(F.data == "button_change_name")
+async def change_name_handler(callback: CallbackQuery, state: FSMContext):
     await state.set_state(UserUpdateStates.GET_NAME)
-    await message.answer(
-        _("enter_info").format(
-            _("new"), _("name")
-        ), reply_markup=ReplyKeyboardRemove())
+    await callback.message.answer(_("enter_info").format(_("new"), _("name")), reply_markup=ReplyKeyboardRemove())
+    await callback.answer()
 
 
-# @router.message(Command(__("change_phone_button")))
-@router.message(F.text.casefold() == __("change_phone_button").casefold())
-async def change_phone_handler(message: Message, state: FSMContext):
+@router.callback_query(F.data == "button_change_phone")
+async def change_phone_handler(callback: CallbackQuery, state: FSMContext):
     await state.set_state(UserUpdateStates.GET_PHONE)
-    await message.answer(_("enter_info").format(
-        _("new"), _("phone")
-    ), reply_markup=ReplyKeyboardRemove())
+    await callback.message.answer(_("enter_info").format(_("new"), _("phone")), reply_markup=ReplyKeyboardRemove())
+    await callback.answer()
 
 
 @router.message(UserUpdateStates.GET_NAME)
@@ -92,7 +89,7 @@ async def process_change_name(message: Message, state: FSMContext):
     updated_user = user_action_utils.update_name(new_name=name, tg_id=message.from_user.id)
     await message.answer(
         _("updated_info").format(updated_user.name, _("name")),
-        reply_markup=FullMenuMarkup(user_id=message.from_user.id)
+        reply_markup=main_buttons(user_id=message.from_user.id)
     )
 
 
@@ -103,7 +100,6 @@ async def process_change_phone(message: Message, state: FSMContext):
     phone = int(data.get("phone"))
     updated_user = user_action_utils.update_phone(new_phone=phone, tg_id=message.from_user.id)
     await message.answer(
-        __("updated_info").format(updated_user.name, __("phone")),
-        reply_markup=FullMenuMarkup(user_id=message.from_user.id)
+        _("updated_info").format(updated_user.name, _("phone")),
+        reply_markup=main_buttons(user_id=message.from_user.id),
     )
-    

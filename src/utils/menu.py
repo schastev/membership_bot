@@ -1,49 +1,48 @@
 from typing import List
 
-from aiogram.types import KeyboardButton
+from aiogram.types import KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 import translation
-
 from config_reader import config
 from src.utils.db_user import check_admin, check_user_registration_state, check_no_memberships
 
-
-__ = translation.i18n.lazy_gettext
 _ = translation.i18n.gettext
 
 
-def language_buttons() -> list:
-    return [KeyboardButton(text=lang) for lang in config.languages]
+def language_buttons() -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+    [builder.add(InlineKeyboardButton(text=lang, callback_data=lang)) for lang in config.languages]
+    return builder.as_markup()
 
 
-def main_buttons(user_id: int) -> list:
-    menu_buttons = []
+def main_buttons(user_id: int) -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
     user_is_registered = check_user_registration_state(user_id)
     user_is_admin = check_admin(user_id)
     user_has_no_memberships = check_no_memberships(user_id)
     if user_is_admin:
-        menu_buttons.append(KeyboardButton(text=_("manage_button")))
+        builder.add(InlineKeyboardButton(text=_("manage_button"), callback_data="button_manage"))
     if user_is_registered and user_has_no_memberships:
-        menu_buttons.append(KeyboardButton(text=_("add_membership")))
+        builder.add(InlineKeyboardButton(text=_("add_membership"), callback_data="button_add_mb"))
     elif user_is_registered and not user_has_no_memberships:
-        menu_buttons.append(KeyboardButton(text=_("view_membership_button")))
+        builder.add(InlineKeyboardButton(text=_("view_membership_button"), callback_data="button_view_mb"))
     if user_is_registered:
-        menu_buttons.extend(
-            [
-                KeyboardButton(text=_("change_name_button")),
-                KeyboardButton(text=_("change_phone_button"))
-            ]
+        builder.add(
+            InlineKeyboardButton(text=_("change_name_button"), callback_data="button_change_name"),
+            InlineKeyboardButton(text=_("change_phone_button"), callback_data="button_change_phone")
         )
     else:
-        menu_buttons.append(KeyboardButton(text=_("register_button")))
-    return menu_buttons
+        builder.add(InlineKeyboardButton(text=_("register_button"), callback_data="button_register"))
+    return builder.as_markup()
 
 
-def membership_request_buttons(request_list: List[dict]) -> list:
-    menu_buttons = []
+def membership_request_buttons(request_list: List[dict]) -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
     for request in request_list:
-        menu_buttons.append(KeyboardButton(text=f'{request["member"].name}: {int(request["member"].phone)}'))
-    return menu_buttons
+        text = f'{request["member"].name}: {int(request["member"].phone)}'
+        builder.add(InlineKeyboardButton(text=text, callback_data=str(request.get("member").tg_id)))
+    return builder.as_markup()
 
 
 def membership_value_buttons() -> list:
