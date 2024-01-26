@@ -157,3 +157,11 @@ msgstr "Здравствуйте! Выберите язык из списка н
 #: src/routers/mb_for_member.py:22 src/routers/mb_for_member.py:23
 msgid "mb_inactive"
 msgstr "Абонемент еще не был активирован"
+
+#: src/routers/mb_for_member.py:22 src/routers/mb_for_admin.py:59
+msgid "request_expired"
+msgstr "Этот запрос уже был обработан."
+
+#: src/routers/user.py:39
+msgid "button_cancel"
+msgstr "Отмена"

@@ -28,7 +28,7 @@ async def start_handler(message: Message, state: FSMContext):
     if not check_user_registration_state(message.from_user.id) and not lang:
         menu_buttons = language_buttons()
         greetings = [_("first_greeting", locale=language) for language in config.languages]
-        await message.answer("\n".join(greetings), reply_markup=menu_buttons, resize_keyboard=True)
+        await message.answer("\n".join(greetings), reply_markup=menu_buttons, resize_keyboard=False)
     else:
         await greeting(message=message)
 
@@ -36,7 +36,7 @@ async def start_handler(message: Message, state: FSMContext):
 async def greeting(message: Message):
     menu_buttons = main_buttons(message.from_user.id)
     await message.answer(
-        _("greeting").format(config.company_name), reply_markup=menu_buttons, resize_keyboard=True
+        _("greeting").format(config.company_name), reply_markup=menu_buttons, resize_keyboard=False
     )
 
 

@@ -28,7 +28,7 @@ async def manage_memberships(callback: CallbackQuery, state: FSMContext):
         await state.update_data(requests=requests)
         request_buttons = menu.membership_request_buttons(request_list=requests)
         await callback.message.answer(
-            text=_("pending_requests"), reply_markup=request_buttons, resize_keyboard=True
+            text=_("pending_requests"), reply_markup=request_buttons, resize_keyboard=False
         )
         await callback.answer()
 
@@ -37,13 +37,20 @@ async def manage_memberships(callback: CallbackQuery, state: FSMContext):
 async def add_membership_select_member(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     requests = data.get("requests")
+    await state.update_data(requests=None)
     member_tg_id = callback.data.split("_")[-1]
-    request = [r for r in requests if r.get("member").tg_id == int(member_tg_id)]
-    await state.update_data(request_tg_id=request[0]["request"].tg_id)
-    await state.update_data(request=request[0])
+    if requests is None:
+        await callback.message.answer(
+            text=_("request_expired"),
+            reply_markup=ReplyKeyboardRemove(),
+        )
+        await callback.answer()
+        return
+    request = [r for r in requests if r.get("member").tg_id == int(member_tg_id)][0]
+    await state.update_data(request=request)
     membership_values = menu.membership_value_buttons()
     await callback.message.answer(
-        text=_("select_value"), reply_markup=membership_values, resize_keyboard=True
+        text=_("select_value"), reply_markup=membership_values, resize_keyboard=False
     )
     await callback.answer()
 
@@ -52,8 +59,16 @@ async def add_membership_select_member(callback: CallbackQuery, state: FSMContex
 async def process_membership(callback: CallbackQuery, state: FSMContext, bot: Bot):
     data = await state.get_data()
     request = data.get("request")
+    await state.update_data(request=None)
     mb_value = callback.data.split("_")[-1]
-    if mb_value.casefold() == _("decline").casefold():
+    if request is None:
+        await callback.message.answer(
+            text=_("request_expired"),
+            reply_markup=ReplyKeyboardRemove(),
+        )
+        await callback.answer()
+        return
+    elif mb_value.casefold() == "decline" and request is not None:
         await bot.send_message(
             chat_id=request["request"].chat_id,
             text=_("membership_not_added_member"),
