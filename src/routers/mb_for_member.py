@@ -18,9 +18,11 @@ async def view_memberships(callback: CallbackQuery):
         text = _("no_memberships")
     else:
         membership = membership_list[0]
-        text = _("membership_info").format(
-            membership.purchase_date, membership.activation_date, membership.expiry_date, membership.current_amount
-        )
+        purchase_date = membership.purchase_date
+        activation_date = membership.activation_date or _("mb_inactive")
+        expiry_date = membership.expiry_date or _("mb_inactive")
+        current_amount = membership.current_amount
+        text = _("membership_info").format(purchase_date, activation_date, expiry_date, current_amount)
     await callback.message.answer(text, reply_markup=main_buttons(user_id=callback.from_user.id))
     await callback.answer()
 

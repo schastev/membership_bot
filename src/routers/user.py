@@ -41,7 +41,7 @@ async def cancel_handler(callback: CallbackQuery, state: FSMContext) -> None:
     if current_state is None:
         return
     logging.info(_("cancelled_state_log").format(current_state))
-    await state.clear()
+    await state.set_state(None)
     await callback.message.answer(_("cancelled"), reply_markup=main_buttons(user_id=callback.from_user.id))
     await callback.answer()
 
@@ -55,15 +55,17 @@ async def process_name(message: Message, state: FSMContext):
 
 @router.message(RegistrationStates.GET_PHONE)
 async def process_phone(message: Message, state: FSMContext):
-    data = await state.update_data(phone=message.text)
+    data = await state.get_data()
     name = data.get("name")
-    phone = data.get("phone")
-    await state.clear()
+    phone = message.text
+    data.pop("name")
+    await state.update_data(name=None)
+    await state.set_state(None)
     lang = data.get("locale")
     added_user = user_action_utils.register_user(name=name, phone=phone, tg_id=message.from_user.id, language=lang)
     await message.answer(
         _("successful_registration").format(added_user.name, int(added_user.phone)),
-        reply_markup=main_buttons(user_id=message.from_user.id)
+        reply_markup=main_buttons(user_id=message.from_user.id), resize_keyboard=True
     )
 
 
@@ -84,7 +86,7 @@ async def change_phone_handler(callback: CallbackQuery, state: FSMContext):
 @router.message(UserUpdateStates.GET_NAME)
 async def process_change_name(message: Message, state: FSMContext):
     data = await state.update_data(name=message.text)
-    await state.clear()
+    await state.set_state(None)
     name = data.get("name")
     updated_user = user_action_utils.update_name(new_name=name, tg_id=message.from_user.id)
     await message.answer(
@@ -96,7 +98,7 @@ async def process_change_name(message: Message, state: FSMContext):
 @router.message(UserUpdateStates.GET_PHONE)
 async def process_change_phone(message: Message, state: FSMContext):
     data = await state.update_data(phone=message.text)
-    await state.clear()
+    await state.set_state(None)
     phone = int(data.get("phone"))
     updated_user = user_action_utils.update_phone(new_phone=phone, tg_id=message.from_user.id)
     await message.answer(

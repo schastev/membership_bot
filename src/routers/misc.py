@@ -27,9 +27,8 @@ async def start_handler(message: Message, state: FSMContext):
     lang = data.get("lang")
     if not check_user_registration_state(message.from_user.id) and not lang:
         menu_buttons = language_buttons()
-        await message.answer("Hello! Please select your language from the list below.\n"
-                             "Здравствуйте! Выберите язык из списка ниже.",
-                             reply_markup=menu_buttons, resize_keyboard=True)
+        greetings = [_("first_greeting", locale=language) for language in config.languages]
+        await message.answer("\n".join(greetings), reply_markup=menu_buttons, resize_keyboard=True)
     else:
         await greeting(message=message)
 

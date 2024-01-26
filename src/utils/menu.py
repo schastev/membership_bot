@@ -1,6 +1,6 @@
 from typing import List
 
-from aiogram.types import KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 import translation
@@ -41,14 +41,14 @@ def membership_request_buttons(request_list: List[dict]) -> InlineKeyboardMarkup
     builder = InlineKeyboardBuilder()
     for request in request_list:
         text = f'{request["member"].name}: {int(request["member"].phone)}'
-        builder.add(InlineKeyboardButton(text=text, callback_data=str(request.get("member").tg_id)))
+        builder.add(InlineKeyboardButton(text=text, callback_data=f"mp_request_{request.get('member').tg_id}"))
     return builder.as_markup()
 
 
-def membership_value_buttons() -> list:
-    menu_buttons = []
+def membership_value_buttons() -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
     membership_values = config.membership_values
     for value in membership_values:
-        menu_buttons.append(KeyboardButton(text=str(value)))
-    menu_buttons.append(KeyboardButton(text=_("decline")))
-    return menu_buttons
+        builder.add(InlineKeyboardButton(text=str(value), callback_data=f"mb_value_{value}"))
+    builder.add(InlineKeyboardButton(text=_("decline"), callback_data="mb_value_decline"))
+    return builder.as_markup()
