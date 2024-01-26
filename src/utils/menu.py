@@ -34,6 +34,7 @@ def main_buttons(user_id: int) -> InlineKeyboardMarkup:
         )
     else:
         builder.add(InlineKeyboardButton(text=_("register_button"), callback_data="button_register"))
+    builder.adjust(2)
     return builder.as_markup()
 
 
@@ -42,6 +43,7 @@ def membership_request_buttons(request_list: List[dict]) -> InlineKeyboardMarkup
     for request in request_list:
         text = f'{request["member"].name}: {int(request["member"].phone)}'
         builder.add(InlineKeyboardButton(text=text, callback_data=f"mp_request_{request.get('member').tg_id}"))
+    builder.adjust(2)
     return builder.as_markup()
 
 
@@ -51,4 +53,5 @@ def membership_value_buttons() -> InlineKeyboardMarkup:
     for value in membership_values:
         builder.add(InlineKeyboardButton(text=str(value), callback_data=f"mb_value_{value}"))
     builder.add(InlineKeyboardButton(text=_("decline"), callback_data="mb_value_decline"))
+    builder.adjust(2)
     return builder.as_markup()
