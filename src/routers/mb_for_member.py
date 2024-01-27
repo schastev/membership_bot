@@ -32,11 +32,9 @@ async def request_to_add_membership(callback: CallbackQuery):
     existing_requests = db_mb_for_admin.check_existing_requests(tg_id=callback.from_user.id)
     if len(existing_requests) == 0:
         db_mb_for_member.request_to_add_membership(tg_id=callback.from_user.id, chat_id=callback.message.chat.id)
-        await callback.message.answer(
-            text=_("request_sent"), reply_markup=main_buttons(user_id=callback.from_user.id)
-        )
+        text = _("request_sent")
     else:
-        await callback.message.answer(
-            text=_("request_already_existed"), reply_markup=main_buttons(user_id=callback.from_user.id),
-        )
+        text = _("request_already_existed")
+    await callback.message.answer(text=text, reply_markup=main_buttons(user_id=callback.from_user.id))
+    # todo rm buttons
     await callback.answer()
