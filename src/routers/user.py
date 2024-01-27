@@ -1,14 +1,14 @@
 import logging
 
-from aiogram import Router, F
+from aiogram import Router, F, Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import ReplyKeyboardRemove, Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery
 
 import config_reader
 import translation
 from src.routers.mb_for_admin import main_buttons
-from src.utils import db_user as user_action_utils
+from src.utils import db_user as user_action_utils, bot_helpers
 
 router = Router()
 _ = translation.i18n.gettext
@@ -25,18 +25,21 @@ class UserUpdateStates(StatesGroup):
 
 
 @router.callback_query(F.data == "button_register")
-async def register_handler(callback: CallbackQuery, state: FSMContext):
+async def register_handler(callback: CallbackQuery, state: FSMContext, bot: Bot):
     if not user_action_utils.check_user_registration_state(tg_id=callback.from_user.id):
         await state.set_state(RegistrationStates.GET_NAME)
-        await callback.message.answer(text=_("welcome"), reply_markup=ReplyKeyboardRemove()),
+        await callback.message.answer(text=_("welcome")),
     else:
         await callback.message.answer(
             text=_("already_registered"), reply_markup=main_buttons(user_id=callback.from_user.id)
         )
+    await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
     await callback.answer()
 
 
-@router.message(F.text.casefold().in_([_("button_cancel", locale=locale).casefold() for locale in config_reader.config.languages]))
+@router.message(
+    F.text.casefold().in_([_("button_cancel", locale=locale).casefold() for locale in config_reader.config.languages])
+)
 async def cancel_handler(message: Message, state: FSMContext) -> None:
     current_state = await state.get_state()
     if current_state is None:
@@ -69,16 +72,18 @@ async def process_phone(message: Message, state: FSMContext):
 
 
 @router.callback_query(F.data == "button_change_name")
-async def change_name_handler(callback: CallbackQuery, state: FSMContext):
+async def change_name_handler(callback: CallbackQuery, state: FSMContext, bot: Bot):
     await state.set_state(UserUpdateStates.GET_NAME)
-    await callback.message.answer(_("enter_info").format(_("new"), _("name")), reply_markup=ReplyKeyboardRemove())
+    await callback.message.answer(_("enter_info").format(_("new"), _("name")))
+    await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
     await callback.answer()
 
 
 @router.callback_query(F.data == "button_change_phone")
-async def change_phone_handler(callback: CallbackQuery, state: FSMContext):
+async def change_phone_handler(callback: CallbackQuery, state: FSMContext, bot: Bot):
     await state.set_state(UserUpdateStates.GET_PHONE)
-    await callback.message.answer(_("enter_info").format(_("new"), _("phone")), reply_markup=ReplyKeyboardRemove())
+    await callback.message.answer(_("enter_info").format(_("new"), _("phone")))
+    await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
     await callback.answer()
 
 

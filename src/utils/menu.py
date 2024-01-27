@@ -5,8 +5,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 import translation
 from config_reader import config
-from src.utils.callback_factories import MembershipRequestCallbackFactory, MBRequestListCallbackFactory, \
-    MBRequestValueCallbackFactory
+from src.utils.callback_factories import MBRequestListCallbackFactory, MBRequestValueCallbackFactory
 from src.utils.db_user import check_admin, check_user_registration_state, check_no_memberships
 
 _ = translation.i18n.gettext

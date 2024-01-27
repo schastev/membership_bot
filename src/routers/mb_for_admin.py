@@ -3,7 +3,7 @@ from aiogram.types import ReplyKeyboardRemove, CallbackQuery
 
 import translation
 from config_reader import config
-from src.utils import menu, db_mb_for_admin
+from src.utils import menu, db_mb_for_admin, bot_helpers
 from src.utils.callback_factories import MembershipRequestCallbackFactory, MBRequestValueCallbackFactory, \
     MBRequestListCallbackFactory
 from src.utils.db_user import check_admin
@@ -24,18 +24,17 @@ async def manage_memberships(callback: CallbackQuery):
     requests = await db_mb_for_admin.poll_for_membership_requests()
     if len(requests) == 0:
         await callback.message.answer(_('polling_timeout'))
-        await callback.answer()
     else:
         request_buttons = menu.membership_request_buttons(request_list=requests)
         await callback.message.answer(text=_("pending_requests"), reply_markup=request_buttons)
-        await callback.answer()
+    await callback.answer()
 
 
 @router.callback_query(MBRequestListCallbackFactory.filter())
-async def add_membership_select_member(callback: CallbackQuery, callback_data: MBRequestListCallbackFactory):
+async def add_membership_select_member(callback: CallbackQuery, callback_data: MBRequestListCallbackFactory, bot: Bot):
     request = callback_data
     if not request:
-        await callback.message.answer(text=_("request_expired"), reply_markup=ReplyKeyboardRemove())
+        await callback.message.answer(text=_("request_expired"))
         await callback.answer()
         return
     membership_values = menu.membership_value_buttons(
@@ -45,6 +44,7 @@ async def add_membership_select_member(callback: CallbackQuery, callback_data: M
         request_id=request.id
     )
     await callback.message.answer(text=_("select_value"), reply_markup=membership_values)
+    await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
     await callback.answer()
 
 
@@ -71,4 +71,5 @@ async def process_membership(callback: CallbackQuery, bot: Bot, callback_data: M
             chat_id=request.chat_id, text=_("membership_added_member").format(membership.total_amount)
         )
     db_mb_for_admin.delete_membership_request(request_id=request.id)
+    await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
     await callback.answer()

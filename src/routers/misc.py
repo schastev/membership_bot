@@ -1,10 +1,11 @@
-from aiogram import Router, F
+from aiogram import Router, F, Bot
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
 import translation
 from config_reader import config
+from src.utils import bot_helpers
 from src.utils.db_user import check_user_registration_state
 from src.utils.menu import main_buttons, language_buttons
 
@@ -13,10 +14,11 @@ _ = translation.i18n.gettext
 
 
 @router.callback_query(F.data.in_(config.languages))
-async def handle_language(callback: CallbackQuery, state: FSMContext):
+async def handle_language(callback: CallbackQuery, state: FSMContext, bot: Bot):
     await translation.locale.set_locale(state=state, locale=callback.data)
     await state.update_data(lang=callback.data)
     await greeting(message=callback.message)
+    await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
     await callback.answer()
 
 
