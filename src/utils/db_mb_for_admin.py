@@ -21,19 +21,15 @@ def check_existing_requests(tg_id: int) -> List[MembershipRequest]:
 
 
 async def poll_for_membership_requests() -> list:
-    query_for_requests = select(MembershipRequest)
     result = []
     timer = TIMER
     with Session(ENGINE) as session:
-        requests = session.scalars(query_for_requests).all()
+        requests = session.query(MembershipRequest, User).join(User).filter(MembershipRequest.tg_id == User.tg_id).all()
         while len(requests) == 0 and timer > 0:
-            requests = session.scalars(query_for_requests).all()
+            requests = session.query(MembershipRequest).join(User).filter(MembershipRequest.tg_id == User.tg_id).all()
             timer = timer - 10
             time.sleep(10)
-        for request in requests:
-            query_for_requesting_members = select(User).where(User.tg_id == request.tg_id)
-            member = session.scalars(query_for_requesting_members).first()
-            result.append({"request": request, "member": member})
+    [result.append({"request": request[0], "member": request[1]}) for request in requests]
     return result
 
 
