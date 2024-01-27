@@ -10,7 +10,6 @@ from src.utils.db_user import check_admin
 from src.utils.menu import main_buttons
 
 router = Router()
-locale = config
 _ = translation.i18n.gettext
 
 

@@ -2,12 +2,10 @@ from aiogram import F, Router
 from aiogram.types import CallbackQuery
 
 import translation
-from config_reader import config
 from src.utils import db_mb_for_admin, db_mb_for_member
 from src.utils.menu import main_buttons
 
 router = Router()
-locale = config
 _ = translation.i18n.gettext
 
 
