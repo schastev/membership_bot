@@ -64,7 +64,7 @@ async def process_phone(message: Message, state: FSMContext):
     added_user = user_action_utils.register_user(name=name, phone=phone, tg_id=message.from_user.id, language=lang)
     await message.answer(
         _("successful_registration").format(added_user.name, int(added_user.phone)),
-        reply_markup=main_buttons(user_id=message.from_user.id), resize_keyboard=False
+        reply_markup=main_buttons(user_id=message.from_user.id)
     )
 
 

@@ -5,7 +5,8 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 import translation
 from config_reader import config
-from src.utils.callback_factories import MembershipRequestCallbackFactory
+from src.utils.callback_factories import MembershipRequestCallbackFactory, MBRequestListCallbackFactory, \
+    MBRequestValueCallbackFactory
 from src.utils.db_user import check_admin, check_user_registration_state, check_no_memberships
 
 _ = translation.i18n.gettext
@@ -43,7 +44,17 @@ def membership_request_buttons(request_list: List[dict]) -> InlineKeyboardMarkup
     builder = InlineKeyboardBuilder()
     for request in request_list:
         text = f'{request["member"].name}: {int(request["member"].phone)}'
-        builder.add(InlineKeyboardButton(text=text, callback_data=f"mp_request_{request.get('member').tg_id}"))
+        builder.add(
+            InlineKeyboardButton(
+                text=text,
+                callback_data=MBRequestListCallbackFactory(
+                    member_tg_id=request.get("member").tg_id,
+                    member_name=request.get("member").name,
+                    chat_id=request.get("request").chat_id,
+                    id=request.get("request").id
+                ).pack()
+            )
+        )
     builder.adjust(2)
     return builder.as_markup()
 
@@ -57,16 +68,17 @@ def membership_value_buttons(
         builder.add(
             InlineKeyboardButton(
                 text=str(value),
-                callback_data=MembershipRequestCallbackFactory(
+                callback_data=MBRequestValueCallbackFactory(
                     member_tg_id=member_tg_id,
                     member_name=member_name,
-                    value=value, chat_id=chat_id,
-                    id=request_id
+                    value=value,
+                    chat_id=chat_id,
+                    id=request_id,
                 ).pack()))
     builder.add(
         InlineKeyboardButton(
             text=_("decline"),
-            callback_data=MembershipRequestCallbackFactory(
+            callback_data=MBRequestValueCallbackFactory(
                 member_tg_id=member_tg_id,
                 member_name=member_name, value=-1,
                 chat_id=chat_id,
