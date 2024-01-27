@@ -5,6 +5,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 import translation
 from config_reader import config
+from src.utils.callback_factories import MembershipRequestCallbackFactory
 from src.utils.db_user import check_admin, check_user_registration_state, check_no_memberships
 
 _ = translation.i18n.gettext
@@ -47,11 +48,31 @@ def membership_request_buttons(request_list: List[dict]) -> InlineKeyboardMarkup
     return builder.as_markup()
 
 
-def membership_value_buttons() -> InlineKeyboardMarkup:
+def membership_value_buttons(
+        member_tg_id: int, member_name: str, chat_id: int, request_id: int
+) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     membership_values = config.membership_values
     for value in membership_values:
-        builder.add(InlineKeyboardButton(text=str(value), callback_data=f"mb_value_{value}"))
-    builder.add(InlineKeyboardButton(text=_("decline"), callback_data="mb_value_decline"))
+        builder.add(
+            InlineKeyboardButton(
+                text=str(value),
+                callback_data=MembershipRequestCallbackFactory(
+                    member_tg_id=member_tg_id,
+                    member_name=member_name,
+                    value=value, chat_id=chat_id,
+                    id=request_id
+                ).pack()))
+    builder.add(
+        InlineKeyboardButton(
+            text=_("decline"),
+            callback_data=MembershipRequestCallbackFactory(
+                member_tg_id=member_tg_id,
+                member_name=member_name, value=-1,
+                chat_id=chat_id,
+                id=request_id
+            ).pack()
+        )
+    )
     builder.adjust(2)
     return builder.as_markup()

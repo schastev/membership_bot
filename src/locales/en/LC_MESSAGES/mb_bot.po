@@ -175,4 +175,4 @@ msgstr "Membership has not been activated yet"
 
 #: src/routers/mb_for_member.py:22 src/routers/mb_for_admin.py:59
 msgid "request_expired"
-msgstr "This request has already been processed."
+msgstr "This request has already been processed or it is expired."

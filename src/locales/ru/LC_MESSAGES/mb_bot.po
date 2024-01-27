@@ -160,7 +160,7 @@ msgstr "Абонемент еще не был активирован"
 
 #: src/routers/mb_for_member.py:22 src/routers/mb_for_admin.py:59
 msgid "request_expired"
-msgstr "Этот запрос уже был обработан."
+msgstr "Этот запрос уже был обработан или истек срок его действия."
 
 #: src/routers/user.py:39
 msgid "button_cancel"

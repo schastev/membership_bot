@@ -12,4 +12,4 @@ class User(Base):
     language: Mapped[str]
 
     def __repr__(self):
-        return f"User(tg_id={self.tg_id}, tg_name={self.name}, phone={self.phone}, lang={self.language})"
+        return f"User(tg_id={self.tg_id}, name={self.name}, phone={self.phone}, lang={self.language})"

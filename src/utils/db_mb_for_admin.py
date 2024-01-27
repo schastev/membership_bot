@@ -47,9 +47,9 @@ def add_membership(tg_id: int, membership_value: int) -> Membership:
     return added_membership
 
 
-def delete_membership_request(request: dict) -> None:
+def delete_membership_request(request_id: int) -> None:
     with Session(ENGINE) as session:
-        query = select(MembershipRequest).where(MembershipRequest.id == request.id)
+        query = select(MembershipRequest).where(MembershipRequest.id == request_id)
         db_request = session.scalars(query).first()
         session.delete(db_request)
         session.commit()
