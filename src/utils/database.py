@@ -5,7 +5,7 @@ from src.model.membership import Membership
 from src.model.request import MembershipRequest
 from src.model.user import User
 
-ENGINE = create_engine("sqlite+pysqlite:///:memory:", echo=True)
+ENGINE = create_engine("sqlite+pysqlite:///mb_bot.db", echo=True)
 
 
 Base.metadata.create_all(bind=ENGINE)
