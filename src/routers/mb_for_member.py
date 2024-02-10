@@ -1,8 +1,7 @@
 from aiogram import F, Router
 from aiogram.types import CallbackQuery
 
-import translation
-from src.utils import db_mb_for_admin, db_mb_for_member
+from src.utils import db_mb_for_admin, db_mb_for_member, translation
 from src.utils.menu import main_buttons
 
 router = Router()

@@ -5,7 +5,7 @@ from aiogram import Bot, Dispatcher
 
 from config_reader import config
 from src.routers import misc, user, mb_for_admin, mb_for_member
-from translation import locale
+from src.utils.translation import locale
 
 
 async def main():

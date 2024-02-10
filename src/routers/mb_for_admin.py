@@ -1,9 +1,8 @@
 from aiogram import Router, F, Bot
 from aiogram.types import ReplyKeyboardRemove, CallbackQuery
 
-import translation
 from config_reader import config
-from src.utils import menu, db_mb_for_admin, bot_helpers
+from src.utils import menu, db_mb_for_admin, bot_helpers, translation
 from src.utils.callback_factories import MembershipRequestCallbackFactory, MBRequestValueCallbackFactory, \
     MBRequestListCallbackFactory
 from src.utils.db_user import check_admin

@@ -3,7 +3,7 @@ from typing import List
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-import translation
+from src.utils import translation
 from config_reader import config
 from src.utils.callback_factories import MBRequestListCallbackFactory, MBRequestValueCallbackFactory
 from src.utils.db_user import check_admin, check_user_registration_state, check_no_memberships

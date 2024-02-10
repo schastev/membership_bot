@@ -6,9 +6,8 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery
 
 import config_reader
-import translation
 from src.routers.mb_for_admin import main_buttons
-from src.utils import db_user as user_action_utils, bot_helpers
+from src.utils import db_user as user_action_utils, bot_helpers, translation
 from src.utils.menu import language_buttons
 
 router = Router()
@@ -64,8 +63,8 @@ async def process_phone(message: Message, state: FSMContext):
     name = data.get("name")
     phone = message.text
     await state.update_data(name=None)
-    lang = data.get("locale")
-    added_user = user_action_utils.register_user(name=name, phone=phone, tg_id=message.from_user.id, language=lang)
+    locale = data.get("locale")
+    added_user = user_action_utils.register_user(name=name, phone=phone, tg_id=message.from_user.id, locale=locale)
     await message.answer(
         _("successful_registration").format(added_user.name, int(added_user.phone)),
         reply_markup=main_buttons(user_id=message.from_user.id)

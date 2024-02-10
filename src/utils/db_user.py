@@ -9,9 +9,9 @@ from src.utils import db_mb_for_member
 from src.utils.database import ENGINE, get_user_by_tg_id
 
 
-def register_user(tg_id: int, name: str, phone: str, language: str) -> User:
+def register_user(tg_id: int, name: str, phone: str, locale: str) -> User:
     with Session(ENGINE) as session:
-        user = User(name=name, phone=phone, tg_id=tg_id, language=language)
+        user = User(name=name, phone=phone, tg_id=tg_id, locale=locale)
         session.add(user)
         session.commit()
     with Session(ENGINE) as session:
@@ -44,11 +44,11 @@ def update_phone(tg_id: int, new_phone: int) -> User:
 def update_user_locale(tg_id: int, new_locale: str) -> User:
     with Session(ENGINE) as session:
         user = session.scalars(get_user_by_tg_id(tg_id=tg_id)).one()
-        user.language = new_locale
+        user.locale = new_locale
         session.commit()
     with Session(ENGINE) as session:
         updated_user = session.scalars(get_user_by_tg_id(tg_id=tg_id)).one()
-        assert updated_user.language == new_locale
+        assert updated_user.locale == new_locale
     return updated_user
 
 
