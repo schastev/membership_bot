@@ -146,6 +146,10 @@ msgstr "новый"
 msgid "change_phone_button"
 msgstr "Изменить телефон"
 
+#: src/utils/menu.py:35
+msgid "change_language_button"
+msgstr "Изменить язык"
+
 #: src/routers/user.py:95 src/routers/user.py:107
 msgid "updated_info"
 msgstr "{}, ваш {} был обновлен."
@@ -165,3 +169,7 @@ msgstr "Этот запрос уже был обработан или истек
 #: src/routers/user.py:39
 msgid "button_cancel"
 msgstr "Отмена"
+
+#: src/routers/user.py:117
+msgid "change_language"
+msgstr "Выберите язык из списка ниже."

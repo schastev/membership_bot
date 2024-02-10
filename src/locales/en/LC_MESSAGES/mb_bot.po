@@ -156,6 +156,10 @@ msgstr "new"
 msgid "change_phone_button"
 msgstr "Change phone"
 
+#: src/utils/menu.py:35
+msgid "change_language_button"
+msgstr "Change language"
+
 
 #: src/routers/user.py:95 src/routers/user.py:107
 msgid "updated_info"
@@ -176,3 +180,7 @@ msgstr "Membership has not been activated yet"
 #: src/routers/mb_for_member.py:22 src/routers/mb_for_admin.py:59
 msgid "request_expired"
 msgstr "This request has already been processed or it is expired."
+
+#: src/routers/user.py:117
+msgid "change_language"
+msgstr "Please select your language from the list below."

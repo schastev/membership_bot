@@ -6,7 +6,7 @@ from aiogram.types import Message, CallbackQuery
 import translation
 from config_reader import config
 from src.utils import bot_helpers
-from src.utils.db_user import check_user_registration_state
+from src.utils.db_user import check_user_registration_state, update_user_locale
 from src.utils.menu import main_buttons, language_buttons
 
 router = Router()
@@ -16,7 +16,14 @@ _ = translation.i18n.gettext
 @router.callback_query(F.data.in_(config.languages))
 async def handle_language(callback: CallbackQuery, state: FSMContext, bot: Bot):
     await translation.locale.set_locale(state=state, locale=callback.data)
-    await greeting(message=callback.message)
+    if callback.message.from_user.id == bot.id:  # this is to correctly display buttons after user changes locale
+        user_id = callback.from_user.id
+    else:
+        user_id = callback.message.from_user.id
+    await greeting(message=callback.message, user_id=user_id)
+    user = check_user_registration_state(tg_id=user_id)
+    if user:
+        update_user_locale(tg_id=user_id, new_locale=callback.data)
     await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
     await callback.answer()
 
@@ -30,12 +37,12 @@ async def start_handler(message: Message, state: FSMContext):
         greetings = [_("first_greeting", locale=language) for language in config.languages]
         await message.answer("\n".join(greetings), reply_markup=menu_buttons)
     else:
-        await translation.locale.set_locale(state=state, locale=user.language)
+        await translation.locale.set_locale(state=state, locale=user.locale)
         await greeting(message=message)
 
 
-async def greeting(message: Message):
-    menu_buttons = main_buttons(message.from_user.id)
+async def greeting(message: Message, user_id: int = 0):
+    menu_buttons = main_buttons(user_id=user_id or message.from_user.id)
     await message.answer(
         _("greeting").format(config.company_name), reply_markup=menu_buttons
     )

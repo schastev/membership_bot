@@ -41,6 +41,17 @@ def update_phone(tg_id: int, new_phone: int) -> User:
     return updated_user
 
 
+def update_user_locale(tg_id: int, new_locale: str) -> User:
+    with Session(ENGINE) as session:
+        user = session.scalars(get_user_by_tg_id(tg_id=tg_id)).one()
+        user.language = new_locale
+        session.commit()
+    with Session(ENGINE) as session:
+        updated_user = session.scalars(get_user_by_tg_id(tg_id=tg_id)).one()
+        assert updated_user.language == new_locale
+    return updated_user
+
+
 def check_user_registration_state(tg_id: int) -> Union[User, None]:
     with Session(ENGINE) as session:
         user = session.scalars(get_user_by_tg_id(tg_id=tg_id)).first()

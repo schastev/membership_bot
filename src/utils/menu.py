@@ -31,7 +31,8 @@ def main_buttons(user_id: int) -> InlineKeyboardMarkup:
     if user_is_registered:
         builder.add(
             InlineKeyboardButton(text=_("change_name_button"), callback_data="button_change_name"),
-            InlineKeyboardButton(text=_("change_phone_button"), callback_data="button_change_phone")
+            InlineKeyboardButton(text=_("change_phone_button"), callback_data="button_change_phone"),
+            InlineKeyboardButton(text=_("change_language_button"), callback_data="button_change_language"),
         )
     else:
         builder.add(InlineKeyboardButton(text=_("register_button"), callback_data="button_register"))
