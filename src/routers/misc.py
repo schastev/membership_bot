@@ -16,7 +16,6 @@ _ = translation.i18n.gettext
 @router.callback_query(F.data.in_(config.languages))
 async def handle_language(callback: CallbackQuery, state: FSMContext, bot: Bot):
     await translation.locale.set_locale(state=state, locale=callback.data)
-    await state.update_data(lang=callback.data)
     await greeting(message=callback.message)
     await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
     await callback.answer()
@@ -25,13 +24,13 @@ async def handle_language(callback: CallbackQuery, state: FSMContext, bot: Bot):
 @router.message(CommandStart())
 @router.message(F.text.casefold() == "start")
 async def start_handler(message: Message, state: FSMContext):
-    data = await state.get_data()
-    lang = data.get("lang")
-    if not check_user_registration_state(message.from_user.id) and not lang:
+    user = check_user_registration_state(message.from_user.id)
+    if not user:
         menu_buttons = language_buttons()
         greetings = [_("first_greeting", locale=language) for language in config.languages]
         await message.answer("\n".join(greetings), reply_markup=menu_buttons)
     else:
+        await translation.locale.set_locale(state=state, locale=user.language)
         await greeting(message=message)
 
 

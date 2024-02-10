@@ -1,3 +1,5 @@
+from typing import Union
+
 from sqlalchemy.orm import Session
 
 from config_reader import config
@@ -39,13 +41,13 @@ def update_phone(tg_id: int, new_phone: int) -> User:
     return updated_user
 
 
-def check_user_registration_state(tg_id: int) -> bool:
+def check_user_registration_state(tg_id: int) -> Union[User, None]:
     with Session(ENGINE) as session:
         user = session.scalars(get_user_by_tg_id(tg_id=tg_id)).first()
     if user:
-        return True
+        return user
     else:
-        return False
+        return None
 
 
 def check_admin(tg_id: int) -> bool:
