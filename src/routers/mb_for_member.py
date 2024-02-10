@@ -1,7 +1,8 @@
 from aiogram import F, Router
 from aiogram.types import CallbackQuery
 
-from src.utils import db_mb_for_admin, db_mb_for_member, translation
+from src.utils import translation
+from src.db_calls import mb_for_member, mb_for_admin
 from src.utils.menu import main_buttons
 
 router = Router()
@@ -10,7 +11,7 @@ _ = translation.i18n.gettext
 
 @router.callback_query(F.data == "button_view_mb")
 async def view_memberships(callback: CallbackQuery):
-    membership_list = db_mb_for_member.view_memberships_by_user_id(tg_id=callback.from_user.id)
+    membership_list = mb_for_member.view_memberships_by_user_id(tg_id=callback.from_user.id)
     if len(membership_list) == 0:
         text = _("no_memberships")
     else:
@@ -26,9 +27,9 @@ async def view_memberships(callback: CallbackQuery):
 
 @router.callback_query(F.data == "button_add_mb")
 async def request_to_add_membership(callback: CallbackQuery):
-    existing_requests = db_mb_for_admin.check_existing_requests(tg_id=callback.from_user.id)
+    existing_requests = mb_for_admin.check_existing_requests(tg_id=callback.from_user.id)
     if len(existing_requests) == 0:
-        db_mb_for_member.request_to_add_membership(tg_id=callback.from_user.id, chat_id=callback.message.chat.id)
+        mb_for_member.request_to_add_membership(tg_id=callback.from_user.id, chat_id=callback.message.chat.id)
         text = _("request_sent")
     else:
         text = _("request_already_existed")

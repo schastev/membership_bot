@@ -5,7 +5,7 @@ from aiogram.types import Message, CallbackQuery
 
 from config_reader import config
 from src.utils import bot_helpers, translation
-from src.utils.db_user import check_user_registration_state, update_user_locale
+from src.db_calls.user import check_user_registration_state, update_user_locale
 from src.utils.menu import main_buttons, language_buttons
 
 router = Router()

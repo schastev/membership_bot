@@ -5,8 +5,8 @@ from sqlalchemy.orm import Session
 from config_reader import config
 
 from src.model.user import User
-from src.utils import db_mb_for_member
-from src.utils.database import ENGINE, get_user_by_tg_id
+from src.db_calls import mb_for_member
+from src.db_calls.database import ENGINE, get_user_by_tg_id
 
 
 def register_user(tg_id: int, name: str, phone: str, locale: str) -> User:
@@ -66,5 +66,5 @@ def check_admin(tg_id: int) -> bool:
 
 
 def check_no_memberships(tg_id: int) -> bool:
-    memberships = db_mb_for_member.view_memberships_by_user_id(tg_id=tg_id)
+    memberships = mb_for_member.view_memberships_by_user_id(tg_id=tg_id)
     return len(memberships) == 0

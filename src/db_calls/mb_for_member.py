@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from src.model.membership import Membership
 from src.model.request import MembershipRequest
-from src.utils.database import ENGINE, get_memberships_by_tg_id
+from src.db_calls.database import ENGINE, get_memberships_by_tg_id
 
 
 def view_memberships_by_user_id(tg_id: int) -> List[Membership]:

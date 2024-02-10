@@ -2,10 +2,11 @@ from aiogram import Router, F, Bot
 from aiogram.types import ReplyKeyboardRemove, CallbackQuery
 
 from config_reader import config
-from src.utils import menu, db_mb_for_admin, bot_helpers, translation
+from src.utils import menu, bot_helpers, translation
+from src.db_calls import mb_for_admin
 from src.utils.callback_factories import MembershipRequestCallbackFactory, MBRequestValueCallbackFactory, \
     MBRequestListCallbackFactory
-from src.utils.db_user import check_admin
+from src.db_calls.user import check_admin
 from src.utils.menu import main_buttons
 
 router = Router()
@@ -19,7 +20,7 @@ async def manage_memberships(callback: CallbackQuery):
         await callback.answer()
         return
     await callback.message.answer(_('polling').format(config.polling_timeout_seconds))
-    requests = await db_mb_for_admin.poll_for_membership_requests()
+    requests = await mb_for_admin.poll_for_membership_requests()
     if len(requests) == 0:
         await callback.message.answer(_('polling_timeout'))
     else:
@@ -60,7 +61,7 @@ async def process_membership(callback: CallbackQuery, bot: Bot, callback_data: M
             reply_markup=main_buttons(user_id=callback.from_user.id)
         )
     else:
-        membership = db_mb_for_admin.add_membership(tg_id=request.member_tg_id, membership_value=request.value)
+        membership = mb_for_admin.add_membership(tg_id=request.member_tg_id, membership_value=request.value)
         await callback.message.answer(
             text=_("membership_added_admin").format(membership.total_amount, request.member_name),
             reply_markup=ReplyKeyboardRemove(),
@@ -68,6 +69,6 @@ async def process_membership(callback: CallbackQuery, bot: Bot, callback_data: M
         await bot.send_message(
             chat_id=request.chat_id, text=_("membership_added_member").format(membership.total_amount)
         )
-    db_mb_for_admin.delete_membership_request(request_id=request.id)
+    mb_for_admin.delete_membership_request(request_id=request.id)
     await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
     await callback.answer()

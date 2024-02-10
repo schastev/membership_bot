@@ -8,7 +8,7 @@ from config_reader import config
 from src.model.membership import Membership
 from src.model.request import MembershipRequest
 from src.model.user import User
-from src.utils.database import ENGINE, get_memberships_by_tg_id, get_membership_requests_for_user
+from src.db_calls.database import ENGINE, get_memberships_by_tg_id, get_membership_requests_for_user
 
 
 TIMER = config.polling_timeout_seconds

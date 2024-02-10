@@ -7,7 +7,8 @@ from aiogram.types import Message, CallbackQuery
 
 import config_reader
 from src.routers.mb_for_admin import main_buttons
-from src.utils import db_user as user_action_utils, bot_helpers, translation
+from src.utils import bot_helpers, translation
+from src.db_calls import user as user_action_utils
 from src.utils.menu import language_buttons
 
 router = Router()
