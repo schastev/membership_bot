@@ -15,7 +15,7 @@ class Membership(Base):
     activation_date: Mapped[Optional[date]]
     expiry_date: Mapped[Optional[date]]
     original_expiry_date: Mapped[Optional[date]]
-    _frozen: Mapped[Optional[bool]] = False
+    _frozen: Mapped[Optional[bool]] = None
     freeze_date: Mapped[Optional[date]]
     unfreeze_date: Mapped[Optional[date]]
     total_amount: Mapped[int]
