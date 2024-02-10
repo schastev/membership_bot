@@ -8,7 +8,7 @@ from src.model.declarative_models import Base
 
 
 class Membership(Base):
-    __tablename__ = "memberships"
+    __tablename__ = "membership"
     id: Mapped[int] = mapped_column(primary_key=True)
     member_id: Mapped[int] = mapped_column(ForeignKey("user.tg_id"))
     purchase_date: Mapped[date] = date.today()

@@ -15,3 +15,10 @@ class MBRequestListCallbackFactory(MembershipRequestCallbackFactory, prefix="mb_
 
 class MBRequestValueCallbackFactory(MembershipRequestCallbackFactory, prefix="mb_request_value"):
     pass
+
+
+class AttRequestCallbackFactory(CallbackData, prefix="att_request"):
+    member_tg_id: int
+    member_name: str
+    chat_id: int
+    id: int

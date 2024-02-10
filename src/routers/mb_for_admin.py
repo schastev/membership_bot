@@ -6,7 +6,7 @@ from src.utils import menu, bot_helpers, translation
 from src.db_calls import mb_for_admin
 from src.utils.callback_factories import MembershipRequestCallbackFactory, MBRequestValueCallbackFactory, \
     MBRequestListCallbackFactory
-from src.db_calls.user import check_admin
+from src.db_calls.user import is_admin
 from src.utils.menu import main_buttons
 
 router = Router()
@@ -15,17 +15,17 @@ _ = translation.i18n.gettext
 
 @router.callback_query(F.data == "button_manage")
 async def manage_memberships(callback: CallbackQuery):
-    if not check_admin(callback.from_user.id):
+    if not is_admin(callback.from_user.id):
         await callback.message.answer(_("not_admin"))
         await callback.answer()
         return
-    await callback.message.answer(_('polling').format(config.polling_timeout_seconds))
+    await callback.message.answer(_('polling_mb').format(config.polling_timeout_seconds))
     requests = await mb_for_admin.poll_for_membership_requests()
     if len(requests) == 0:
-        await callback.message.answer(_('polling_timeout'))
+        await callback.message.answer(_('polling_timeout_mb'))
     else:
         request_buttons = menu.membership_request_buttons(request_list=requests)
-        await callback.message.answer(text=_("pending_requests"), reply_markup=request_buttons)
+        await callback.message.answer(text=_("pending_requests_mb"), reply_markup=request_buttons)
     await callback.answer()
 
 

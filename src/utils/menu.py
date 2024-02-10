@@ -5,8 +5,9 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from src.utils import translation
 from config_reader import config
-from src.utils.callback_factories import MBRequestListCallbackFactory, MBRequestValueCallbackFactory
-from src.db_calls.user import check_admin, check_user_registration_state, check_no_memberships
+from src.utils.callback_factories import MBRequestListCallbackFactory, MBRequestValueCallbackFactory, \
+    AttRequestCallbackFactory
+from src.db_calls import user as db_calls_user
 
 _ = translation.i18n.gettext
 
@@ -19,15 +20,20 @@ def language_buttons() -> InlineKeyboardMarkup:
 
 def main_buttons(user_id: int) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    user_is_registered = check_user_registration_state(user_id)
-    user_is_admin = check_admin(user_id)
-    user_has_no_memberships = check_no_memberships(user_id)
+    user_is_registered = db_calls_user.check_user_registration_state(tg_id=user_id)
+    user_is_admin = db_calls_user.is_admin(tg_id=user_id)
+    user_has_memberships = db_calls_user.has_active_memberships(tg_id=user_id)
+    user_has_attendances = db_calls_user.has_attendances(tg_id=user_id)
     if user_is_admin:
         builder.add(InlineKeyboardButton(text=_("manage_button"), callback_data="button_manage"))
-    if user_is_registered and user_has_no_memberships:
+        builder.add(InlineKeyboardButton(text=_("manage_att_button"), callback_data="button_manage_att"))
+    if user_is_registered and not user_has_memberships:
         builder.add(InlineKeyboardButton(text=_("add_membership"), callback_data="button_add_mb"))
-    elif user_is_registered and not user_has_no_memberships:
+    elif user_is_registered and user_has_memberships:
         builder.add(InlineKeyboardButton(text=_("view_membership_button"), callback_data="button_view_mb"))
+        builder.add(InlineKeyboardButton(text=_("add_attendance"), callback_data="button_add_att"))
+    if user_is_registered and not user_has_attendances:
+        builder.add(InlineKeyboardButton(text=_("view_attendances_button"), callback_data="button_view_att"))
     if user_is_registered:
         builder.add(
             InlineKeyboardButton(text=_("change_name_button"), callback_data="button_change_name"),
@@ -48,6 +54,25 @@ def membership_request_buttons(request_list: List[dict]) -> InlineKeyboardMarkup
             InlineKeyboardButton(
                 text=text,
                 callback_data=MBRequestListCallbackFactory(
+                    member_tg_id=request.get("member").tg_id,
+                    member_name=request.get("member").name,
+                    chat_id=request.get("request").chat_id,
+                    id=request.get("request").id
+                ).pack()
+            )
+        )
+    builder.adjust(2)
+    return builder.as_markup()
+
+
+def attendance_request_buttons(request_list: List[dict]) -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+    for request in request_list:
+        text = f'{request["member"].name}: {int(request["member"].phone)}'
+        builder.add(
+            InlineKeyboardButton(
+                text=text,
+                callback_data=AttRequestCallbackFactory(
                     member_tg_id=request.get("member").tg_id,
                     member_name=request.get("member").name,
                     chat_id=request.get("request").chat_id,

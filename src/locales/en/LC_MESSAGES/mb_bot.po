@@ -39,8 +39,12 @@ msgstr ""
 msgid "add_membership"
 msgstr "Add membership"
 #: src/routers/mb_for_member.py:38
-msgid "request_sent"
+msgid "request_sent_mb"
 msgstr "Your request to add a membership has been sent to the admin."
+
+#: src/routers/att_for_member.py:30
+msgid "request_sent_att"
+msgstr "Your request to check in has been sent to the admin."
 
 #: src/routers/mb_for_member.py:41
 msgid "request_already_existed"
@@ -56,21 +60,40 @@ msgid "not_admin"
 msgstr "You are not an admin!"
 
 #: src/routers/mb_for_admin.py:32
-msgid "polling"
+msgid "polling_mb"
 msgstr ""
 "Polling for new membership requests. The requesting person needs to press "
 "the \"Add membership\" button in their conversation with this bot. They need "
 "to do so within {} seconds."
 
+#: src/routers/att_for_admin.py:20
+msgid "polling_att"
+msgstr ""
+"Polling for new check-in requests. The requesting person needs to press "
+"the \"Check in\" button in their conversation with this bot. They need "
+"to do so within {} seconds."
+
+#: src/routers/att_for_admin.py:26
+msgid "pending_requests_att"
+msgstr ""
+"Here are pending check-in requests:"
+
 #: src/routers/mb_for_admin.py:35
-msgid "polling_timeout"
+msgid "polling_timeout_mb"
 msgstr ""
 "No new requests found. Try again after making sure that the requesting "
 "person pressed the \"Add membership\" button in their conversation with this "
 "bot."
 
+#: src/routers/att_for_admin.py:23
+msgid "polling_timeout_att"
+msgstr ""
+"No new requests found. Try again after making sure that the requesting "
+"person pressed the \"Check-in\" button in their conversation with this "
+"bot."
+
 #: src/routers/mb_for_admin.py:40
-msgid "pending_requests"
+msgid "pending_requests_mb"
 msgstr "Here are pending membership requests:"
 
 #: src/routers/mb_for_admin.py:56
@@ -159,6 +182,18 @@ msgstr "Change phone"
 #: src/utils/menu.py:35
 msgid "change_language_button"
 msgstr "Change language"
+
+#: src/utils/menu.py:34
+msgid "add_attendance"
+msgstr "Check in"
+
+#: src/utils/menu.py:36
+msgid "view_attendances_button"
+msgstr "My attendance"
+
+#: src/utils/menu.py:29
+msgid "manage_att_button"
+msgstr "Manage attendance"
 
 
 #: src/routers/user.py:95 src/routers/user.py:107

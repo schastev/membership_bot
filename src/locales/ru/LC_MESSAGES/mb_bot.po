@@ -39,8 +39,12 @@ msgid "add_membership"
 msgstr "Добавить абонемент"
 
 #: src/routers/mb_for_member.py:38
-msgid "request_sent"
+msgid "request_sent_mb"
 msgstr "Ваш запрос на добавление абонемента был отправлен администратору."
+
+#: src/routers/att_for_member.py:30
+msgid "request_sent_att"
+msgstr "Ваш запрос на добавление отметки о посещении был отправлен администратору."
 
 #: src/routers/mb_for_member.py:41
 msgid "request_already_existed"
@@ -55,17 +59,33 @@ msgid "not_admin"
 msgstr "Вы не администратор."
 
 #: src/routers/mb_for_admin.py:32
-msgid "polling"
+msgid "polling_mb"
 msgstr "Ожидаем новые запросы на абонементы. Клиент должен нажать кнопку \"Добавить абонемент\""
 " в чате с этим ботом в течение следующих {} секунд."
 
+#: src/routers/att_for_admin.py:20
+msgid "polling_att"
+msgstr "Ожидаем новые запросы на отметки о посещении. Клиент должен нажать кнопку \"Отметиться\""
+" в чате с этим ботом в течение следующих {} секунд."
+
+#: src/routers/att_for_admin.py:26
+msgid "pending_requests_att"
+msgstr ""
+"Текущие необработанные запросы на отметку о посещении:"
+
 #: src/routers/mb_for_admin.py:35
-msgid "polling_timeout"
+msgid "polling_timeout_mb"
 msgstr "Новых запросов не найдено. Убедитесь, что клиент нажал на кнопку \"Добавить абонемент\""
 " в чате с этим ботом."
 
+#: src/routers/att_for_admin.py:23
+msgid "polling_timeout_att"
+msgstr ""
+"Новых запросов не найдено. Убедитесь, что клиент нажал на кнопку \"Отметиться\""
+" в чате с этим ботом."
+
 #: src/routers/mb_for_admin.py:40
-msgid "pending_requests"
+msgid "pending_requests_mb"
 msgstr "Текущие необработанные запроса на абонементы:"
 
 #: src/routers/mb_for_admin.py:56
@@ -149,6 +169,18 @@ msgstr "Изменить телефон"
 #: src/utils/menu.py:35
 msgid "change_language_button"
 msgstr "Изменить язык"
+
+#: src/utils/menu.py:34
+msgid "add_attendance"
+msgstr "Отметиться"
+
+#: src/utils/menu.py:36
+msgid "view_attendances_button"
+msgstr "Мои посещения"
+
+#: src/utils/menu.py:29
+msgid "manage_att_button"
+msgstr "Управление посещениями"
 
 #: src/routers/user.py:95 src/routers/user.py:107
 msgid "updated_info"
