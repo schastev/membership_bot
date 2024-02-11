@@ -11,6 +11,7 @@ class Settings(BaseSettings, extra=Extra.allow):
     membership_values: List[int]
     polling_timeout_seconds: int
     languages: List[str]
+    membership_duration_days: int
 
 
 config = Settings()

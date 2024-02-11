@@ -4,6 +4,7 @@ from typing import Optional, Any
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
+import config_reader
 from src.model.declarative_models import Base
 
 
@@ -73,8 +74,8 @@ class Membership(Base):
 
     def _activate(self, activation_date: date) -> None:
         self.activation_date = activation_date
-        self.expiry_date = activation_date + timedelta(days=30)
-        self.original_expiry_date = activation_date + timedelta(days=30)
+        self.expiry_date = activation_date + timedelta(days=config_reader.config.membership_duration_days)
+        self.original_expiry_date = activation_date + timedelta(days=config_reader.config.membership_duration_days)
 
     def is_valid(self) -> bool:
         return self.has_uses() and not self.is_expired()
