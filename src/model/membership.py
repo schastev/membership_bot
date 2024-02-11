@@ -64,7 +64,7 @@ class Membership(Base):
     def subtract(self) -> None:
         if not self.activation_date:
             self._activate(date.today())
-        if not self._check_validity():
+        if not self.is_valid():
             raise ValueError("Абонемент полностью использован или истек срок его действия.")
         self.current_amount -= 1
         if self.activation_date is None:
@@ -76,5 +76,13 @@ class Membership(Base):
         self.expiry_date = activation_date + timedelta(days=30)
         self.original_expiry_date = activation_date + timedelta(days=30)
 
-    def _check_validity(self) -> bool:
-        return self.current_amount > 0 and self.expiry_date > date.today()
+    def is_valid(self) -> bool:
+        return self.has_uses() and not self.is_expired()
+
+    def is_expired(self) -> bool:
+        if self.expiry_date:
+            return self.expiry_date < date.today()
+        return False
+
+    def has_uses(self) -> bool:
+        return self.current_amount > 0

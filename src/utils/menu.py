@@ -32,7 +32,7 @@ def main_buttons(user_id: int) -> InlineKeyboardMarkup:
     elif user_is_registered and user_has_memberships:
         builder.add(InlineKeyboardButton(text=_("view_membership_button"), callback_data="button_view_mb"))
         builder.add(InlineKeyboardButton(text=_("add_attendance"), callback_data="button_add_att"))
-    if user_is_registered and not user_has_attendances:
+    if user_is_registered and user_has_attendances:
         builder.add(InlineKeyboardButton(text=_("view_attendances_button"), callback_data="button_view_att"))
     if user_is_registered:
         builder.add(

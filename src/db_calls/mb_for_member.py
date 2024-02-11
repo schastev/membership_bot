@@ -1,5 +1,4 @@
-from datetime import date
-from typing import List
+from typing import List, Union
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -15,15 +14,13 @@ def view_memberships_by_user_id(tg_id: int) -> List[Membership]:
     return memberships
 
 
-def get_active_membership_by_user_id(tg_id: int) -> Membership:
+def get_active_membership_by_user_id(tg_id: int) -> Union[Membership, None]:
     with Session(ENGINE) as session:
         memberships = session.scalars(get_memberships_by_tg_id(tg_id=tg_id)).all()
-    active_mb = [
-        mb for mb in memberships
-        if mb.current_amount > 0 and (mb.expiry_date is None or mb.expiry_date > date.today())
-    ][0]  #todo add check for non-emptiness
-    return active_mb
-
+    active_mb = [mb for mb in memberships if mb.is_valid()]
+    if len(active_mb) == 0:
+        return None
+    return active_mb[0]
 
 
 def request_to_add_membership(tg_id: int, chat_id: int) -> MembershipRequest:
