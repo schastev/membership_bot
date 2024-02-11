@@ -16,7 +16,8 @@ TIMER = config.polling_timeout_seconds
 
 def check_existing_requests(tg_id: int) -> List[MembershipRequest]:
     with Session(database.ENGINE) as session:
-        requests = session.scalars(database.get_membership_requests_for_user(tg_id=tg_id)).all()
+        query = select(MembershipRequest).where(MembershipRequest.tg_id == tg_id)
+        requests = session.scalars(query).all()
     return requests
 
 
@@ -33,14 +34,11 @@ async def poll_for_membership_requests() -> list:
     return result
 
 
-def add_membership(tg_id: int, membership_value: int) -> Membership:
+def add_membership(tg_id: int, membership_value: int) -> None:
     with Session(database.ENGINE) as session:
         membership = Membership(member_id=tg_id, total_amount=membership_value)
         session.add(membership)
         session.commit()
-    with Session(database.ENGINE) as session:
-        added_membership = session.scalars(database.get_memberships_by_tg_id(tg_id=tg_id)).first()
-    return added_membership
 
 
 def delete_membership_request(request_id: int) -> None:

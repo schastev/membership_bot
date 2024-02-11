@@ -8,12 +8,6 @@ from src.model.request import AttendanceRequest
 from src.db_calls import database, mb_for_member
 
 
-def view_attendances_by_user_id(tg_id: int) -> List[Attendance]:
-    with Session(database.ENGINE) as session:
-        attendances = session.scalars(database.get_attendances_by_tg_id(tg_id=tg_id)).all()
-    return attendances
-
-
 def view_attendances_for_active_membership(tg_id: int) -> List[Attendance]:
     with Session(database.ENGINE) as session:
         active_mb = mb_for_member.get_active_membership_by_user_id(tg_id=tg_id)

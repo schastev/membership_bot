@@ -17,7 +17,8 @@ TIMER = config.polling_timeout_seconds
 
 def check_existing_attendance_requests(tg_id: int) -> List[AttendanceRequest]:
     with Session(database.ENGINE) as session:
-        requests = session.scalars(database.get_attendance_requests_for_user(tg_id=tg_id)).all()
+        query = select(AttendanceRequest).where(AttendanceRequest.tg_id == tg_id)
+        requests = session.scalars(query).all()
     return requests
 
 
@@ -34,7 +35,7 @@ async def poll_for_attendance_requests() -> list:
     return result
 
 
-def mark_attendance(tg_id: int, membership_id: int) -> Attendance:
+def mark_attendance(tg_id: int, membership_id: int) -> None:
     with Session(database.ENGINE) as session:
         attendance = Attendance(member_id=tg_id, membership_id=membership_id)
         session.add(attendance)
@@ -42,9 +43,6 @@ def mark_attendance(tg_id: int, membership_id: int) -> Attendance:
         membership = session.scalars(membership_query).first()
         membership.subtract()
         session.commit()
-    with Session(database.ENGINE) as session:
-        added_attendance = session.scalars(database.get_attendances_by_tg_id(tg_id=tg_id)).first()
-    return added_attendance
 
 
 def delete_attendance_request(request_id: int) -> None:

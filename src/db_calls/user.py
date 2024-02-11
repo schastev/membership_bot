@@ -70,5 +70,5 @@ def has_active_memberships(tg_id: int) -> bool:
 
 
 def has_attendances(tg_id: int) -> bool:
-    attendances = att_for_member.view_attendances_by_user_id(tg_id=tg_id)
+    attendances = att_for_member.view_attendances_for_active_membership(tg_id=tg_id)
     return len(attendances) != 0

@@ -35,7 +35,7 @@ async def mark_attendance(callback: CallbackQuery, callback_data: AttRequestCall
         await callback.answer()
         return
     membership = mb_for_member.get_active_membership_by_user_id(tg_id=request.member_tg_id)
-    attendance = att_for_admin.mark_attendance(tg_id=request.member_tg_id, membership_id=membership.id)
+    att_for_admin.mark_attendance(tg_id=request.member_tg_id, membership_id=membership.id)
     await callback.message.answer(
         text=_("attendance_marked_admin"),
         reply_markup=ReplyKeyboardRemove(),
