@@ -34,11 +34,12 @@ async def poll_for_membership_requests() -> list:
     return result
 
 
-def add_membership(tg_id: int, membership_value: int) -> None:
+def add_membership(tg_id: int, membership_value: int, request_id: int) -> None:
     with Session(database.ENGINE) as session:
         membership = Membership(member_id=tg_id, total_amount=membership_value)
         session.add(membership)
         session.commit()
+    delete_membership_request(request_id=request_id)
 
 
 def delete_membership_request(request_id: int) -> None:

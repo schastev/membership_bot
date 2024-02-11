@@ -22,6 +22,6 @@ def request_to_add_attendance(tg_id: int, chat_id: int) -> AttendanceRequest:
         session.commit()
     with Session(database.ENGINE) as session:
         query = select(AttendanceRequest).where(AttendanceRequest.tg_id == tg_id)
-        request = session.scalars(query).first()
+        request = session.scalars(query).one()
     assert request is not None
     return request

@@ -30,6 +30,6 @@ def request_to_add_membership(tg_id: int, chat_id: int) -> MembershipRequest:
         session.commit()
     with Session(database.ENGINE) as session:
         query = select(MembershipRequest).where(MembershipRequest.tg_id == tg_id)
-        request = session.scalars(query).first()
+        request = session.scalars(query).one()
     assert request is not None
     return request

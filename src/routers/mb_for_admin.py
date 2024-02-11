@@ -61,7 +61,7 @@ async def process_membership(callback: CallbackQuery, bot: Bot, callback_data: M
             reply_markup=main_buttons(user_id=callback.from_user.id)
         )
     else:
-        mb_for_admin.add_membership(tg_id=request.member_tg_id, membership_value=request.value)
+        mb_for_admin.add_membership(tg_id=request.member_tg_id, membership_value=request.value, request_id=request.id)
         await callback.message.answer(
             text=_("membership_added_admin").format(request.value, request.member_name),
             reply_markup=ReplyKeyboardRemove(),
@@ -69,6 +69,5 @@ async def process_membership(callback: CallbackQuery, bot: Bot, callback_data: M
         await bot.send_message(
             chat_id=request.chat_id, text=_("membership_added_member").format(request.value)
         )
-    mb_for_admin.delete_membership_request(request_id=request.id)
     await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
     await callback.answer()

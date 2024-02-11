@@ -35,7 +35,7 @@ async def mark_attendance(callback: CallbackQuery, callback_data: AttRequestCall
         await callback.answer()
         return
     membership = mb_for_member.get_active_membership_by_user_id(tg_id=request.member_tg_id)
-    att_for_admin.mark_attendance(tg_id=request.member_tg_id, membership_id=membership.id)
+    att_for_admin.mark_attendance(tg_id=request.member_tg_id, membership_id=membership.id, request_id=request.id)
     await callback.message.answer(
         text=_("attendance_marked_admin"),
         reply_markup=ReplyKeyboardRemove(),
@@ -43,6 +43,5 @@ async def mark_attendance(callback: CallbackQuery, callback_data: AttRequestCall
     await bot.send_message(
         chat_id=request.chat_id, text=_("attendance_marked_member. Left: {}").format(membership.current_amount - 1)
     )
-    att_for_admin.delete_attendance_request(request_id=request.id)
     await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
     await callback.answer()

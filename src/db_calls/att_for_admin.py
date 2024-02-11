@@ -35,7 +35,7 @@ async def poll_for_attendance_requests() -> list:
     return result
 
 
-def mark_attendance(tg_id: int, membership_id: int) -> None:
+def mark_attendance(tg_id: int, membership_id: int, request_id: int) -> None:
     with Session(database.ENGINE) as session:
         attendance = Attendance(member_id=tg_id, membership_id=membership_id)
         session.add(attendance)
@@ -43,6 +43,7 @@ def mark_attendance(tg_id: int, membership_id: int) -> None:
         membership = session.scalars(membership_query).first()
         membership.subtract()
         session.commit()
+    delete_attendance_request(request_id=request_id)
 
 
 def delete_attendance_request(request_id: int) -> None:
