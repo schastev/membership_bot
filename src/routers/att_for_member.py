@@ -11,8 +11,7 @@ _ = translation.i18n.gettext
 
 @router.callback_query(F.data == "button_view_att")
 async def view_attendances(callback: CallbackQuery):
-    # todo search by membership id
-    attendance_list = att_for_member.view_attendances_by_user_id(tg_id=callback.from_user.id)
+    attendance_list = att_for_member.view_attendances_for_active_membership(tg_id=callback.from_user.id)
     if len(attendance_list) == 0:
         text = _("no_attendances")
     else:
