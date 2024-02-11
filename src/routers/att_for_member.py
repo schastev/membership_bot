@@ -11,13 +11,12 @@ _ = translation.i18n.gettext
 
 @router.callback_query(F.data == "button_view_att")
 async def view_attendances(callback: CallbackQuery):
+    # todo search by membership id
     attendance_list = att_for_member.view_attendances_by_user_id(tg_id=callback.from_user.id)
     if len(attendance_list) == 0:
         text = _("no_attendances")
     else:
-        attendance = attendance_list[0]
-        # todo prep attendances for printing
-        text = _("attendance_info").format(attendance)
+        text = "\n".join([str(att) for att in attendance_list])
     await callback.message.answer(text, reply_markup=main_buttons(user_id=callback.from_user.id))
     await callback.answer()
 
@@ -25,10 +24,8 @@ async def view_attendances(callback: CallbackQuery):
 @router.callback_query(F.data == "button_add_att")
 async def request_to_add_attendance(callback: CallbackQuery):
     active_membership = mb_for_member.get_active_membership_by_user_id(tg_id=callback.from_user.id)
-    if active_membership.is_expired():
-        await callback.message.answer(text=_("membership_expired"))
-    elif not active_membership.has_uses():
-        await callback.message.answer(text=_("membership_used_up"))
+    if not active_membership:
+        await callback.message.answer(text=_("membership_expired_or_used_up"))
         await callback.answer()
         return
     existing_requests = att_for_admin.check_existing_attendance_requests(tg_id=callback.from_user.id)

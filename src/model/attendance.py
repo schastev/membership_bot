@@ -9,6 +9,9 @@ from src.model.declarative_models import Base
 class Attendance(Base):
     __tablename__ = "attendance"
     id: Mapped[int] = mapped_column(primary_key=True)
-    # date: Mapped[date] = "" #date.today()
+    attendance_date: Mapped[date] = date.today()
     member_id: Mapped[int] = mapped_column(ForeignKey("user.tg_id"))
     membership_id: Mapped[int] = mapped_column(ForeignKey("membership.id"))
+
+    def __str__(self):  #todo i18n this
+        return f"{self.attendance_date}"

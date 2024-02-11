@@ -6,6 +6,9 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 import config_reader
 from src.model.declarative_models import Base
+from src.utils import translation
+
+_ = translation.i18n.gettext
 
 
 class Membership(Base):
@@ -34,6 +37,18 @@ class Membership(Base):
                f"current_amount={self.current_amount}, " \
                f"activation_date={self.activation_date}, " \
                f"purchase_date={self.purchase_date})"
+
+    def __str__(self):  #todo i18n this
+        text = f"{_('active_mb_info')}:" \
+            f"{_('mb_purchase_date')}: {self.purchase_date}\n" \
+            f"{_('mb_total_amount')}: {self.total_amount}\n"
+        if self.activation_date:
+            text = text + f"{_('mb_rmn_value')}: {self.current_amount}\n" \
+                          f"{_('mb_act_date')}: {self.activation_date}\n" \
+                          f"{_('mb_exp_date')}: {self.expiry_date}\n"
+        else:
+            text = text + "This membership has not been activated yet, so activation/expiry date is not set yet."
+        return text
 
     def freeze(self, days: int, freeze_date: date = date.today()) -> None:
         if days > 14:

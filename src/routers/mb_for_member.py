@@ -15,11 +15,7 @@ async def view_memberships(callback: CallbackQuery):
     if not active_membership:
         text = _("no_memberships")
     else:
-        purchase_date = active_membership.purchase_date
-        activation_date = active_membership.activation_date or _("mb_inactive")
-        expiry_date = active_membership.expiry_date or _("mb_inactive")
-        current_amount = active_membership.current_amount
-        text = _("membership_info").format(purchase_date, activation_date, expiry_date, current_amount)
+        text = str(active_membership)
     await callback.message.answer(text, reply_markup=main_buttons(user_id=callback.from_user.id))
     await callback.answer()
 
