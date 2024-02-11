@@ -9,7 +9,7 @@ import config_reader
 from src.routers.mb_for_admin import main_buttons
 from src.utils import bot_helpers, translation
 from src.db_calls import user as user_action_utils
-from src.utils.menu import language_buttons
+from src.utils.menu import locale_buttons
 
 router = Router()
 _ = translation.i18n.gettext
@@ -39,7 +39,7 @@ async def register_handler(callback: CallbackQuery, state: FSMContext, bot: Bot)
 
 
 @router.message(
-    F.text.casefold().in_([_("button_cancel", locale=locale).casefold() for locale in config_reader.config.languages])
+    F.text.casefold().in_([_("button_cancel", locale=locale).casefold() for locale in config_reader.config.locales])
 )
 async def cancel_handler(message: Message, state: FSMContext) -> None:
     current_state = await state.get_state()
@@ -110,9 +110,9 @@ async def process_change_phone(message: Message, state: FSMContext):
     await state.set_state(None)
 
 
-@router.callback_query(F.data == "button_change_language")
+@router.callback_query(F.data == "button_change_locale")
 async def change_locale_handler(callback: CallbackQuery):
-    menu_buttons = language_buttons()
-    greetings = [_("change_language", locale=language) for language in config_reader.config.languages]
+    menu_buttons = locale_buttons()
+    greetings = [_("change_locale", locale=locale) for locale in config_reader.config.locales]
     await callback.message.answer("\n".join(greetings), reply_markup=menu_buttons)
     await callback.answer()

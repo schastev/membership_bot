@@ -167,7 +167,7 @@ msgid "change_phone_button"
 msgstr "Изменить телефон"
 
 #: src/utils/menu.py:35
-msgid "change_language_button"
+msgid "change_locale_button"
 msgstr "Изменить язык"
 
 #: src/utils/menu.py:34
@@ -203,5 +203,5 @@ msgid "button_cancel"
 msgstr "Отмена"
 
 #: src/routers/user.py:117
-msgid "change_language"
+msgid "change_locale"
 msgstr "Выберите язык из списка ниже."

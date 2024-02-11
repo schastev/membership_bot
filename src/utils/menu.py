@@ -12,9 +12,9 @@ from src.db_calls import user as db_calls_user
 _ = translation.i18n.gettext
 
 
-def language_buttons() -> InlineKeyboardMarkup:
+def locale_buttons() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    [builder.add(InlineKeyboardButton(text=lang, callback_data=lang)) for lang in config.languages]
+    [builder.add(InlineKeyboardButton(text=locale, callback_data=locale)) for locale in config.locales]
     return builder.as_markup()
 
 
@@ -38,7 +38,7 @@ def main_buttons(user_id: int) -> InlineKeyboardMarkup:
         builder.add(
             InlineKeyboardButton(text=_("change_name_button"), callback_data="button_change_name"),
             InlineKeyboardButton(text=_("change_phone_button"), callback_data="button_change_phone"),
-            InlineKeyboardButton(text=_("change_language_button"), callback_data="button_change_language"),
+            InlineKeyboardButton(text=_("change_locale_button"), callback_data="button_change_locale"),
         )
     else:
         builder.add(InlineKeyboardButton(text=_("register_button"), callback_data="button_register"))

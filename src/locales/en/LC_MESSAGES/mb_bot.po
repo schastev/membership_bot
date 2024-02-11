@@ -180,8 +180,8 @@ msgid "change_phone_button"
 msgstr "Change phone"
 
 #: src/utils/menu.py:35
-msgid "change_language_button"
-msgstr "Change language"
+msgid "change_locale_button"
+msgstr "Change locale"
 
 #: src/utils/menu.py:34
 msgid "add_attendance"
@@ -206,7 +206,7 @@ msgstr "Cancel"
 
 #: src/routers/misc.py:30 src/routers/misc.py:39
 msgid "first_greeting"
-msgstr "Hello! Please select your language from the list below."
+msgstr "Hello! Please select your locale from the list below."
 
 #: src/routers/mb_for_member.py:22 src/routers/mb_for_member.py:23
 msgid "mb_inactive"
@@ -217,5 +217,5 @@ msgid "request_expired"
 msgstr "This request has already been processed or it is expired."
 
 #: src/routers/user.py:117
-msgid "change_language"
-msgstr "Please select your language from the list below."
+msgid "change_locale"
+msgstr "Please select your locale from the list below."
