@@ -9,7 +9,7 @@ import config_reader
 from src.routers.mb_for_admin import main_buttons
 from src.utils import bot_helpers, translation
 from src.db_calls import user as user_action_utils
-from src.utils.menu import locale_buttons
+from src.utils.menu import locale_buttons, user_settings_options
 
 router = Router()
 _ = translation.i18n.gettext
@@ -35,6 +35,12 @@ async def register_handler(callback: CallbackQuery, state: FSMContext, bot: Bot)
             text=_("already_registered"), reply_markup=main_buttons(user_id=callback.from_user.id)
         )
     await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
+    await callback.answer()
+
+
+@router.callback_query(F.data == "button_change_user_settings")
+async def change_user_settings(callback: CallbackQuery):
+    await callback.message.answer(text=_("text_change_user_settings"), reply_markup=user_settings_options())
     await callback.answer()
 
 

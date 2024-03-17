@@ -11,6 +11,21 @@ from src.db_calls import user as db_calls_user
 
 _ = translation.i18n.gettext
 
+admin = {"manage_button": "button_manage", "manage_att_button": "button_manage_att"}
+registered_without_active_mb = {"add_membership": "button_add_mb"}
+registered_with_active_mb = {
+    "view_active_membership_button": "button_view_active_mb",
+    "view_memberships_button": "button_view_mb",
+    "add_attendance": "button_add_att",
+}
+registered_with_attendances = {"view_attendances_button": "button_view_att"}
+registered = {
+    "change_name_button": "button_change_name",
+    "change_phone_button": "button_change_phone",
+    "change_locale_button": "change_locale_button",
+}
+not_registered = {"register_button": "button_register"}
+
 
 def locale_buttons() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
@@ -22,30 +37,38 @@ def main_buttons(user_id: int) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     user_is_registered = db_calls_user.check_user_registration_state(tg_id=user_id)
     user_is_admin = db_calls_user.is_admin(tg_id=user_id)
-    user_has_memberships = db_calls_user.has_active_memberships(tg_id=user_id)
+    user_has_usable_mb, mb_is_active, mb_is_frozen = db_calls_user.membership_status(tg_id=user_id)
     user_has_attendances = False
-    if user_has_memberships:
+    buttons = {}
+    if user_has_usable_mb:
         user_has_attendances = db_calls_user.has_attendances(tg_id=user_id)
     if user_is_admin:
-        builder.add(InlineKeyboardButton(text=_("manage_button"), callback_data="button_manage"))
-        builder.add(InlineKeyboardButton(text=_("manage_att_button"), callback_data="button_manage_att"))
-    if user_is_registered and not user_has_memberships:
-        builder.add(InlineKeyboardButton(text=_("add_membership"), callback_data="button_add_mb"))
-    elif user_is_registered and user_has_memberships:
-        builder.add(InlineKeyboardButton(text=_("view_active_membership_button"), callback_data="button_view_active_mb"))
-        builder.add(InlineKeyboardButton(text=_("view_memberships_button"), callback_data="button_view_mb"))
-        builder.add(InlineKeyboardButton(text=_("add_attendance"), callback_data="button_add_att"))
-        builder.add(InlineKeyboardButton(text=_("freeze_membership"), callback_data="button_freeze_mb"))
-    if user_is_registered and user_has_attendances:
-        builder.add(InlineKeyboardButton(text=_("view_attendances_button"), callback_data="button_view_att"))
+        buttons.update(admin)
     if user_is_registered:
-        builder.add(
-            InlineKeyboardButton(text=_("change_name_button"), callback_data="button_change_name"),
-            InlineKeyboardButton(text=_("change_phone_button"), callback_data="button_change_phone"),
-            InlineKeyboardButton(text=_("change_locale_button"), callback_data="button_change_locale"),
-        )
+        buttons.update({"change_user_settings_button": "button_change_user_settings"})
+        if user_has_usable_mb:
+            buttons.update(registered_with_active_mb)
+        elif mb_is_active:
+            buttons.update({"freeze_membership": "button_freeze_mb"})
+        elif mb_is_frozen:
+            buttons.update({"unfreeze_mb_button": "button_unfreeze_mb"})
+        else:
+            buttons.update(registered_without_active_mb)
+        if user_has_attendances:
+            buttons.update(registered_with_attendances)
     else:
-        builder.add(InlineKeyboardButton(text=_("register_button"), callback_data="button_register"))
+        buttons.update(not_registered)
+
+    for k, v in buttons.items():
+        builder.add(InlineKeyboardButton(text=_(k), callback_data=v))
+    builder.adjust(2)
+    return builder.as_markup()
+
+
+def user_settings_options() -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+    for k, v in registered.items():
+        builder.add(InlineKeyboardButton(text=_(k), callback_data=v))
     builder.adjust(2)
     return builder.as_markup()
 

@@ -64,9 +64,11 @@ def is_admin(tg_id: int) -> bool:
     return tg_id in config.admin_ids
 
 
-def has_active_memberships(tg_id: int) -> bool:
+def membership_status(tg_id: int) -> (bool, bool, bool):
     active_mb = mb_for_member.get_active_membership_by_user_id(tg_id=tg_id)
-    return bool(active_mb)
+    if not active_mb:
+        return False, False, False
+    return bool(active_mb), active_mb.activation_date, active_mb.freeze_date
 
 
 def has_attendances(tg_id: int) -> bool:
