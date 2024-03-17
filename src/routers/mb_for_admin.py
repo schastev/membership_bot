@@ -5,7 +5,7 @@ from config_reader import config
 from src.utils import menu, bot_helpers, translation
 from src.db_calls import mb_for_admin
 from src.utils.callback_factories import MembershipRequestCallbackFactory, MBRequestValueCallbackFactory, \
-    MBRequestListCallbackFactory
+    MBRequestListCallbackFactory, FreezeRequestCallbackFactory
 from src.db_calls.user import is_admin
 from src.utils.menu import main_buttons
 
@@ -19,12 +19,31 @@ async def manage_memberships(callback: CallbackQuery):
         await callback.message.answer(_("not_admin"))
         await callback.answer()
         return
+    management_options = menu.mb_management_options()
+    await callback.message.answer(text=_("management_options"), reply_markup=management_options)
+    await callback.answer()
+
+
+@router.callback_query(F.data == "button_add_mb_request")
+async def poll_for_mb_add_request(callback: CallbackQuery):
     await callback.message.answer(_('polling_mb').format(config.polling_timeout_seconds))
-    requests = await mb_for_admin.poll_for_membership_requests()
+    requests = await mb_for_admin.poll_for_add_mb_requests()
     if len(requests) == 0:
         await callback.message.answer(_('polling_timeout_mb'))
     else:
         request_buttons = menu.membership_request_buttons(request_list=requests)
+        await callback.message.answer(text=_("pending_requests_mb"), reply_markup=request_buttons)
+    await callback.answer()
+
+
+@router.callback_query(F.data == "button_freeze_mb_request")
+async def poll_for_mb_freeze_request(callback: CallbackQuery):
+    await callback.message.answer(_('polling_mb').format(config.polling_timeout_seconds))
+    requests = await mb_for_admin.poll_for_freeze_mb_requests()
+    if len(requests) == 0:
+        await callback.message.answer(_('polling_timeout_mb'))
+    else:
+        request_buttons = menu.freeze_membership_request_buttons(request_list=requests)
         await callback.message.answer(text=_("pending_requests_mb"), reply_markup=request_buttons)
     await callback.answer()
 
@@ -70,4 +89,13 @@ async def process_membership(callback: CallbackQuery, bot: Bot, callback_data: M
             chat_id=request.chat_id, text=_("membership_added_member").format(request.value)
         )
     await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
+    await callback.answer()
+
+
+@router.callback_query(FreezeRequestCallbackFactory.filter())
+async def freeze_membership(callback: CallbackQuery, callback_data: FreezeRequestCallbackFactory, bot: Bot):
+    request = callback_data
+    mb_for_admin.freeze_membership(mb_id=request.membership_id, days=request.duration, request_id=request.id)
+    await callback.message.answer(_("mb_frozen_admin"))
+    await bot.send_message(chat_id=request.chat_id, text=_("mb_frozen_member"))
     await callback.answer()

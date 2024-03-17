@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from src.model.membership import Membership
-from src.model.request import MembershipRequest
+from src.model.request import MembershipRequest, FreezeRequest
 from src.db_calls import database
 
 
@@ -30,6 +30,18 @@ def request_to_add_membership(tg_id: int, chat_id: int) -> MembershipRequest:
         session.commit()
     with Session(database.ENGINE) as session:
         query = select(MembershipRequest).where(MembershipRequest.tg_id == tg_id)
+        request = session.scalars(query).one()
+    assert request is not None
+    return request
+
+
+def request_to_freeze_membership(tg_id: int, chat_id: int, mb_id: int, duration: int) -> FreezeRequest:
+    with Session(database.ENGINE) as session:
+        request = FreezeRequest(tg_id=tg_id, chat_id=chat_id, mb_id=mb_id, duration=duration)
+        session.add(request)
+        session.commit()
+    with Session(database.ENGINE) as session:
+        query = select(FreezeRequest).where(FreezeRequest.tg_id == tg_id)
         request = session.scalars(query).one()
     assert request is not None
     return request

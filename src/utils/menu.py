@@ -6,7 +6,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from src.utils import translation
 from config_reader import config
 from src.utils.callback_factories import MBRequestListCallbackFactory, MBRequestValueCallbackFactory, \
-    AttRequestCallbackFactory
+    AttRequestCallbackFactory, FreezeRequestCallbackFactory
 from src.db_calls import user as db_calls_user
 
 _ = translation.i18n.gettext
@@ -35,6 +35,7 @@ def main_buttons(user_id: int) -> InlineKeyboardMarkup:
         builder.add(InlineKeyboardButton(text=_("view_active_membership_button"), callback_data="button_view_active_mb"))
         builder.add(InlineKeyboardButton(text=_("view_memberships_button"), callback_data="button_view_mb"))
         builder.add(InlineKeyboardButton(text=_("add_attendance"), callback_data="button_add_att"))
+        builder.add(InlineKeyboardButton(text=_("freeze_membership"), callback_data="button_freeze_mb"))
     if user_is_registered and user_has_attendances:
         builder.add(InlineKeyboardButton(text=_("view_attendances_button"), callback_data="button_view_att"))
     if user_is_registered:
@@ -46,6 +47,13 @@ def main_buttons(user_id: int) -> InlineKeyboardMarkup:
     else:
         builder.add(InlineKeyboardButton(text=_("register_button"), callback_data="button_register"))
     builder.adjust(2)
+    return builder.as_markup()
+
+
+def mb_management_options() -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+    builder.add(InlineKeyboardButton(text=_("add_mb"), callback_data="button_add_mb_request"))
+    builder.add(InlineKeyboardButton(text=_("freeze_mb"), callback_data="button_freeze_mb_request"))
     return builder.as_markup()
 
 
@@ -61,6 +69,27 @@ def membership_request_buttons(request_list: List[dict]) -> InlineKeyboardMarkup
                     member_name=request.get("member").name,
                     chat_id=request.get("request").chat_id,
                     id=request.get("request").id
+                ).pack()
+            )
+        )
+    builder.adjust(2)
+    return builder.as_markup()
+
+
+def freeze_membership_request_buttons(request_list: List[dict]) -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+    for request in request_list:
+        text = f'{request["member"].name}: {int(request["member"].phone)}: {request.get("request").duration}'
+        builder.add(
+            InlineKeyboardButton(
+                text=text,
+                callback_data=FreezeRequestCallbackFactory(
+                    member_tg_id=request.get("member").tg_id,
+                    member_name=request.get("member").name,
+                    membership_id=request.get("request").mb_id,
+                    chat_id=request.get("request").chat_id,
+                    id=request.get("request").id,
+                    duration=request.get("request").duration,
                 ).pack()
             )
         )

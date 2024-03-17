@@ -46,6 +46,9 @@ class Membership(Base):
             text = text + f"{_('mb_rmn_value')}: {self.current_amount}\n" \
                           f"{_('mb_act_date')}: {self.activation_date}\n" \
                           f"{_('mb_exp_date')}: {self.expiry_date}\n"
+            if self.freeze_date:
+                text += (f"{_('mb_freeze_date')}: {self.freeze_date}\n"
+                         f"{_('mb_unfreeze_date')}: {self.unfreeze_date}\n")
         else:
             text = text + "This membership has not been activated yet, so activation/expiry date is not set yet."
         return text

@@ -12,6 +12,7 @@ class Settings(BaseSettings, extra=Extra.allow):
     polling_timeout_seconds: int
     locales: List[str]
     membership_duration_days: int
+    max_freeze_duration: int
 
 
 config = Settings()
