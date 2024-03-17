@@ -8,7 +8,7 @@ from src.model.request import MembershipRequest
 from src.db_calls import database
 
 
-def view_memberships_by_user_id(tg_id: int) -> List[Membership]:
+def get_memberships_by_user_id(tg_id: int) -> List[Membership]:
     with Session(database.ENGINE) as session:
         memberships = session.scalars(database.get_memberships_by_tg_id(tg_id=tg_id)).all()
     return memberships

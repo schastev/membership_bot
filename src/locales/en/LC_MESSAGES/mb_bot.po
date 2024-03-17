@@ -19,11 +19,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: src/routers/mb_for_member.py:18 src/routers/mb_for_member.py:19
-msgid "view_membership_button"
-msgstr "View my membership"
+msgid "view_memberships_button"
+msgstr "View my memberships"
 
 #: src/routers/mb_for_member.py:23
-msgid "no_memberships"
+msgid "no_active_memberships"
 msgstr "You have no active memberships."
 
 #: src/routers/mb_for_member.py:26

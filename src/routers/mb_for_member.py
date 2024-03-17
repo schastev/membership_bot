@@ -9,13 +9,24 @@ router = Router()
 _ = translation.i18n.gettext
 
 
-@router.callback_query(F.data == "button_view_mb")
-async def view_memberships(callback: CallbackQuery):
+@router.callback_query(F.data == "button_view_active_mb")
+async def view_active_membership(callback: CallbackQuery):
     active_membership = mb_for_member.get_active_membership_by_user_id(tg_id=callback.from_user.id)
     if not active_membership:
-        text = _("no_memberships")
+        text = _("no_active_memberships")
     else:
         text = str(active_membership)
+    await callback.message.answer(text, reply_markup=main_buttons(user_id=callback.from_user.id))
+    await callback.answer()
+
+
+@router.callback_query(F.data == "button_view_mb")
+async def view_memberships(callback: CallbackQuery):
+    memberships = mb_for_member.get_memberships_by_user_id(tg_id=callback.from_user.id)
+    if not memberships:
+        text = _("no_memberships")
+    else:
+        text = str(memberships)
     await callback.message.answer(text, reply_markup=main_buttons(user_id=callback.from_user.id))
     await callback.answer()
 
