@@ -14,7 +14,7 @@ def check_existing_requests(tg_id: int, request_type: RequestType) -> List[Reque
     with Session(database.ENGINE) as session:
         query = select(Request).where((Request.tg_id == tg_id) and (Request.type == request_type))
         requests = session.scalars(query).all()
-    return requests
+    return list(requests)
 
 
 async def poll_for_requests(request_type: RequestType) -> list:

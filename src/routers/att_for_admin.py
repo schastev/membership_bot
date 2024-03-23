@@ -1,13 +1,11 @@
 from aiogram import Router, F, Bot
 from aiogram.types import ReplyKeyboardRemove, CallbackQuery
-#
-from config_reader import config
 from src.model.attendance import Attendance
 from src.model.request import RequestType
-from src.utils import menu, bot_helpers, translation
-from src.db_calls import att_for_admin, for_admin
+from src.routers import for_admin
+from src.utils import bot_helpers, translation
+from src.db_calls import att_for_admin
 from src.utils.callback_factories import AttRequestCallbackFactory
-from src.db_calls.user import is_admin
 
 router = Router()
 _ = translation.i18n.gettext
@@ -15,17 +13,8 @@ _ = translation.i18n.gettext
 
 @router.callback_query(F.data == "button_manage_att")
 async def manage_attendances(callback: CallbackQuery):
-    if not is_admin(callback.from_user.id):
-        await callback.message.answer(_("not_admin"))
-        await callback.answer()
-        return
-    await callback.message.answer(_('polling_att').format(config.polling_timeout_seconds))
-    requests = await for_admin.poll_for_requests(request_type=RequestType.ATTENDANCE)
-    if len(requests) == 0:
-        await callback.message.answer(_('polling_timeout_att'))
-    else:
-        request_buttons = menu.attendance_request_buttons(request_list=requests)
-        await callback.message.answer(text=_("pending_requests_att"), reply_markup=request_buttons)
+    if for_admin.check_admin(user_id=callback.from_user.id, message=callback.message):
+        await for_admin.poll_for_requests(message=callback.message, request_type=RequestType.ATTENDANCE)
     await callback.answer()
 
 

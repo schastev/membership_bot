@@ -1,14 +1,13 @@
 from aiogram import Router, F, Bot
 from aiogram.types import ReplyKeyboardRemove, CallbackQuery
 
-import src.db_calls.for_admin
 from config_reader import config
 from src.model.request import RequestType
+from src.routers import for_admin
 from src.utils import menu, bot_helpers, translation
 from src.db_calls import mb_for_admin
 from src.utils.callback_factories import MembershipRequestCallbackFactory, MBRequestValueCallbackFactory, \
     MBRequestListCallbackFactory, FreezeRequestCallbackFactory
-from src.db_calls.user import is_admin
 from src.utils.menu import main_buttons
 
 router = Router()
@@ -17,36 +16,21 @@ _ = translation.i18n.gettext
 
 @router.callback_query(F.data == "button_manage")
 async def manage_memberships(callback: CallbackQuery):
-    if not is_admin(callback.from_user.id):
-        await callback.message.answer(_("not_admin"))
+    if for_admin.check_admin(user_id=callback.from_user.id, message=callback.message):
+        management_options = menu.mb_management_options()
+        await callback.message.answer(text=_("management_options"), reply_markup=management_options)
         await callback.answer()
-        return
-    management_options = menu.mb_management_options()
-    await callback.message.answer(text=_("management_options"), reply_markup=management_options)
-    await callback.answer()
 
 
 @router.callback_query(F.data == "button_add_mb_request")
 async def poll_for_mb_add_request(callback: CallbackQuery):
-    await callback.message.answer(_('polling_mb').format(config.polling_timeout_seconds))
-    requests = await src.db_calls.for_admin.poll_for_requests(request_type=RequestType.ADD_MEMBERSHIP)
-    if len(requests) == 0:
-        await callback.message.answer(_('polling_timeout_mb'))
-    else:
-        request_buttons = menu.membership_request_buttons(request_list=requests)
-        await callback.message.answer(text=_("pending_requests_mb"), reply_markup=request_buttons)
+    await for_admin.poll_for_requests(message=callback.message, request_type=RequestType.ADD_MEMBERSHIP)
     await callback.answer()
 
 
 @router.callback_query(F.data == "button_freeze_mb_request")
 async def poll_for_mb_freeze_request(callback: CallbackQuery):
-    await callback.message.answer(_('polling_mb').format(config.polling_timeout_seconds))
-    requests = await src.db_calls.for_admin.poll_for_requests(request_type=RequestType.FREEZE_MEMBERSHIP)
-    if len(requests) == 0:
-        await callback.message.answer(_('polling_timeout_mb'))
-    else:
-        request_buttons = menu.freeze_membership_request_buttons(request_list=requests)
-        await callback.message.answer(text=_("pending_requests_mb"), reply_markup=request_buttons)
+    await for_admin.poll_for_requests(message=callback.message, request_type=RequestType.FREEZE_MEMBERSHIP)
     await callback.answer()
 
 
