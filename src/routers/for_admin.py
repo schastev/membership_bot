@@ -37,10 +37,3 @@ async def poll_for_requests(message: Message, request_type: RequestType):
     else:
         request_buttons = menu_function(request_list=requests)
         await message.answer(text=pending_message, reply_markup=request_buttons)
-
-
-async def check_admin(user_id: int, message: Message) -> bool:
-    if not is_admin(user_id):
-        await message.answer(_("not_admin"))
-        return False
-    return True

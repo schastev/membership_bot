@@ -6,6 +6,7 @@ from src.model.request import RequestType
 from src.routers import for_admin
 from src.utils import menu, bot_helpers, translation
 from src.db_calls import mb_for_admin
+from src.utils.bot_helpers import IsAdmin
 from src.utils.callback_factories import MembershipRequestCallbackFactory, MBRequestValueCallbackFactory, \
     MBRequestListCallbackFactory, FreezeRequestCallbackFactory
 from src.utils.menu import main_buttons
@@ -14,27 +15,26 @@ router = Router()
 _ = translation.i18n.gettext
 
 
-@router.callback_query(F.data == "button_manage")
+@router.callback_query(F.data == "button_manage", IsAdmin())
 async def manage_memberships(callback: CallbackQuery):
-    if for_admin.check_admin(user_id=callback.from_user.id, message=callback.message):
-        management_options = menu.mb_management_options()
-        await callback.message.answer(text=_("management_options"), reply_markup=management_options)
-        await callback.answer()
+    management_options = menu.mb_management_options()
+    await callback.message.answer(text=_("management_options"), reply_markup=management_options)
+    await callback.answer()
 
 
-@router.callback_query(F.data == "button_add_mb_request")
+@router.callback_query(F.data == "button_add_mb_request", IsAdmin())
 async def poll_for_mb_add_request(callback: CallbackQuery):
     await for_admin.poll_for_requests(message=callback.message, request_type=RequestType.ADD_MEMBERSHIP)
     await callback.answer()
 
 
-@router.callback_query(F.data == "button_freeze_mb_request")
+@router.callback_query(F.data == "button_freeze_mb_request", IsAdmin())
 async def poll_for_mb_freeze_request(callback: CallbackQuery):
     await for_admin.poll_for_requests(message=callback.message, request_type=RequestType.FREEZE_MEMBERSHIP)
     await callback.answer()
 
 
-@router.callback_query(MBRequestListCallbackFactory.filter())
+@router.callback_query(MBRequestListCallbackFactory.filter(), IsAdmin())
 async def add_membership_select_member(callback: CallbackQuery, callback_data: MBRequestListCallbackFactory, bot: Bot):
     request = callback_data
     if not request:
@@ -52,7 +52,7 @@ async def add_membership_select_member(callback: CallbackQuery, callback_data: M
     await callback.answer()
 
 
-@router.callback_query(MBRequestValueCallbackFactory.filter())
+@router.callback_query(MBRequestValueCallbackFactory.filter(), IsAdmin())
 async def process_membership(callback: CallbackQuery, bot: Bot, callback_data: MembershipRequestCallbackFactory):
     request = callback_data
     if request is None or request.value == 0:
@@ -78,7 +78,7 @@ async def process_membership(callback: CallbackQuery, bot: Bot, callback_data: M
     await callback.answer()
 
 
-@router.callback_query(FreezeRequestCallbackFactory.filter())
+@router.callback_query(FreezeRequestCallbackFactory.filter(), IsAdmin())
 async def freeze_membership(callback: CallbackQuery, callback_data: FreezeRequestCallbackFactory, bot: Bot):
     request = callback_data
     mb_for_admin.freeze_membership(mb_id=request.membership_id, days=request.duration, request_id=request.id)

@@ -5,20 +5,20 @@ from src.model.request import RequestType
 from src.routers import for_admin
 from src.utils import bot_helpers, translation
 from src.db_calls import att_for_admin
+from src.utils.bot_helpers import IsAdmin
 from src.utils.callback_factories import AttRequestCallbackFactory
 
 router = Router()
 _ = translation.i18n.gettext
 
 
-@router.callback_query(F.data == "button_manage_att")
+@router.callback_query(F.data == "button_manage_att", IsAdmin())
 async def manage_attendances(callback: CallbackQuery):
-    if for_admin.check_admin(user_id=callback.from_user.id, message=callback.message):
-        await for_admin.poll_for_requests(message=callback.message, request_type=RequestType.ATTENDANCE)
+    await for_admin.poll_for_requests(message=callback.message, request_type=RequestType.ATTENDANCE)
     await callback.answer()
 
 
-@router.callback_query(AttRequestCallbackFactory.filter())
+@router.callback_query(AttRequestCallbackFactory.filter(), IsAdmin())
 async def mark_attendance(callback: CallbackQuery, callback_data: AttRequestCallbackFactory, bot: Bot):
     request = callback_data
     if not request:
