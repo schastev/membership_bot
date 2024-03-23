@@ -2,7 +2,6 @@ from aiogram.types import Message
 
 from config_reader import config
 from src.db_calls import for_admin
-from src.db_calls.user import is_admin
 from src.model.request import RequestType
 from src.utils import translation, menu
 

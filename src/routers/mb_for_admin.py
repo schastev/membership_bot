@@ -1,7 +1,6 @@
 from aiogram import Router, F, Bot
 from aiogram.types import ReplyKeyboardRemove, CallbackQuery
 
-from config_reader import config
 from src.model.request import RequestType
 from src.routers import for_admin
 from src.utils import menu, bot_helpers, translation

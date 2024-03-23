@@ -4,11 +4,10 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import CallbackQuery, Message
 
 import config_reader
-import src.db_calls.for_admin
 from src.model.request import RequestType
 from src.routers import for_member
 from src.utils import translation
-from src.db_calls import mb_for_member, mb_for_admin, for_admin
+from src.db_calls import mb_for_member, for_admin
 from src.utils.menu import main_buttons
 
 router = Router()

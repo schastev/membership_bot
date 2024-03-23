@@ -1,9 +1,13 @@
+import logging
+
 from aiogram import Router, F, Bot
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
+import config_reader
 from config_reader import config
+from src.routers.user import _
 from src.utils import bot_helpers, translation
 from src.db_calls.user import check_user_registration_state, update_user_locale
 from src.utils.menu import main_buttons, locale_buttons
@@ -55,3 +59,15 @@ async def gotta_catch_them_all(message: Message):
 @router.callback_query(F.data)
 async def gotta_catch_all_of_them(callback: CallbackQuery):
     print(callback.data)
+
+
+@router.message(
+    F.text.casefold().in_([_("button_cancel", locale=locale).casefold() for locale in config_reader.config.locales])
+)
+async def cancel_handler(message: Message, state: FSMContext) -> None:
+    current_state = await state.get_state()
+    if current_state is None:
+        return
+    logging.info(_("cancelled_state_log").format(current_state))
+    await message.answer(_("cancelled"), reply_markup=main_buttons(user_id=message.from_user.id))
+    await state.set_state(None)

@@ -60,17 +60,6 @@ def check_user_registration_state(tg_id: int) -> Union[User, None]:
         return None
 
 
-def is_admin(tg_id: int) -> bool:
-    return tg_id in config.admin_ids
-
-
-def membership_status(tg_id: int) -> (bool, bool, bool):
-    active_mb = mb_for_member.get_active_membership_by_user_id(tg_id=tg_id)
-    if not active_mb:
-        return False, False, False
-    return bool(active_mb), active_mb.activation_date, active_mb.freeze_date
-
-
-def has_attendances(tg_id: int) -> bool:
-    attendances = att_for_member.view_attendances_for_active_membership(tg_id=tg_id)
-    return len(attendances) != 0
+def get_user(tg_id: int) -> Union[User, None]:
+    with Session(database.ENGINE) as session:
+        return session.scalars(database.get_user_by_tg_id(tg_id=tg_id)).first()

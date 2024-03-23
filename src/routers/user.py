@@ -1,5 +1,3 @@
-import logging
-
 from aiogram import Router, F, Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
@@ -42,18 +40,6 @@ async def register_handler(callback: CallbackQuery, state: FSMContext, bot: Bot)
 async def change_user_settings(callback: CallbackQuery):
     await callback.message.answer(text=_("text_change_user_settings"), reply_markup=user_settings_options())
     await callback.answer()
-
-
-@router.message(
-    F.text.casefold().in_([_("button_cancel", locale=locale).casefold() for locale in config_reader.config.locales])
-)
-async def cancel_handler(message: Message, state: FSMContext) -> None:
-    current_state = await state.get_state()
-    if current_state is None:
-        return
-    logging.info(_("cancelled_state_log").format(current_state))
-    await message.answer(_("cancelled"), reply_markup=main_buttons(user_id=message.from_user.id))
-    await state.set_state(None)
 
 
 @router.message(RegistrationStates.GET_NAME)

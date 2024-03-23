@@ -7,7 +7,7 @@ from src.utils import translation
 from config_reader import config
 from src.utils.callback_factories import MBRequestListCallbackFactory, MBRequestValueCallbackFactory, \
     AttRequestCallbackFactory, FreezeRequestCallbackFactory
-from src.db_calls import user as db_calls_user
+from src.db_calls import user as db_calls_user, mb_for_member, att_for_member
 
 _ = translation.i18n.gettext
 
@@ -27,6 +27,28 @@ registered = {
 not_registered = {"register_button": "button_register"}
 
 
+class UserState:
+    is_admin: bool = False
+    is_registered: bool = False
+    has_memberships: bool = False
+    has_usable_membership: bool = False
+    has_frozen_membership: bool = False
+    has_freezable_membership: bool = False
+    has_attendances: bool = False
+
+    def __init__(self, tg_id: int):
+        self.is_admin = tg_id in config.admin_ids
+        user = db_calls_user.get_user(tg_id=tg_id)
+        self.is_registered = bool(user)
+        active_mb = mb_for_member.get_active_membership_by_user_id(tg_id=tg_id)
+        if active_mb:
+            self.has_usable_membership = bool(active_mb)
+            self.has_frozen_membership = bool(active_mb.freeze_date)
+            self.has_freezable_membership = bool(active_mb.activation_date) and not self.has_frozen_membership
+            attendances = att_for_member.view_attendances_for_active_membership(tg_id=tg_id)
+            self.has_attendances = bool(attendances)
+
+
 def locale_buttons() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     [builder.add(InlineKeyboardButton(text=locale, callback_data=locale)) for locale in config.locales]
@@ -35,27 +57,22 @@ def locale_buttons() -> InlineKeyboardMarkup:
 
 def main_buttons(user_id: int) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    user_is_registered = db_calls_user.check_user_registration_state(tg_id=user_id)
-    user_is_admin = db_calls_user.is_admin(tg_id=user_id)
-    user_has_usable_mb, mb_is_active, mb_is_frozen = db_calls_user.membership_status(tg_id=user_id)
-    user_has_attendances = False
     buttons = {}
-    if user_has_usable_mb:
-        user_has_attendances = db_calls_user.has_attendances(tg_id=user_id)
-    if user_is_admin:
+    user = UserState(tg_id=user_id)
+    if user.is_admin:
         buttons.update(admin)
-    if user_is_registered:
+    if user.is_registered:
         buttons.update({"change_user_settings_button": "button_change_user_settings"})
-        if user_has_usable_mb:
+        if user.has_usable_membership:
             buttons.update(registered_with_active_mb)
-        elif mb_is_active:
-            buttons.update({"freeze_membership": "button_freeze_mb"})
-        elif mb_is_frozen:
-            buttons.update({"unfreeze_mb_button": "button_unfreeze_mb"})
+            if user.has_attendances:
+                buttons.update(registered_with_attendances)
+            if user.has_frozen_membership:
+                buttons.update({"unfreeze_mb_button": "button_unfreeze_mb"})
+            elif user.has_freezable_membership:
+                buttons.update({"freeze_membership": "button_freeze_mb"})
         else:
             buttons.update(registered_without_active_mb)
-        if user_has_attendances:
-            buttons.update(registered_with_attendances)
     else:
         buttons.update(not_registered)
 

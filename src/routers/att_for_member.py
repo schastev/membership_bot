@@ -4,7 +4,7 @@ from aiogram.types import CallbackQuery
 from src.model.request import RequestType
 from src.routers import for_member
 from src.utils import translation
-from src.db_calls import att_for_member, att_for_admin, mb_for_member, for_admin
+from src.db_calls import att_for_member, mb_for_member
 from src.utils.menu import main_buttons
 
 router = Router()
