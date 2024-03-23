@@ -2,9 +2,10 @@ from aiogram import Router, F, Bot
 from aiogram.types import ReplyKeyboardRemove, CallbackQuery
 #
 from config_reader import config
+from src.model.attendance import Attendance
 from src.model.request import RequestType
 from src.utils import menu, bot_helpers, translation
-from src.db_calls import att_for_admin, mb_for_member, for_admin
+from src.db_calls import att_for_admin, for_admin
 from src.utils.callback_factories import AttRequestCallbackFactory
 from src.db_calls.user import is_admin
 
@@ -35,14 +36,14 @@ async def mark_attendance(callback: CallbackQuery, callback_data: AttRequestCall
         await callback.message.answer(text=_("request_expired"))
         await callback.answer()
         return
-    membership = mb_for_member.get_active_membership_by_user_id(tg_id=request.member_tg_id)
-    att_for_admin.mark_attendance(tg_id=request.member_tg_id, membership_id=membership.id, request_id=request.id)
+    attendance = Attendance(member_id=request.member_tg_id, membership_id=request.membership_id)
+    current_amount = att_for_admin.mark_attendance(attendance=attendance, request_id=request.id)
     await callback.message.answer(
         text=_("attendance_marked_admin"),
         reply_markup=ReplyKeyboardRemove(),
     )
     await bot.send_message(
-        chat_id=request.chat_id, text=_("attendance_marked_member. Left: {}").format(membership.current_amount - 1)
+        chat_id=request.chat_id, text=_("attendance_marked_member. Left: {}").format(current_amount)
     )
     await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
     await callback.answer()

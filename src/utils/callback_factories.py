@@ -19,6 +19,7 @@ class MBRequestValueCallbackFactory(MembershipRequestCallbackFactory, prefix="mb
 
 class AttRequestCallbackFactory(CallbackData, prefix="att_request"):
     member_tg_id: int
+    membership_id: int
     member_name: str
     chat_id: int
     id: int

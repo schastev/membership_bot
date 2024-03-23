@@ -10,13 +10,14 @@ from src.db_calls import database
 TIMER = config.polling_timeout_seconds
 
 
-def mark_attendance(tg_id: int, membership_id: int, request_id: int) -> None:
+def mark_attendance(attendance: Attendance, request_id: int) -> int:
     with Session(database.ENGINE) as session:
-        attendance = Attendance(member_id=tg_id, membership_id=membership_id)
         session.add(attendance)
-        membership_query = select(Membership).where(Membership.id == membership_id)
+        membership_query = select(Membership).where(Membership.id == attendance.membership_id)
         membership = session.scalars(membership_query).first()
         membership.subtract()
         session.commit()
+        current_amount = membership.current_amount
     from src.db_calls.for_admin import delete_request
     delete_request(request_id=request_id)
+    return current_amount

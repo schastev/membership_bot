@@ -131,7 +131,8 @@ def attendance_request_buttons(request_list: List[dict]) -> InlineKeyboardMarkup
                     member_tg_id=request.get("member").tg_id,
                     member_name=request.get("member").name,
                     chat_id=request.get("request").chat_id,
-                    id=request.get("request").id
+                    id=request.get("request").id,
+                    membership_id=request.get("request").mb_id,
                 ).pack()
             )
         )
