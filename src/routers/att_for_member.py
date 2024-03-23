@@ -2,6 +2,7 @@ from aiogram import F, Router
 from aiogram.types import CallbackQuery
 
 from src.model.request import RequestType
+from src.routers import for_member
 from src.utils import translation
 from src.db_calls import att_for_member, att_for_admin, mb_for_member, for_admin
 from src.utils.menu import main_buttons
@@ -26,14 +27,11 @@ async def request_to_add_attendance(callback: CallbackQuery):
     active_membership = mb_for_member.get_active_membership_by_user_id(tg_id=callback.from_user.id)
     if not active_membership:
         await callback.message.answer(text=_("membership_expired_or_used_up"))
-        await callback.answer()
-        return
-    existing_requests = for_admin.check_existing_requests(tg_id=callback.from_user.id, request_type=RequestType.ATTENDANCE)
-    if len(existing_requests) == 0:
-        att_for_member.request_to_add_attendance(tg_id=callback.from_user.id, chat_id=callback.message.chat.id, mb_id=active_membership.id)
-        text = _("request_sent_att")
     else:
-        text = _("request_already_existed")
-    await callback.message.answer(text=text, reply_markup=main_buttons(user_id=callback.from_user.id))
-    # todo rm buttons
+        await for_member.add_request(
+            message=callback.message,
+            member_id=callback.from_user.id,
+            request_type=RequestType.ATTENDANCE,
+            active_membership_id=active_membership.id,
+        )
     await callback.answer()
