@@ -2,8 +2,9 @@ from aiogram import Router, F, Bot
 from aiogram.types import ReplyKeyboardRemove, CallbackQuery
 #
 from config_reader import config
+from src.model.request import RequestType
 from src.utils import menu, bot_helpers, translation
-from src.db_calls import att_for_admin, mb_for_member
+from src.db_calls import att_for_admin, mb_for_member, for_admin
 from src.utils.callback_factories import AttRequestCallbackFactory
 from src.db_calls.user import is_admin
 
@@ -18,7 +19,7 @@ async def manage_attendances(callback: CallbackQuery):
         await callback.answer()
         return
     await callback.message.answer(_('polling_att').format(config.polling_timeout_seconds))
-    requests = await att_for_admin.poll_for_attendance_requests()
+    requests = await for_admin.poll_for_requests(request_type=RequestType.ATTENDANCE)
     if len(requests) == 0:
         await callback.message.answer(_('polling_timeout_att'))
     else:

@@ -1,7 +1,9 @@
 from aiogram import Router, F, Bot
 from aiogram.types import ReplyKeyboardRemove, CallbackQuery
 
+import src.db_calls.for_admin
 from config_reader import config
+from src.model.request import RequestType
 from src.utils import menu, bot_helpers, translation
 from src.db_calls import mb_for_admin
 from src.utils.callback_factories import MembershipRequestCallbackFactory, MBRequestValueCallbackFactory, \
@@ -27,7 +29,7 @@ async def manage_memberships(callback: CallbackQuery):
 @router.callback_query(F.data == "button_add_mb_request")
 async def poll_for_mb_add_request(callback: CallbackQuery):
     await callback.message.answer(_('polling_mb').format(config.polling_timeout_seconds))
-    requests = await mb_for_admin.poll_for_add_mb_requests()
+    requests = await src.db_calls.for_admin.poll_for_requests(request_type=RequestType.ADD_MEMBERSHIP)
     if len(requests) == 0:
         await callback.message.answer(_('polling_timeout_mb'))
     else:
@@ -39,7 +41,7 @@ async def poll_for_mb_add_request(callback: CallbackQuery):
 @router.callback_query(F.data == "button_freeze_mb_request")
 async def poll_for_mb_freeze_request(callback: CallbackQuery):
     await callback.message.answer(_('polling_mb').format(config.polling_timeout_seconds))
-    requests = await mb_for_admin.poll_for_freeze_mb_requests()
+    requests = await src.db_calls.for_admin.poll_for_requests(request_type=RequestType.FREEZE_MEMBERSHIP)
     if len(requests) == 0:
         await callback.message.answer(_('polling_timeout_mb'))
     else:
