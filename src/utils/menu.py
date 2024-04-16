@@ -8,23 +8,15 @@ from config_reader import config
 from src.utils.callback_factories import MBRequestListCallbackFactory, MBRequestValueCallbackFactory, \
     AttRequestCallbackFactory, FreezeRequestCallbackFactory
 from src.db_calls import user as db_calls_user, mb_for_member, att_for_member
+from src.utils.constants import Action, Modifier
 
 _ = translation.i18n.gettext
 
-admin = {"manage_button": "button_manage", "manage_att_button": "button_manage_att"}
-registered_without_active_mb = {"add_membership": "button_add_mb"}
-registered_with_active_mb = {
-    "view_active_membership_button": "button_view_active_mb",
-    "view_memberships_button": "button_view_mb",
-    "add_attendance": "button_add_att",
-}
-registered_with_attendances = {"view_attendances_button": "button_view_att"}
-registered = {
-    "change_name_button": "button_change_name",
-    "change_phone_button": "button_change_phone",
-    "change_locale_button": "change_locale_button",
-}
-not_registered = {"register_button": "button_register"}
+admin = [f"{Action.MANAGE_MEMBERSHIP}", Action.MANAGE_ATTENDANCE]
+registered_with_active_mb = [Action.VIEW_ACTIVE_MEMBERSHIP, Action.VIEW_ALL_MEMBERSHIPS, Action.CHECK_IN]
+registered_with_attendances = [Action.VIEW_ATTENDANCES]
+registered = [Action.CHANGE_NAME, Action.CHANGE_PHONE, Action.CHANGE_LOCALE]
+membership_management_options = [f"{Modifier.ADMIN}{Action.ADD_MEMBERSHIP}", f"{Modifier.ADMIN}{Action.FREEZE_MEMBERSHIP}", Action.UNFREEZE_MEMBERSHIP]
 
 
 class UserState:
@@ -57,43 +49,44 @@ def locale_buttons() -> InlineKeyboardMarkup:
 
 def main_buttons(user_id: int) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    buttons = {}
+    buttons = []
     user = UserState(tg_id=user_id)
     if user.is_admin:
-        buttons.update(admin)
+        buttons.extend(admin)
     if user.is_registered:
-        buttons.update({"change_user_settings_button": "button_change_user_settings"})
+        buttons.append(Action.CHANGE_SETTINGS)
         if user.has_usable_membership:
-            buttons.update(registered_with_active_mb)
+            buttons.extend(registered_with_active_mb)
             if user.has_attendances:
-                buttons.update(registered_with_attendances)
+                buttons.extend(registered_with_attendances)
             if user.has_frozen_membership:
-                buttons.update({"unfreeze_mb_button": "button_unfreeze_mb"})
+                buttons.append(Action.UNFREEZE_MEMBERSHIP)
             elif user.has_freezable_membership:
-                buttons.update({"freeze_membership": "button_freeze_mb"})
+                buttons.append(Action.FREEZE_MEMBERSHIP)
         else:
-            buttons.update(registered_without_active_mb)
+            buttons.append(Action.ADD_MEMBERSHIP)
     else:
-        buttons.update(not_registered)
-
-    for k, v in buttons.items():
-        builder.add(InlineKeyboardButton(text=_(k), callback_data=v))
+        buttons.append(Action.REGISTER)
+    for button in buttons:
+        button_text = f"{button}{Modifier.BUTTON}"
+        builder.add(InlineKeyboardButton(text=_(button_text), callback_data=f"{button}{Modifier.CALLBACK}"))
     builder.adjust(2)
     return builder.as_markup()
 
 
 def user_settings_options() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    for k, v in registered.items():
-        builder.add(InlineKeyboardButton(text=_(k), callback_data=v))
+    for button in registered:
+        button_text = f"{button}{Modifier.BUTTON}"
+        builder.add(InlineKeyboardButton(text=_(button_text), callback_data=f"{button}{Modifier.CALLBACK}"))
     builder.adjust(2)
     return builder.as_markup()
 
 
 def mb_management_options() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    builder.add(InlineKeyboardButton(text=_("add_mb"), callback_data="button_add_mb_request"))
-    builder.add(InlineKeyboardButton(text=_("freeze_mb"), callback_data="button_freeze_mb_request"))
+    for button in membership_management_options:
+        builder.add(InlineKeyboardButton(text=_("{button}{modifier}".format(button=button, modifier=Modifier.BUTTON)), callback_data=f"{button}{Modifier.CALLBACK}"))
     return builder.as_markup()
 
 
@@ -175,7 +168,7 @@ def membership_value_buttons(
                 ).pack()))
     builder.add(
         InlineKeyboardButton(
-            text=_("decline"),
+            text=_("ADD_MEMBERSHIP_decline_button"),
             callback_data=MBRequestValueCallbackFactory(
                 member_tg_id=member_tg_id,
                 member_name=member_name, value=-1,

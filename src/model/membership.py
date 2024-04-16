@@ -38,53 +38,61 @@ class Membership(Base):
                f"activation_date={self.activation_date}, " \
                f"purchase_date={self.purchase_date})"
 
-    def __str__(self):  #todo i18n this
-        text = f"{_('active_mb_info')}:" \
-            f"{_('mb_purchase_date')}: {self.purchase_date}\n" \
-            f"{_('mb_total_amount')}: {self.total_amount}\n"
+    def __str__(self):
+        text = _("MB_INFO_general").format(mb_purchase_date=self.purchase_date, mb_total_amount=self.total_amount)
         if self.activation_date:
-            text = text + f"{_('mb_rmn_value')}: {self.current_amount}\n" \
-                          f"{_('mb_act_date')}: {self.activation_date}\n" \
-                          f"{_('mb_exp_date')}: {self.expiry_date}\n"
+            text += "\n"
+            text += _("MB_INFO_active").format(
+                mb_rmn_value=self.current_amount, mb_act_date=self.activation_date, mb_exp_date=self.expiry_date
+            )
             if self.freeze_date:
-                text += (f"{_('mb_freeze_date')}: {self.freeze_date}\n"
-                         f"{_('mb_unfreeze_date')}: {self.unfreeze_date}\n")
-        else:
-            text = text + "This membership has not been activated yet, so activation/expiry date is not set yet."
+                text += "\n"
+                text += _("MB_INFO_frozen").format(mb_freeze_date=self.freeze_date, mb_unfreeze_date=self.unfreeze_date)
         return text
 
     def freeze(self, days: int, freeze_date: date = date.today()) -> None:
-        if days > 14:
-            raise ValueError("Заморозить абонемент можно не более чем на две недели.")
+        if self.is_valid_freeze_date(days=days):
+            self._frozen = True
+            self.freeze_date = freeze_date
+            self.unfreeze_date = freeze_date + timedelta(days=days)
+            self.expiry_date += timedelta(days=days)
+
+    def is_valid_freeze_date(self, days: int) -> bool:
+        if days > config_reader.config.max_freeze_duration:
+            raise ValueError(_("FREEZE_MEMBERSHIP_error_duration_exceeded"))
         if days <= 0:
-            raise ValueError("Не положительная продолжительность периода заморозки.")
-        if self._frozen is not None:
-            raise ValueError("Заморозить один абонемент можно только один раз.")
-        self._frozen = True
-        self.freeze_date = freeze_date
-        self.unfreeze_date = freeze_date + timedelta(days=days)
-        self.expiry_date += timedelta(days=days)
+            raise ValueError(_("FREEZE_MEMBERSHIP_error_negative_duration"))
+        if self._frozen is False:
+            raise ValueError(_("FREEZE_MEMBERSHIP_error_second_freeze"))
+        if self._frozen is True:
+            raise ValueError(_("FREEZE_MEMBERSHIP_error_already_frozen"))
+        return True
 
     def unfreeze(self, unfreeze_date: date = date.today()) -> None:
+        if self.is_valid_unfreeze_date(unfreeze_date=unfreeze_date):
+            self.unfreeze_date = unfreeze_date
+            self._frozen = False
+            new_expiry_date = self.original_expiry_date + (unfreeze_date - self.freeze_date)
+            if self.expiry_date != new_expiry_date:
+                self.expiry_date = new_expiry_date
+
+    def is_valid_unfreeze_date(self, unfreeze_date: date = date.today()) -> bool:
         if not self._frozen:
-            raise ValueError("Указанный абонемент не был заморожен.")
+            raise ValueError(_("UNFREEZE_MEMBERSHIP_error_not_frozen"))
         if self.unfreeze_date <= self.freeze_date:
-            raise ValueError("Дата разморозки должна быть позже даты заморозки.")
-        self.unfreeze_date = unfreeze_date
-        self._frozen = False
+            raise ValueError(_("UNFREEZE_MEMBERSHIP_error_unfreeze_before_freeze"))
         new_expiry_date = self.original_expiry_date + (unfreeze_date - self.freeze_date)
         if new_expiry_date - self.original_expiry_date > timedelta(days=14):
-            raise ValueError("Заморозить абонемент можно не более чем на две недели.")
+            raise ValueError(_("FREEZE_MEMBERSHIP_error_duration_exceeded"))
         if (new_expiry_date - self.original_expiry_date).days <= 0:
-            raise ValueError("Не положительная продолжительность периода заморозки.")
-        if self.expiry_date != new_expiry_date:
-            self.expiry_date = new_expiry_date
+            raise ValueError(_("FREEZE_MEMBERSHIP_error_negative_duration"))
+        return True
 
     def subtract(self) -> None:
         if not self.activation_date:
             self._activate(date.today())
         if not self.is_valid():
-            raise ValueError("Абонемент полностью использован или истек срок его действия.")
+            raise ValueError(_("CHECK_IN_error_cannot_subtract"))
         self.current_amount -= 1
         if self.activation_date is None:
             self._activate(activation_date=date.today())
