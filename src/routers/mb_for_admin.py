@@ -71,11 +71,11 @@ async def process_membership(callback: CallbackQuery, bot: Bot, callback_data: M
     else:
         mb_for_admin.add_membership(tg_id=request.member_tg_id, membership_value=request.value, request_id=request.id)
         await callback.message.answer(
-            text=_("ADD_MEMBERSHIP_ok_admin").format(request.value, request.member_name),
+            text=_("ADD_MEMBERSHIP_ok_admin").format(mb_value=request.value, member_name=request.member_name),
             reply_markup=ReplyKeyboardRemove(),
         )
         await bot.send_message(
-            chat_id=request.chat_id, text=_("ADD_MEMBERSHIP_ok_member").format(request.value)
+            chat_id=request.chat_id, text=_("ADD_MEMBERSHIP_ok_member").format(mb_value=request.value)
         )
     await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
     await callback.answer()

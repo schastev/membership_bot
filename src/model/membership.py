@@ -61,7 +61,7 @@ class Membership(Base):
         if not self.activation_date:
             raise ValueError(_("FREEZE_MEMBERSHIP_error_not_active"))
         if days > config_reader.config.max_freeze_duration:
-            raise ValueError(_("FREEZE_MEMBERSHIP_error_duration_exceeded"))
+            raise ValueError(_("FREEZE_MEMBERSHIP_error_duration_exceeded").format(days=config_reader.config.max_freeze_duration))
         if days <= 0:
             raise ValueError(_("FREEZE_MEMBERSHIP_error_negative_duration"))
         if self._frozen is False:

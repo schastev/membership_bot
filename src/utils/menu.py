@@ -16,7 +16,7 @@ admin = [f"{Action.MANAGE_MEMBERSHIP}", Action.MANAGE_ATTENDANCE]
 registered_with_active_mb = [Action.VIEW_ACTIVE_MEMBERSHIP, Action.CHECK_IN]
 registered_with_attendances = [Action.VIEW_ATTENDANCES]
 registered = [Action.CHANGE_NAME, Action.CHANGE_PHONE, Action.CHANGE_LOCALE]
-membership_management_options = [f"{Modifier.ADMIN}{Action.ADD_MEMBERSHIP}", f"{Modifier.ADMIN}{Action.FREEZE_MEMBERSHIP}", Action.UNFREEZE_MEMBERSHIP]
+membership_management_options = [f"{Modifier.ADMIN}{Action.ADD_MEMBERSHIP}", f"{Modifier.ADMIN}{Action.FREEZE_MEMBERSHIP}"]
 
 
 class UserState:
@@ -71,8 +71,7 @@ def main_buttons(user_id: int) -> InlineKeyboardMarkup:
     else:
         buttons.append(Action.REGISTER)
     for button in buttons:
-        button_text = f"{button}{Modifier.BUTTON}"
-        builder.add(InlineKeyboardButton(text=_(button_text), callback_data=f"{button}{Modifier.CALLBACK}"))
+        builder.add(InlineKeyboardButton(text=_("{button}{modifier}".format(button=button, modifier=Modifier.BUTTON)), callback_data=f"{button}{Modifier.CALLBACK}"))
     builder.adjust(2)
     return builder.as_markup()
 
@@ -80,8 +79,7 @@ def main_buttons(user_id: int) -> InlineKeyboardMarkup:
 def user_settings_options() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     for button in registered:
-        button_text = f"{button}{Modifier.BUTTON}"
-        builder.add(InlineKeyboardButton(text=_(button_text), callback_data=f"{button}{Modifier.CALLBACK}"))
+        builder.add(InlineKeyboardButton(text=_("{button}{modifier}".format(button=button, modifier=Modifier.BUTTON)), callback_data=f"{button}{Modifier.CALLBACK}"))
     builder.adjust(2)
     return builder.as_markup()
 
@@ -89,7 +87,7 @@ def user_settings_options() -> InlineKeyboardMarkup:
 def mb_management_options() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     for button in membership_management_options:
-        builder.add(InlineKeyboardButton(text=_("{button}{modifier}".format(button=button, modifier=Modifier.BUTTON)), callback_data=f"{button}{Modifier.CALLBACK}"))
+        builder.add(InlineKeyboardButton(text=_("{button}{modifier}".format(button=button, modifier=Modifier.BUTTON).replace(Modifier.ADMIN, "")), callback_data=f"{button}{Modifier.CALLBACK}"))
     return builder.as_markup()
 
 

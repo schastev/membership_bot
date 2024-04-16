@@ -10,27 +10,19 @@ _ = translation.i18n.gettext
 
 async def poll_for_requests(message: Message, request_type: RequestType):
     if request_type == RequestType.ADD_MEMBERSHIP:
-        request_type_string = _("membership")
         button_name = _("ADD_MEMBERSHIP_button")
         pending_message = _("pending_membership")
         menu_function = menu.membership_request_buttons
     elif request_type == RequestType.ATTENDANCE:
-        request_type_string = _("attendance")
         button_name = _("CHECK_IN_button")
         pending_message = _("pending_attendance")
         menu_function = menu.attendance_request_buttons
-    elif request_type == RequestType.FREEZE_MEMBERSHIP:
-        request_type_string = _("freeze")
+    else:
         button_name = _("FREEZE_MEMBERSHIP_button")
         pending_message = _("pending_freeze")
         menu_function = menu.freeze_membership_request_buttons
-    else:
-        request_type_string = _("unfreeze")
-        button_name = _("UNFREEZE_MEMBERSHIP_button")
-        pending_message = _('pending_unfreeze')
-        menu_function = menu.unfreeze_membership_request_buttons  #todo
     await message.answer(_("polling").format(
-        request_type_string=request_type_string,
+        request_type_string=pending_message,
         timeout_seconds=config.polling_timeout_seconds,
         button_name=button_name)
     )

@@ -48,7 +48,7 @@ async def start_handler(message: Message, state: FSMContext):
 async def greeting(message: Message, user_id: int = 0):
     menu_buttons = main_buttons(user_id=user_id or message.from_user.id)
     await message.answer(
-        _("greeting").format(config.company_name), reply_markup=menu_buttons
+        _("greeting").format(company_name=config.company_name), reply_markup=menu_buttons
     )
 
 
@@ -57,7 +57,7 @@ async def cancel_handler(callback: CallbackQuery, state: FSMContext) -> None:
     current_state = await state.get_state()
     if current_state is None:
         return
-    logging.info(_("cancelled_state_log").format(current_state))
+    logging.info(_("cancelled_state_log").format(current_state=current_state))
     await callback.message.answer(_("cancelled"), reply_markup=main_buttons(user_id=callback.from_user.id))
     await state.set_state(None)
     await callback.answer()

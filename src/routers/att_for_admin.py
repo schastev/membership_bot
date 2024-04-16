@@ -34,7 +34,7 @@ async def mark_attendance(callback: CallbackQuery, callback_data: AttRequestCall
         reply_markup=ReplyKeyboardRemove(),
     )
     await bot.send_message(
-        chat_id=request.chat_id, text=_("CHECK_in_ok_member").format(current_amount)
+        chat_id=request.chat_id, text=_("CHECK_in_ok_member").format(current_amount=current_amount)
     )
     await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
     await callback.answer()

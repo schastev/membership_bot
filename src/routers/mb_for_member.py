@@ -52,7 +52,7 @@ async def request_to_add_membership(callback: CallbackQuery, bot: Bot):
 @router.callback_query(F.data == f"{Action.FREEZE_MEMBERSHIP}{Modifier.CALLBACK}")
 async def request_to_freeze_membership(callback: CallbackQuery, state: FSMContext, bot: Bot):
     await callback.message.answer(
-        text=_("FREEZE_MEMBERSHIP_query_duration").format(config_reader.config.max_freeze_duration),
+        text=_("FREEZE_MEMBERSHIP_query_duration").format(max_freeze_duration=config_reader.config.max_freeze_duration),
         reply_markup=cancel_button()
     )
     await state.set_state(FreezeRequestState.GET_DURATION)
@@ -76,7 +76,6 @@ async def process_freeze_request(message: Message, state: FSMContext):
         request_type=RequestType.FREEZE_MEMBERSHIP,
         duration=duration,
     )
-    await message.answer(text=_("REQUEST_sent").format(request_type=RequestType.FREEZE_MEMBERSHIP))
     await state.set_state(None)
 
 

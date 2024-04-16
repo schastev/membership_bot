@@ -47,7 +47,7 @@ async def change_user_settings(callback: CallbackQuery):
 async def process_name(message: Message, state: FSMContext):
     await state.update_data(name=message.text)
     await state.set_state(RegistrationStates.GET_PHONE)
-    await message.answer(_("CHANGE_SETTINGS_query").format("", _("phone")).replace("  ", " "))
+    await message.answer(_("CHANGE_SETTINGS_first_phone_query"))
 
 
 @router.message(RegistrationStates.GET_PHONE)
@@ -60,7 +60,7 @@ async def process_phone(message: Message, state: FSMContext):
     locale = data.get("locale")
     added_user = user_action_utils.register_user(name=name, phone=phone, tg_id=message.from_user.id, locale=locale)
     await message.answer(
-        _("REGISTER_ok").format(added_user.name, int(added_user.phone)),
+        _("REGISTER_ok").format(name=added_user.name, phone=int(added_user.phone)),
         reply_markup=main_buttons(user_id=message.from_user.id)
     )
 
@@ -68,7 +68,7 @@ async def process_phone(message: Message, state: FSMContext):
 @router.callback_query(F.data == f"{Action.CHANGE_NAME}{Modifier.CALLBACK}")
 async def change_name_handler(callback: CallbackQuery, state: FSMContext, bot: Bot):
     await state.set_state(UserUpdateStates.GET_NAME)
-    await callback.message.answer(_("CHANGE_SETTINGS_query").format(_("new"), _("name")))
+    await callback.message.answer(_("CHANGE_SETTINGS_query_name"))
     await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
     await callback.answer()
 
@@ -76,7 +76,7 @@ async def change_name_handler(callback: CallbackQuery, state: FSMContext, bot: B
 @router.callback_query(F.data == f"{Action.CHANGE_PHONE}{Modifier.CALLBACK}")
 async def change_phone_handler(callback: CallbackQuery, state: FSMContext, bot: Bot):
     await state.set_state(UserUpdateStates.GET_PHONE)
-    await callback.message.answer(_("CHANGE_SETTINGS_query").format(_("new"), _("phone")))
+    await callback.message.answer(_("CHANGE_SETTINGS_query_phone"))
     await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
     await callback.answer()
 
@@ -86,7 +86,7 @@ async def process_change_name(message: Message, state: FSMContext):
     name = message.text
     updated_user = user_action_utils.update_name(new_name=name, tg_id=message.from_user.id)
     await message.answer(
-        _("CHANGE_SETTINGS_ok").format(updated_user.name, _("name")),
+        _("CHANGE_SETTINGS_name_ok").format(name=updated_user.name),
         reply_markup=main_buttons(user_id=message.from_user.id)
     )
     await state.set_state(None)
@@ -97,7 +97,7 @@ async def process_change_phone(message: Message, state: FSMContext):
     phone = int(message.text)
     updated_user = user_action_utils.update_phone(new_phone=phone, tg_id=message.from_user.id)
     await message.answer(
-        _("CHANGE_SETTINGS_ok").format(updated_user.name, _("phone")),
+        _("CHANGE_SETTINGS_phone_ok").format(name=updated_user.name),
         reply_markup=main_buttons(user_id=message.from_user.id),
     )
     await state.set_state(None)
