@@ -9,7 +9,6 @@ from src.model.declarative_models import Base
 class RequestType:
     ADD_MEMBERSHIP = "ADD_MEMBERSHIP"
     FREEZE_MEMBERSHIP = "FREEZE_MEMBERSHIP"
-    UNFREEZE_MEMBERSHIP = "UNFREEZE_MEMBERSHIP"
     ATTENDANCE = "ATTENDANCE"
 
 

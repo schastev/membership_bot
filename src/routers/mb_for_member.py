@@ -79,3 +79,13 @@ async def process_freeze_request(message: Message, state: FSMContext):
     await message.answer(text=_("REQUEST_sent").format(request_type=RequestType.FREEZE_MEMBERSHIP))
     await state.set_state(None)
 
+
+@router.callback_query(F.data == f"{Action.UNFREEZE_MEMBERSHIP}{Modifier.CALLBACK}")
+async def unfreeze_membership(callback: CallbackQuery, bot: Bot):
+    if active_mb := await get_active_membership_or_go_home(tg_id=callback.from_user.id, callback=callback):
+        mb_for_member.unfreeze_membership(mb_id=active_mb.id)
+        await callback.message.answer(
+            text=_("UNFREEZE_MEMBERSHIP_ok"), reply_markup=main_buttons(user_id=callback.from_user.id)
+        )
+        await callback.answer()
+    await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)

@@ -37,7 +37,9 @@ def request_to_add_membership(tg_id: int, chat_id: int) -> Request:
 
 def request_to_freeze_membership(tg_id: int, chat_id: int, mb_id: int, duration: int) -> Request:
     with Session(database.ENGINE) as session:
-        request = Request(tg_id=tg_id, chat_id=chat_id, mb_id=mb_id, duration=duration, type=RequestType.FREEZE_MEMBERSHIP)
+        request = Request(
+            tg_id=tg_id, chat_id=chat_id, mb_id=mb_id, duration=duration, type=RequestType.FREEZE_MEMBERSHIP
+        )
         session.add(request)
         session.commit()
     with Session(database.ENGINE) as session:
@@ -45,3 +47,11 @@ def request_to_freeze_membership(tg_id: int, chat_id: int, mb_id: int, duration:
         request = session.scalars(query).one()
     assert request is not None
     return request
+
+
+def unfreeze_membership(mb_id: int):
+    with Session(database.ENGINE) as session:
+        query = select(Membership).where(Membership.id == mb_id)
+        mb = session.scalars(query).first()
+        mb.unfreeze()
+        session.commit()

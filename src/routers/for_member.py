@@ -33,11 +33,8 @@ async def add_request(
             if not duration or not active_mb:
                 return False
             args = {"tg_id": member_id, "chat_id": message.chat.id, "mb_id": active_mb.id, "duration": duration}
-        else:  # todo
-            add_function = mb_for_member.request_to_unfreeze_membership
-            if not duration or not active_mb:
-                return False
-            args = {"tg_id": member_id, "chat_id": message.chat.id, "mb_id": active_mb.id}
+        else:
+            raise ValueError("Unsupported request type")
     existing_requests = for_admin.check_existing_requests(tg_id=member_id, request_type=request_type)
     if existing_requests and existing_requests[0].duration == -1:
         for_admin.delete_request(existing_requests[0].id)
