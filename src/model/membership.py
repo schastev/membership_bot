@@ -58,6 +58,8 @@ class Membership(Base):
             self.expiry_date += timedelta(days=days)
 
     def is_valid_freeze_date(self, days: int) -> bool:
+        if not self.activation_date:
+            raise ValueError(_("FREEZE_MEMBERSHIP_error_not_active"))
         if days > config_reader.config.max_freeze_duration:
             raise ValueError(_("FREEZE_MEMBERSHIP_error_duration_exceeded"))
         if days <= 0:
@@ -84,7 +86,7 @@ class Membership(Base):
         new_expiry_date = self.original_expiry_date + (unfreeze_date - self.freeze_date)
         if new_expiry_date - self.original_expiry_date > timedelta(days=14):
             raise ValueError(_("FREEZE_MEMBERSHIP_error_duration_exceeded"))
-        if (new_expiry_date - self.original_expiry_date).days <= 0:
+        if (new_expiry_date - self.original_expiry_date).days < 0:
             raise ValueError(_("FREEZE_MEMBERSHIP_error_negative_duration"))
         return True
 
@@ -97,6 +99,8 @@ class Membership(Base):
         if self.activation_date is None:
             self._activate(activation_date=date.today())
             self._frozen = False
+        if self._frozen:
+            self.unfreeze(unfreeze_date=date.today())
 
     def _activate(self, activation_date: date) -> None:
         self.activation_date = activation_date

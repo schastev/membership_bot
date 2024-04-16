@@ -11,7 +11,7 @@ from src.db_calls import database
 def get_memberships_by_user_id(tg_id: int) -> List[Membership]:
     with Session(database.ENGINE) as session:
         memberships = session.scalars(database.get_memberships_by_tg_id(tg_id=tg_id)).all()
-    return memberships
+    return list(memberships)
 
 
 def get_active_membership_by_user_id(tg_id: int) -> Union[Membership, None]:

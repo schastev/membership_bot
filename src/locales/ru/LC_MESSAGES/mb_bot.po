@@ -169,7 +169,7 @@ msgstr "Добавить абонемент"
 
 #: src/routers/for_admin.py:15
 msgid "pending_membership"
-msgstr "Текущие необработанные запросы на абонементы:"
+msgstr "абонементы"
 
 #: src/routers/for_admin.py:18
 msgid "attendance"
@@ -181,7 +181,7 @@ msgstr "Отметиться"
 
 #: src/routers/for_admin.py:20
 msgid "pending_attendance"
-msgstr "Текущие необработанные запросы на отметку о посещении:"
+msgstr "отметку о посещении"
 
 #: src/routers/for_admin.py:23
 msgid "freeze"
@@ -193,7 +193,7 @@ msgstr "Заморозить абонемент"
 
 #: src/routers/for_admin.py:25
 msgid "pending_freeze"
-msgstr "Текущие необработанные запросы на заморозку абонемента:"
+msgstr "заморозку абонемента"
 
 #: src/routers/for_admin.py:28
 msgid "unfreeze"
@@ -205,7 +205,7 @@ msgstr "Разморозить абонемент"
 
 #: src/routers/for_admin.py:30
 msgid "pending_unfreeze"
-msgstr "Текущие необработанные запросы на разморозку абонемента:"
+msgstr "разморозку абонемента"
 
 #: src/routers/for_admin.py:32
 msgid "polling"

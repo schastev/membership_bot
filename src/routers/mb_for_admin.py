@@ -16,22 +16,25 @@ _ = translation.i18n.gettext
 
 
 @router.callback_query(F.data == f"{Action.MANAGE_MEMBERSHIP}{Modifier.CALLBACK}", IsAdmin())
-async def manage_memberships(callback: CallbackQuery):
+async def manage_memberships(callback: CallbackQuery, bot: Bot):
     management_options = menu.mb_management_options()
     await callback.message.answer(text=_("MANAGE_MEMBERSHIP_options"), reply_markup=management_options)
     await callback.answer()
+    await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
 
 
 @router.callback_query(F.data == f"{Modifier.ADMIN}{Action.ADD_MEMBERSHIP}{Modifier.CALLBACK}", IsAdmin())
-async def poll_for_mb_add_request(callback: CallbackQuery):
+async def poll_for_mb_add_request(callback: CallbackQuery, bot: Bot):
     await for_admin.poll_for_requests(message=callback.message, request_type=RequestType.ADD_MEMBERSHIP)
     await callback.answer()
+    await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
 
 
 @router.callback_query(F.data == f"{Modifier.ADMIN}{Action.FREEZE_MEMBERSHIP}{Modifier.CALLBACK}", IsAdmin())
-async def poll_for_mb_freeze_request(callback: CallbackQuery):
+async def poll_for_mb_freeze_request(callback: CallbackQuery, bot: Bot):
     await for_admin.poll_for_requests(message=callback.message, request_type=RequestType.FREEZE_MEMBERSHIP)
     await callback.answer()
+    await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
 
 
 @router.callback_query(MBRequestListCallbackFactory.filter(), IsAdmin())
@@ -81,7 +84,8 @@ async def process_membership(callback: CallbackQuery, bot: Bot, callback_data: M
 @router.callback_query(FreezeRequestCallbackFactory.filter(), IsAdmin())
 async def freeze_membership(callback: CallbackQuery, callback_data: FreezeRequestCallbackFactory, bot: Bot):
     request = callback_data
-    mb_for_admin.freeze_membership(mb_id=request.membership_id, days=request.duration, request_id=request.id)
-    await callback.message.answer(_("FREEZE_MEMBERSHIP_ok_admin").format(unfreeze_date=""))  # todo extract unfreeze
-    await bot.send_message(chat_id=request.chat_id, text=_("FREEZE_MEMBERSHIP_ok_member").format(unfreeze_date=""))
+    unfreeze_date = mb_for_admin.freeze_membership(mb_id=request.membership_id, days=request.duration, request_id=request.id)
+    await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
+    await callback.message.answer(_("FREEZE_MEMBERSHIP_ok_admin").format(unfreeze_date=unfreeze_date))
+    await bot.send_message(chat_id=request.chat_id, text=_("FREEZE_MEMBERSHIP_ok_member").format(unfreeze_date=unfreeze_date))
     await callback.answer()

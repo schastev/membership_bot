@@ -18,11 +18,13 @@ def add_membership(tg_id: int, membership_value: int, request_id: int) -> None:
     delete_request(request_id=request_id)
 
 
-def freeze_membership(mb_id: int, days: int, request_id: int):
+def freeze_membership(mb_id: int, days: int, request_id: int) -> str:
     with Session(database.ENGINE) as session:
         query = select(Membership).where(Membership.id == mb_id)
         mb = session.scalars(query).first()
         mb.freeze(days=days)
+        unfreeze_date = mb.unfreeze_date
         session.commit()
     from src.db_calls.for_admin import delete_request
     delete_request(request_id=request_id)
+    return unfreeze_date

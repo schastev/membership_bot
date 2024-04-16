@@ -13,7 +13,7 @@ from src.utils.constants import Action, Modifier
 _ = translation.i18n.gettext
 
 admin = [f"{Action.MANAGE_MEMBERSHIP}", Action.MANAGE_ATTENDANCE]
-registered_with_active_mb = [Action.VIEW_ACTIVE_MEMBERSHIP, Action.VIEW_ALL_MEMBERSHIPS, Action.CHECK_IN]
+registered_with_active_mb = [Action.VIEW_ACTIVE_MEMBERSHIP, Action.CHECK_IN]
 registered_with_attendances = [Action.VIEW_ATTENDANCES]
 registered = [Action.CHANGE_NAME, Action.CHANGE_PHONE, Action.CHANGE_LOCALE]
 membership_management_options = [f"{Modifier.ADMIN}{Action.ADD_MEMBERSHIP}", f"{Modifier.ADMIN}{Action.FREEZE_MEMBERSHIP}", Action.UNFREEZE_MEMBERSHIP]
@@ -33,6 +33,7 @@ class UserState:
         user = db_calls_user.get_user(tg_id=tg_id)
         self.is_registered = bool(user)
         active_mb = mb_for_member.get_active_membership_by_user_id(tg_id=tg_id)
+        self.has_memberships = bool(mb_for_member.get_memberships_by_user_id(tg_id=tg_id))
         if active_mb:
             self.has_usable_membership = bool(active_mb)
             self.has_frozen_membership = bool(active_mb.freeze_date)
@@ -55,6 +56,8 @@ def main_buttons(user_id: int) -> InlineKeyboardMarkup:
         buttons.extend(admin)
     if user.is_registered:
         buttons.append(Action.CHANGE_SETTINGS)
+        if user.has_memberships:
+            buttons.append(Action.VIEW_ALL_MEMBERSHIPS)
         if user.has_usable_membership:
             buttons.extend(registered_with_active_mb)
             if user.has_attendances:
@@ -178,4 +181,10 @@ def membership_value_buttons(
         )
     )
     builder.adjust(2)
+    return builder.as_markup()
+
+
+def cancel_button() -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+    builder.add(InlineKeyboardButton(text=_("button_cancel"), callback_data=f"{Action.CANCEL}{Modifier.CALLBACK}"))
     return builder.as_markup()

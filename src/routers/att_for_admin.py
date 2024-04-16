@@ -14,9 +14,10 @@ _ = translation.i18n.gettext
 
 
 @router.callback_query(F.data == f"{Action.MANAGE_ATTENDANCE}{Modifier.CALLBACK}", IsAdmin())
-async def manage_attendances(callback: CallbackQuery):
+async def manage_attendances(callback: CallbackQuery, bot: Bot):
     await for_admin.poll_for_requests(message=callback.message, request_type=RequestType.ATTENDANCE)
     await callback.answer()
+    await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
 
 
 @router.callback_query(AttRequestCallbackFactory.filter(), IsAdmin())
