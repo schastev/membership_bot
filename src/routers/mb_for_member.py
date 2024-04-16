@@ -69,16 +69,16 @@ async def process_freeze_request(message: Message, state: FSMContext):
     duration = message.text
     try:
         duration = int(duration)
-        is_number = True
     except ValueError:
-        is_number = False
-    is_valid_length = False
-    if is_number:
-        is_valid_length = duration <= config_reader.config.max_freeze_duration
-    if not is_number or not is_valid_length:
-        await message.answer(_("FREEZE_MEMBERSHIP_error_duration").format(config_reader.config.max_freeze_duration))
+        await message.answer(text=_("FREEZE_MEMBERSHIP_query_duration").format(config_reader.config.max_freeze_duration))
         return
     active_mb = mb_for_member.get_active_membership_by_user_id(tg_id=message.from_user.id)
+    try:
+        active_mb.is_valid_freeze_date(days=duration)
+    except ValueError as error:
+        await message.answer(text=error.args[0])
+        await state.set_state(None)
+        return
     mb_for_member.request_to_freeze_membership(
         tg_id=message.from_user.id, chat_id=message.chat.id, mb_id=active_mb.id, duration=duration
     )
