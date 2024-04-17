@@ -20,10 +20,9 @@ _ = translation.i18n.gettext
 @router.callback_query(F.data.in_(config.locales))
 async def handle_locale(callback: CallbackQuery, state: FSMContext, bot: Bot):
     await translation.locale.set_locale(state=state, locale=callback.data)
-    if callback.message.from_user.id == bot.id:  # this is to correctly display buttons after user changes locale
+    if user_id := callback.message.from_user.id == bot.id:
+        # this is to correctly display buttons after user changes locale
         user_id = callback.from_user.id
-    else:
-        user_id = callback.message.from_user.id
     await greeting(message=callback.message, user_id=user_id)
     user = check_user_registration_state(tg_id=user_id)
     if user:
@@ -35,20 +34,17 @@ async def handle_locale(callback: CallbackQuery, state: FSMContext, bot: Bot):
 @router.message(CommandStart())
 @router.message(F.text.casefold() == "start")
 async def start_handler(message: Message, state: FSMContext):
-    user = check_user_registration_state(message.from_user.id)
-    if not user:
-        menu_buttons = locale_buttons()
-        greetings = [_("first_greeting", locale=locale) for locale in config.locales]
-        await message.answer("\n".join(greetings), reply_markup=menu_buttons)
-    else:
+    if user := check_user_registration_state(message.from_user.id):
         await translation.locale.set_locale(state=state, locale=user.locale)
-        await greeting(message=message)
+        await greeting(message=message, user_id=user.tg_id)
+    else:
+        greetings = [_("first_greeting", locale=locale) for locale in config.locales]
+        await message.answer("\n".join(greetings), reply_markup=locale_buttons())
 
 
-async def greeting(message: Message, user_id: int = 0):
-    menu_buttons = main_buttons(user_id=user_id or message.from_user.id)
+async def greeting(message: Message, user_id: int):
     await message.answer(
-        _("greeting").format(company_name=config.company_name), reply_markup=menu_buttons
+        _("greeting").format(company_name=config.company_name), reply_markup=main_buttons(user_id=user_id)
     )
 
 

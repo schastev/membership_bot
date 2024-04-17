@@ -30,11 +30,10 @@ async def view_active_membership(callback: CallbackQuery, bot: Bot):
 
 @router.callback_query(F.data == f"{Action.VIEW_ALL_MEMBERSHIPS}{Modifier.CALLBACK}")
 async def view_memberships(callback: CallbackQuery, bot: Bot):
-    memberships = mb_for_member.get_memberships_by_user_id(tg_id=callback.from_user.id)
-    if not memberships:
-        text = _("VIEW_ALL_MEMBERSHIPS_error_no")
+    if memberships := mb_for_member.get_memberships_by_user_id(tg_id=callback.from_user.id):
+        text = "\n".join(mb.past_info() for mb in memberships)
     else:
-        text = str(memberships)
+        text = _("VIEW_ALL_MEMBERSHIPS_error_no")
     await callback.message.answer(text, reply_markup=main_buttons(user_id=callback.from_user.id))
     await callback.answer()
     await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)

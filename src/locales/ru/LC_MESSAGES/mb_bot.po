@@ -38,6 +38,11 @@ msgstr ""
 "Дата заморозки: {mb_freeze_date}\n"
 "Дата окончания заморозки: {mb_unfreeze_date}"
 
+#: src/model/membership.py:122
+msgid "MB_INFO_past"
+msgstr ""
+"Номинал: {total}. Период использования: {act_date} - {exp_date}"
+
 #: src/model/membership.py:62
 msgid "FREEZE_MEMBERSHIP_error_not_active"
 msgstr "Заморозить можно только активированный абонемент."

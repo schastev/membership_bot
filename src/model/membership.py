@@ -96,6 +96,8 @@ class Membership(Base):
         if not self.is_valid():
             raise ValueError(_("CHECK_IN_error_cannot_subtract"))
         self.current_amount -= 1
+        if self.current_amount == 0:
+            self.expiry_date = date.today()
         if self.activation_date is None:
             self._activate(activation_date=date.today())
             self._frozen = False
@@ -117,3 +119,6 @@ class Membership(Base):
 
     def has_uses(self) -> bool:
         return self.current_amount > 0
+
+    def past_info(self):
+        return _("MB_INFO_past").format(total=self.total_amount, act_date=self.activation_date, exp_date=self.expiry_date)

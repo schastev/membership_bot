@@ -17,8 +17,7 @@ _ = translation.i18n.gettext
 
 @router.callback_query(F.data == f"{Action.MANAGE_MEMBERSHIP}{Modifier.CALLBACK}", IsAdmin())
 async def manage_memberships(callback: CallbackQuery, bot: Bot):
-    management_options = menu.mb_management_options()
-    await callback.message.answer(text=_("MANAGE_MEMBERSHIP_options"), reply_markup=management_options)
+    await callback.message.answer(text=_("MANAGE_MEMBERSHIP_options"), reply_markup=menu.mb_management_options())
     await callback.answer()
     await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
 
