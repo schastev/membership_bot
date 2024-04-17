@@ -40,7 +40,7 @@ msgstr ""
 
 #: src/model/membership.py:62
 msgid "FREEZE_MEMBERSHIP_error_not_active"
-msgstr ""
+msgstr "Заморозить можно только активированный абонемент."
 
 #: src/model/membership.py:64
 #: src/model/membership.py:88
@@ -180,11 +180,11 @@ msgstr "Этот запрос уже был обработан или истек
 
 #: src/routers/att_for_admin.py:33
 msgid "CHECK_in_ok_admin"
-msgstr ""
+msgstr "Клиенту {name} была проставлена отметка о посещении."
 
 #: src/routers/att_for_admin.py:37
 msgid "CHECK_in_ok_member"
-msgstr ""
+msgstr "Вам была проставлена отметка о посещении."
 
 #: src/routers/mb_for_member.py:35
 msgid "VIEW_ALL_MEMBERSHIPS_error_no"
@@ -206,7 +206,7 @@ msgstr "Ваш абонемент был разморожен."
 
 #: src/routers/for_member.py:47
 msgid "REQUEST_error_already_existed"
-msgstr ""
+msgstr "Вы уже отправили запрос такого типа. Подождите, пока администратор его обработает."
 
 #: src/routers/for_admin.py:13
 msgid "ADD_MEMBERSHIP_button"

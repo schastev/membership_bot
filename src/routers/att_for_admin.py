@@ -30,7 +30,7 @@ async def mark_attendance(callback: CallbackQuery, callback_data: AttRequestCall
     attendance = Attendance(member_id=request.member_tg_id, membership_id=request.membership_id)
     current_amount = att_for_admin.mark_attendance(attendance=attendance, request_id=request.id)
     await callback.message.answer(
-        text=_("CHECK_in_ok_admin"),
+        text=_("CHECK_in_ok_admin").format(name=request.member_name),
         reply_markup=ReplyKeyboardRemove(),
     )
     await bot.send_message(

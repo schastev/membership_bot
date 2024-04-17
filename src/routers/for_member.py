@@ -16,6 +16,7 @@ async def add_request(
     if request_type == RequestType.ADD_MEMBERSHIP:
         add_function = mb_for_member.request_to_add_membership
         args = {"tg_id": member_id, "chat_id": message.chat.id}
+        pending_message = _("pending_membership")
     else:
         active_mb = await get_active_membership_or_go_home(tg_id=message.chat.id, message=message)
         if request_type == RequestType.ATTENDANCE:
@@ -23,6 +24,7 @@ async def add_request(
                 return False
             add_function = att_for_member.request_to_add_attendance
             args = {"tg_id": member_id, "chat_id": message.chat.id, "mb_id": active_mb.id}
+            pending_message = _("pending_attendance")
         elif request_type == RequestType.FREEZE_MEMBERSHIP:
             add_function = mb_for_member.request_to_freeze_membership
             try:
@@ -33,6 +35,7 @@ async def add_request(
             if not duration or not active_mb:
                 return False
             args = {"tg_id": member_id, "chat_id": message.chat.id, "mb_id": active_mb.id, "duration": duration}
+            pending_message = _("pending_freeze")
         else:
             raise ValueError("Unsupported request type")
     existing_requests = for_admin.check_existing_requests(tg_id=member_id, request_type=request_type)
@@ -41,7 +44,7 @@ async def add_request(
         existing_requests = []
     if len(existing_requests) == 0:
         add_function(**args)
-        text = _("REQUEST_sent").format(request_type=request_type)
+        text = _("REQUEST_sent").format(request_type=pending_message)
         request_added = True
     else:
         text = _("REQUEST_error_already_existed")
