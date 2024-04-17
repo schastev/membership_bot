@@ -1,0 +1,5 @@
+aiogram==3.4.1
+pydantic==2.7.0
+pydantic_settings==2.2.1
+pytest==8.1.1
+SQLAlchemy==2.0.17
