@@ -36,8 +36,8 @@ class UserState:
         self.has_memberships = bool(mb_for_member.get_memberships_by_user_id(tg_id=tg_id))
         if active_mb:
             self.has_usable_membership = bool(active_mb)
-            self.has_frozen_membership = bool(active_mb.freeze_date)
-            self.has_freezable_membership = bool(active_mb.activation_date) and not self.has_frozen_membership
+            self.has_frozen_membership = bool(active_mb.freeze_date) and not bool(active_mb.unfreeze_date)
+            self.has_freezable_membership = bool(active_mb.activation_date) and not active_mb.unfreeze_date and not self.has_frozen_membership
             attendances = att_for_member.view_attendances_for_active_membership(tg_id=tg_id)
             self.has_attendances = bool(attendances)
 
