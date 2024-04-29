@@ -59,7 +59,7 @@ def test_membership_cannot_freeze_two_times():
         mb.freeze(freeze_date=freeze_date, days=freeze_duration)
 
 
-@pytest.mark.parametrize("delta", [8, -7], ids=["over two weeks", "negative freeze period"])
+@pytest.mark.parametrize("delta", [8, -10], ids=["over two weeks", "negative freeze period"])
 def test_membership_cannot_unfreeze_to_make_freeze_period_invalid(delta):
     mb = Membership(total_amount=4, member_id=1)
     mb.subtract()
