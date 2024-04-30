@@ -1,34 +1,19 @@
 import logging
 
-from aiogram import Router, F, Bot
+from aiogram import Router, F
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
-import config_reader
 from config_reader import config
 from src.routers.user import _
-from src.utils import bot_helpers, translation
-from src.db_calls.user import check_user_registration_state, update_user_locale
+from src.utils import translation
+from src.db_calls.user import check_user_registration_state
 from src.utils.constants import Action, Modifier
 from src.utils.menu import main_buttons, locale_buttons, UserState
 
 router = Router()
 _ = translation.i18n.gettext
-
-
-@router.callback_query(F.data.in_(config.locales))
-async def handle_locale(callback: CallbackQuery, state: FSMContext, bot: Bot, user_state: UserState | None = None):
-    await translation.locale.set_locale(state=state, locale=callback.data)
-    if user_id := callback.message.from_user.id == bot.id:
-        # this is to correctly display buttons after user changes locale
-        user_id = callback.from_user.id
-    await greeting(message=callback.message, user_id=user_id, user_state=user_state)
-    user = check_user_registration_state(tg_id=user_id)
-    if user:
-        update_user_locale(tg_id=user_id, new_locale=callback.data)
-    await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
-    await callback.answer()
 
 
 @router.message(CommandStart())

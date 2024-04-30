@@ -1,11 +1,16 @@
 from random import Random
 
 import pytest
+from aiogram_tests import MockedRequester
+from aiogram_tests.handler import CallbackQueryHandler
+from aiogram_tests.types.dataset import CALLBACK_QUERY
 
+from config_reader import config
 from src.model.membership import Membership
 from src.utils.constants import Action
 from src.utils.menu import UserState, admin
-from project import main_menu
+from project import main_menu, locale_handler
+from tests.e2e.test_register import _
 from tests.unit_test.helper import extract_keyboard_entries
 
 
@@ -80,3 +85,13 @@ def test_main_buttons_active_membership_states(frozen, unfrozen, expected):
     if has_attendances:
         expected.append(Action.VIEW_ATTENDANCES)
     assert sorted(buttons) == sorted(expected)
+
+
+@pytest.mark.asyncio
+async def test_locale_handler():
+    requester = MockedRequester(CallbackQueryHandler(locale_handler))
+    for loc in config.locales:
+        callback_query = CALLBACK_QUERY.as_object(data=loc)
+        calls = await requester.query(callback_query)
+        answer_message = calls.send_message.fetchone()
+        assert answer_message.text == _("greeting", locale=loc).format(company_name=config.company_name)
