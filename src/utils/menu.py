@@ -29,13 +29,15 @@ class UserState:
     has_attendances: bool = False
 
     def __init__(self, tg_id: int):
+        if not tg_id:
+            return
         self.is_admin = tg_id in config.admin_ids
         user = db_calls_user.get_user(tg_id=tg_id)
         self.is_registered = bool(user)
         active_mb = mb_for_member.get_active_membership_by_user_id(tg_id=tg_id)
         self.has_memberships = bool(mb_for_member.get_memberships_by_user_id(tg_id=tg_id))
         if active_mb:
-            self.has_usable_membership = bool(active_mb)
+            self.has_usable_membership = True
             self.has_frozen_membership = bool(active_mb.freeze_date) and not bool(active_mb.unfreeze_date)
             self.has_freezable_membership = bool(active_mb.activation_date) and not active_mb.unfreeze_date and not self.has_frozen_membership
             attendances = att_for_member.view_attendances_for_active_membership(tg_id=tg_id)
@@ -48,23 +50,24 @@ def locale_buttons() -> InlineKeyboardMarkup:
     return builder.as_markup()
 
 
-def main_buttons(user_id: int) -> InlineKeyboardMarkup:
+def main_buttons(user_id: int, user_state: UserState | None = None) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     buttons = []
-    user = UserState(tg_id=user_id)
-    if user.is_admin:
+    if not user_state:
+        user_state = UserState(tg_id=user_id)
+    if user_state.is_admin:
         buttons.extend(admin)
-    if user.is_registered:
+    if user_state.is_registered:
         buttons.append(Action.CHANGE_SETTINGS)
-        if user.has_memberships:
+        if user_state.has_memberships:
             buttons.append(Action.VIEW_ALL_MEMBERSHIPS)
-        if user.has_usable_membership:
+        if user_state.has_usable_membership:
             buttons.extend(registered_with_active_mb)
-            if user.has_attendances:
+            if user_state.has_attendances:
                 buttons.extend(registered_with_attendances)
-            if user.has_frozen_membership:
+            if user_state.has_frozen_membership:
                 buttons.append(Action.UNFREEZE_MEMBERSHIP)
-            elif user.has_freezable_membership:
+            elif user_state.has_freezable_membership:
                 buttons.append(Action.FREEZE_MEMBERSHIP)
         else:
             buttons.append(Action.ADD_MEMBERSHIP)
