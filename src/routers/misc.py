@@ -1,30 +1,17 @@
 import logging
 
 from aiogram import Router, F
-from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
 from config_reader import config
 from src.routers.user import _
 from src.utils import translation
-from src.db_calls.user import check_user_registration_state
 from src.utils.constants import Action, Modifier
-from src.utils.menu import main_buttons, locale_buttons, UserState
+from src.utils.menu import main_buttons, UserState
 
 router = Router()
 _ = translation.i18n.gettext
-
-
-@router.message(CommandStart())
-@router.message(F.text.casefold() == "start")
-async def start_handler(message: Message, state: FSMContext):
-    if user := check_user_registration_state(message.from_user.id):
-        await translation.locale.set_locale(state=state, locale=user.locale)
-        await greeting(message=message, user_id=user.tg_id)
-    else:
-        greetings = [_("first_greeting", locale=locale) for locale in config.locales]
-        await message.answer("\n".join(greetings), reply_markup=locale_buttons())
 
 
 async def greeting(message: Message, user_id: int, user_state: UserState | None = None):

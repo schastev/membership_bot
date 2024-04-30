@@ -2,16 +2,18 @@ from random import Random
 
 import pytest
 from aiogram_tests import MockedRequester
-from aiogram_tests.handler import CallbackQueryHandler
-from aiogram_tests.types.dataset import CALLBACK_QUERY
+from aiogram_tests.handler import CallbackQueryHandler, MessageHandler
+from aiogram_tests.types.dataset import CALLBACK_QUERY, MESSAGE
 
 from config_reader import config
 from src.model.membership import Membership
+from src.utils import translation
 from src.utils.constants import Action
 from src.utils.menu import UserState, admin
-from project import main_menu, locale_handler
-from tests.e2e.test_register import _
+from project import main_menu, locale_handler, start_handler
 from tests.unit_test.helper import extract_keyboard_entries
+
+_ = translation.i18n.gettext
 
 
 def test_main_buttons_not_registered():
@@ -95,3 +97,11 @@ async def test_locale_handler():
         calls = await requester.query(callback_query)
         answer_message = calls.send_message.fetchone()
         assert answer_message.text == _("greeting", locale=loc).format(company_name=config.company_name)
+
+
+@pytest.mark.asyncio
+async def test_start_handler():
+    requester = MockedRequester(MessageHandler(start_handler))
+    calls = await requester.query(MESSAGE.as_object(text="start"))
+    answer_message = calls.send_message.fetchone().text
+    assert answer_message == "\n".join([_("first_greeting", locale=locale) for locale in config.locales])
