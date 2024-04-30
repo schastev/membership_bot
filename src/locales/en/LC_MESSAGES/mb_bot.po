@@ -119,7 +119,7 @@ msgstr "A membership with value {} was added for you."
 
 #: src/routers/misc.py:22
 msgid "greeting"
-msgstr "Hello! This bot will help you manage your memberships with {}. Please pick "
+msgstr "Hello! This bot will help you manage your memberships with {company_name}. Please pick "
 "one of the options below:"
 
 #: src/routers/user.py:31 src/routers/user.py:32
