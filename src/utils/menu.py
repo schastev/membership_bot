@@ -37,12 +37,14 @@ class UserState:
             self.is_registered = bool(user)
             active_mb = active_mb or mb_for_member.get_active_membership_by_user_id(tg_id=tg_id)
             self.has_memberships = bool(mb_for_member.get_memberships_by_user_id(tg_id=tg_id))
-            attendances = att_for_member.view_attendances_for_active_membership(tg_id=tg_id)
-            self.has_attendances = bool(attendances)
         if active_mb:
             self.has_usable_membership = True
             self.has_frozen_membership = bool(active_mb.freeze_date) and active_mb.unfreeze_date > datetime.date.today()
             self.has_freezable_membership = bool(active_mb.activation_date) and not active_mb.unfreeze_date and not self.has_frozen_membership
+            if tg_id:
+                attendances = att_for_member.view_attendances_for_active_membership(tg_id=tg_id)
+                self.has_attendances = bool(attendances)
+
 
 
 def locale_buttons() -> InlineKeyboardMarkup:
