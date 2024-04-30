@@ -9,7 +9,7 @@ from aiogram.types import CallbackQuery, Message
 from config_reader import config
 from src.db_calls.user import check_user_registration_state, update_user_locale
 from src.routers import user, mb_for_admin, mb_for_member, att_for_member, att_for_admin
-from src.routers.misc import greeting
+from src.routers.helpers import greeting
 from src.utils import translation, bot_helpers
 from src.utils.translation import locale
 from src.utils.menu import main_buttons, UserState, locale_buttons

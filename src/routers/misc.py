@@ -4,21 +4,12 @@ from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
-from config_reader import config
-from src.routers.user import _
 from src.utils import translation
 from src.utils.constants import Action, Modifier
-from src.utils.menu import main_buttons, UserState
+from src.utils.menu import main_buttons
 
 router = Router()
 _ = translation.i18n.gettext
-
-
-async def greeting(message: Message, user_id: int, user_state: UserState | None = None):
-    await message.answer(
-        text=_("greeting").format(company_name=config.company_name),
-        reply_markup=main_buttons(user_id=user_id, user_state=user_state)
-    )
 
 
 @router.callback_query(F.data == f"{Action.CANCEL}{Modifier.CALLBACK}")
