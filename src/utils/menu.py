@@ -1,8 +1,10 @@
+import datetime
 from typing import List
 
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+from src.model.membership import Membership
 from src.utils import translation
 from config_reader import config
 from src.utils.callback_factories import MBRequestListCallbackFactory, MBRequestValueCallbackFactory, \
@@ -28,20 +30,19 @@ class UserState:
     has_freezable_membership: bool = False
     has_attendances: bool = False
 
-    def __init__(self, tg_id: int):
-        if not tg_id:
-            return
-        self.is_admin = tg_id in config.admin_ids
-        user = db_calls_user.get_user(tg_id=tg_id)
-        self.is_registered = bool(user)
-        active_mb = mb_for_member.get_active_membership_by_user_id(tg_id=tg_id)
-        self.has_memberships = bool(mb_for_member.get_memberships_by_user_id(tg_id=tg_id))
-        if active_mb:
-            self.has_usable_membership = True
-            self.has_frozen_membership = bool(active_mb.freeze_date) and not bool(active_mb.unfreeze_date)
-            self.has_freezable_membership = bool(active_mb.activation_date) and not active_mb.unfreeze_date and not self.has_frozen_membership
+    def __init__(self, tg_id: int, active_mb: Membership | None = None):
+        if tg_id:
+            self.is_admin = tg_id in config.admin_ids
+            user = db_calls_user.get_user(tg_id=tg_id)
+            self.is_registered = bool(user)
+            active_mb = active_mb or mb_for_member.get_active_membership_by_user_id(tg_id=tg_id)
+            self.has_memberships = bool(mb_for_member.get_memberships_by_user_id(tg_id=tg_id))
             attendances = att_for_member.view_attendances_for_active_membership(tg_id=tg_id)
             self.has_attendances = bool(attendances)
+        if active_mb:
+            self.has_usable_membership = True
+            self.has_frozen_membership = bool(active_mb.freeze_date) and active_mb.unfreeze_date > datetime.date.today()
+            self.has_freezable_membership = bool(active_mb.activation_date) and not active_mb.unfreeze_date and not self.has_frozen_membership
 
 
 def locale_buttons() -> InlineKeyboardMarkup:

@@ -6,6 +6,7 @@ from aiogram import Bot, Dispatcher
 from config_reader import config
 from src.routers import misc, user, mb_for_admin, mb_for_member, att_for_member, att_for_admin
 from src.utils.translation import locale
+from src.utils.menu import main_buttons, UserState
 
 
 async def main():
@@ -17,6 +18,10 @@ async def main():
     )
     bot = Bot(token=config.bot_token.get_secret_value())
     await dp.start_polling(bot)
+
+
+def main_menu(user_id: int, user_state: UserState):
+    return main_buttons(user_id=user_id, user_state=user_state)
 
 
 if __name__ == "__main__":
