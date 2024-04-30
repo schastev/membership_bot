@@ -28,10 +28,11 @@ class UserUpdateStates(StatesGroup):
 async def register_handler(callback: CallbackQuery, state: FSMContext, bot: Bot):
     if not user_action_utils.check_user_registration_state(tg_id=callback.from_user.id):
         await state.set_state(RegistrationStates.GET_NAME)
-        await callback.message.answer(text=_("welcome")),
+        (await callback.message.answer(text=_("welcome")),)
     else:
         await callback.message.answer(
-            text=_("REGISTER_error_already_registered"), reply_markup=main_buttons(user_id=callback.from_user.id)
+            text=_("REGISTER_error_already_registered"),
+            reply_markup=main_buttons(user_id=callback.from_user.id),
         )
     await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
     await callback.answer()
@@ -39,7 +40,9 @@ async def register_handler(callback: CallbackQuery, state: FSMContext, bot: Bot)
 
 @router.callback_query(F.data == f"{Action.CHANGE_SETTINGS}{Modifier.CALLBACK}")
 async def change_user_settings(callback: CallbackQuery):
-    await callback.message.answer(text=_("CHANGE_SETTINGS_text"), reply_markup=user_settings_options())
+    await callback.message.answer(
+        text=_("CHANGE_SETTINGS_text"), reply_markup=user_settings_options()
+    )
     await callback.answer()
 
 
@@ -58,10 +61,12 @@ async def process_phone(message: Message, state: FSMContext):
     phone = message.text
     await state.update_data(name=None)
     locale = data.get("locale")
-    added_user = user_action_utils.register_user(name=name, phone=phone, tg_id=message.from_user.id, locale=locale)
+    added_user = user_action_utils.register_user(
+        name=name, phone=phone, tg_id=message.from_user.id, locale=locale
+    )
     await message.answer(
         _("REGISTER_ok").format(name=added_user.name, phone=int(added_user.phone)),
-        reply_markup=main_buttons(user_id=message.from_user.id)
+        reply_markup=main_buttons(user_id=message.from_user.id),
     )
 
 
@@ -84,10 +89,12 @@ async def change_phone_handler(callback: CallbackQuery, state: FSMContext, bot: 
 @router.message(UserUpdateStates.GET_NAME)
 async def process_change_name(message: Message, state: FSMContext):
     name = message.text
-    updated_user = user_action_utils.update_name(new_name=name, tg_id=message.from_user.id)
+    updated_user = user_action_utils.update_name(
+        new_name=name, tg_id=message.from_user.id
+    )
     await message.answer(
         _("CHANGE_SETTINGS_name_ok").format(name=updated_user.name),
-        reply_markup=main_buttons(user_id=message.from_user.id)
+        reply_markup=main_buttons(user_id=message.from_user.id),
     )
     await state.set_state(None)
 
@@ -95,7 +102,9 @@ async def process_change_name(message: Message, state: FSMContext):
 @router.message(UserUpdateStates.GET_PHONE)
 async def process_change_phone(message: Message, state: FSMContext):
     phone = int(message.text)
-    updated_user = user_action_utils.update_phone(new_phone=phone, tg_id=message.from_user.id)
+    updated_user = user_action_utils.update_phone(
+        new_phone=phone, tg_id=message.from_user.id
+    )
     await message.answer(
         _("CHANGE_SETTINGS_phone_ok").format(name=updated_user.name),
         reply_markup=main_buttons(user_id=message.from_user.id),
@@ -106,6 +115,9 @@ async def process_change_phone(message: Message, state: FSMContext):
 @router.callback_query(F.data == f"{Action.CHANGE_LOCALE}{Modifier.CALLBACK}")
 async def change_locale_handler(callback: CallbackQuery):
     menu_buttons = locale_buttons()
-    greetings = [_("CHANGE_LOCALE_text", locale=locale) for locale in config_reader.config.locales]
+    greetings = [
+        _("CHANGE_LOCALE_text", locale=locale)
+        for locale in config_reader.config.locales
+    ]
     await callback.message.answer("\n".join(greetings), reply_markup=menu_buttons)
     await callback.answer()

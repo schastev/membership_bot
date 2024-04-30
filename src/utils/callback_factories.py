@@ -9,11 +9,15 @@ class MembershipRequestCallbackFactory(CallbackData, prefix="mb_request"):
     id: int
 
 
-class MBRequestListCallbackFactory(MembershipRequestCallbackFactory, prefix="mb_request_list"):
+class MBRequestListCallbackFactory(
+    MembershipRequestCallbackFactory, prefix="mb_request_list"
+):
     pass
 
 
-class MBRequestValueCallbackFactory(MembershipRequestCallbackFactory, prefix="mb_request_value"):
+class MBRequestValueCallbackFactory(
+    MembershipRequestCallbackFactory, prefix="mb_request_value"
+):
     pass
 
 

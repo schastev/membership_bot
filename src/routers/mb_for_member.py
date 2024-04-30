@@ -23,18 +23,25 @@ class FreezeRequestState(StatesGroup):
 @router.callback_query(F.data == f"{Action.VIEW_ACTIVE_MEMBERSHIP}{Modifier.CALLBACK}")
 async def view_active_membership(callback: CallbackQuery, bot: Bot):
     if active_membership := await get_active_membership_or_go_home(callback=callback):
-        await callback.message.answer(str(active_membership), reply_markup=main_buttons(user_id=callback.from_user.id))
+        await callback.message.answer(
+            str(active_membership),
+            reply_markup=main_buttons(user_id=callback.from_user.id),
+        )
         await callback.answer()
     await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
 
 
 @router.callback_query(F.data == f"{Action.VIEW_ALL_MEMBERSHIPS}{Modifier.CALLBACK}")
 async def view_memberships(callback: CallbackQuery, bot: Bot):
-    if memberships := mb_for_member.get_memberships_by_user_id(tg_id=callback.from_user.id):
+    if memberships := mb_for_member.get_memberships_by_user_id(
+        tg_id=callback.from_user.id
+    ):
         text = "\n".join(mb.past_info() for mb in memberships)
     else:
         text = _("VIEW_ALL_MEMBERSHIPS_error_no")
-    await callback.message.answer(text, reply_markup=main_buttons(user_id=callback.from_user.id))
+    await callback.message.answer(
+        text, reply_markup=main_buttons(user_id=callback.from_user.id)
+    )
     await callback.answer()
     await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
 
@@ -42,17 +49,23 @@ async def view_memberships(callback: CallbackQuery, bot: Bot):
 @router.callback_query(F.data == f"{Action.ADD_MEMBERSHIP}{Modifier.CALLBACK}")
 async def request_to_add_membership(callback: CallbackQuery, bot: Bot):
     await for_member.add_request(
-        message=callback.message, member_id=callback.from_user.id, request_type=RequestType.ADD_MEMBERSHIP
+        message=callback.message,
+        member_id=callback.from_user.id,
+        request_type=RequestType.ADD_MEMBERSHIP,
     )
     await callback.answer()
     await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
 
 
 @router.callback_query(F.data == f"{Action.FREEZE_MEMBERSHIP}{Modifier.CALLBACK}")
-async def request_to_freeze_membership(callback: CallbackQuery, state: FSMContext, bot: Bot):
+async def request_to_freeze_membership(
+    callback: CallbackQuery, state: FSMContext, bot: Bot
+):
     await callback.message.answer(
-        text=_("FREEZE_MEMBERSHIP_query_duration").format(max_freeze_duration=config_reader.config.max_freeze_duration),
-        reply_markup=cancel_button()
+        text=_("FREEZE_MEMBERSHIP_query_duration").format(
+            max_freeze_duration=config_reader.config.max_freeze_duration
+        ),
+        reply_markup=cancel_button(),
     )
     await state.set_state(FreezeRequestState.GET_DURATION)
     await callback.answer()
@@ -66,12 +79,15 @@ async def process_freeze_request(message: Message, state: FSMContext):
         duration = int(duration)
     except ValueError:
         await message.answer(
-            text=_("FREEZE_MEMBERSHIP_query_duration").format(config_reader.config.max_freeze_duration),
+            text=_("FREEZE_MEMBERSHIP_query_duration").format(
+                config_reader.config.max_freeze_duration
+            ),
             reply_markup=cancel_button(),
         )
         return
     await for_member.add_request(
-        message=message, member_id=message.from_user.id,
+        message=message,
+        member_id=message.from_user.id,
         request_type=RequestType.FREEZE_MEMBERSHIP,
         duration=duration,
     )
@@ -80,10 +96,13 @@ async def process_freeze_request(message: Message, state: FSMContext):
 
 @router.callback_query(F.data == f"{Action.UNFREEZE_MEMBERSHIP}{Modifier.CALLBACK}")
 async def unfreeze_membership(callback: CallbackQuery, bot: Bot):
-    if active_mb := await get_active_membership_or_go_home(tg_id=callback.from_user.id, callback=callback):
+    if active_mb := await get_active_membership_or_go_home(
+        tg_id=callback.from_user.id, callback=callback
+    ):
         mb_for_member.unfreeze_membership(mb_id=active_mb.id)
         await callback.message.answer(
-            text=_("UNFREEZE_MEMBERSHIP_ok"), reply_markup=main_buttons(user_id=callback.from_user.id)
+            text=_("UNFREEZE_MEMBERSHIP_ok"),
+            reply_markup=main_buttons(user_id=callback.from_user.id),
         )
         await callback.answer()
     await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)

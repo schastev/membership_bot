@@ -21,15 +21,22 @@ async def poll_for_requests(message: Message, request_type: RequestType):
         button_name = _("FREEZE_MEMBERSHIP_button")
         pending_message = _("pending_freeze")
         menu_function = menu.freeze_membership_request_buttons
-    await message.answer(_("polling").format(
-        request_type_string=pending_message,
-        timeout_seconds=config.polling_timeout_seconds,
-        button_name=button_name)
+    await message.answer(
+        _("polling").format(
+            request_type_string=pending_message,
+            timeout_seconds=config.polling_timeout_seconds,
+            button_name=button_name,
+        )
     )
     requests = await for_admin.poll_for_requests(request_type=request_type)
     if len(requests) == 0:
         await message.answer(
-            text=_("polling_timeout").format(button_name=button_name), reply_markup=menu.main_buttons(user_id=message.chat.id))
+            text=_("polling_timeout").format(button_name=button_name),
+            reply_markup=menu.main_buttons(user_id=message.chat.id),
+        )
     else:
         request_buttons = menu_function(request_list=requests)
-        await message.answer(text=_("pending_list").format(request_type=pending_message), reply_markup=request_buttons)
+        await message.answer(
+            text=_("pending_list").format(request_type=pending_message),
+            reply_markup=request_buttons,
+        )

@@ -23,4 +23,3 @@ class Request(Base):
 
     def __repr__(self):
         return f"Request(tg_id={self.tg_id}, type={self.type}{f', duration={self.duration}' if self.duration else ''})"
-

@@ -29,7 +29,9 @@ def test_membership_freezing_and_unfreezing_delays_expiry():
     assert mb.expiry_date == new_expiry_date
 
 
-@pytest.mark.parametrize("delta", [2, -2], ids=["later than planned", "earlier than planned"])
+@pytest.mark.parametrize(
+    "delta", [2, -2], ids=["later than planned", "earlier than planned"]
+)
 def test_membership_can_unfreeze_earlier_or_later_than_planned(delta):
     mb = Membership(total_amount=4, member_id=1)
     mb.subtract()
@@ -59,7 +61,9 @@ def test_membership_cannot_freeze_two_times():
         mb.freeze(freeze_date=freeze_date, days=freeze_duration)
 
 
-@pytest.mark.parametrize("delta", [8, -10], ids=["over two weeks", "negative freeze period"])
+@pytest.mark.parametrize(
+    "delta", [8, -10], ids=["over two weeks", "negative freeze period"]
+)
 def test_membership_cannot_unfreeze_to_make_freeze_period_invalid(delta):
     mb = Membership(total_amount=4, member_id=1)
     mb.subtract()

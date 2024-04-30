@@ -17,7 +17,13 @@ def view_attendances_for_active_membership(tg_id: int) -> List[Attendance]:
 
 def request_to_add_attendance(tg_id: int, chat_id: int, mb_id: int) -> Request:
     with Session(database.ENGINE) as session:
-        request = Request(tg_id=tg_id, chat_id=chat_id, type=RequestType.ATTENDANCE, mb_id=mb_id, duration=-1)
+        request = Request(
+            tg_id=tg_id,
+            chat_id=chat_id,
+            type=RequestType.ATTENDANCE,
+            mb_id=mb_id,
+            duration=-1,
+        )
         session.add(request)
         session.commit()
     with Session(database.ENGINE) as session:

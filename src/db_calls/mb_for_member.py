@@ -10,13 +10,17 @@ from src.db_calls import database
 
 def get_memberships_by_user_id(tg_id: int) -> List[Membership]:
     with Session(database.ENGINE) as session:
-        memberships = session.scalars(database.get_memberships_by_tg_id(tg_id=tg_id)).all()
+        memberships = session.scalars(
+            database.get_memberships_by_tg_id(tg_id=tg_id)
+        ).all()
     return list(memberships)
 
 
 def get_active_membership_by_user_id(tg_id: int) -> Union[Membership, None]:
     with Session(database.ENGINE) as session:
-        memberships = session.scalars(database.get_memberships_by_tg_id(tg_id=tg_id)).all()
+        memberships = session.scalars(
+            database.get_memberships_by_tg_id(tg_id=tg_id)
+        ).all()
     active_mb = [mb for mb in memberships if mb.is_valid()]
     if len(active_mb) == 0:
         return None
@@ -25,7 +29,13 @@ def get_active_membership_by_user_id(tg_id: int) -> Union[Membership, None]:
 
 def request_to_add_membership(tg_id: int, chat_id: int) -> Request:
     with Session(database.ENGINE) as session:
-        request = Request(tg_id=tg_id, chat_id=chat_id, type=RequestType.ADD_MEMBERSHIP, mb_id=-1, duration=-1)
+        request = Request(
+            tg_id=tg_id,
+            chat_id=chat_id,
+            type=RequestType.ADD_MEMBERSHIP,
+            mb_id=-1,
+            duration=-1,
+        )
         session.add(request)
         session.commit()
     with Session(database.ENGINE) as session:
@@ -35,10 +45,16 @@ def request_to_add_membership(tg_id: int, chat_id: int) -> Request:
     return request
 
 
-def request_to_freeze_membership(tg_id: int, chat_id: int, mb_id: int, duration: int) -> Request:
+def request_to_freeze_membership(
+    tg_id: int, chat_id: int, mb_id: int, duration: int
+) -> Request:
     with Session(database.ENGINE) as session:
         request = Request(
-            tg_id=tg_id, chat_id=chat_id, mb_id=mb_id, duration=duration, type=RequestType.FREEZE_MEMBERSHIP
+            tg_id=tg_id,
+            chat_id=chat_id,
+            mb_id=mb_id,
+            duration=duration,
+            type=RequestType.FREEZE_MEMBERSHIP,
         )
         session.add(request)
         session.commit()

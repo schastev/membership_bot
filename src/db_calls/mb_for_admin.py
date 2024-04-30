@@ -15,6 +15,7 @@ def add_membership(tg_id: int, membership_value: int, request_id: int) -> None:
         session.add(membership)
         session.commit()
     from src.db_calls.for_admin import delete_request
+
     delete_request(request_id=request_id)
 
 
@@ -26,5 +27,6 @@ def freeze_membership(mb_id: int, days: int, request_id: int) -> str:
         unfreeze_date = mb.unfreeze_date
         session.commit()
     from src.db_calls.for_admin import delete_request
+
     delete_request(request_id=request_id)
     return unfreeze_date

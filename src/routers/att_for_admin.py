@@ -13,28 +13,39 @@ router = Router()
 _ = translation.i18n.gettext
 
 
-@router.callback_query(F.data == f"{Action.MANAGE_ATTENDANCE}{Modifier.CALLBACK}", IsAdmin())
+@router.callback_query(
+    F.data == f"{Action.MANAGE_ATTENDANCE}{Modifier.CALLBACK}", IsAdmin()
+)
 async def manage_attendances(callback: CallbackQuery, bot: Bot):
-    await for_admin.poll_for_requests(message=callback.message, request_type=RequestType.ATTENDANCE)
+    await for_admin.poll_for_requests(
+        message=callback.message, request_type=RequestType.ATTENDANCE
+    )
     await callback.answer()
     await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
 
 
 @router.callback_query(AttRequestCallbackFactory.filter(), IsAdmin())
-async def mark_attendance(callback: CallbackQuery, callback_data: AttRequestCallbackFactory, bot: Bot):
+async def mark_attendance(
+    callback: CallbackQuery, callback_data: AttRequestCallbackFactory, bot: Bot
+):
     request = callback_data
     if not request:
         await callback.message.answer(text=_("CHECK_IN_error_expired"))
         await callback.answer()
         return
-    attendance = Attendance(member_id=request.member_tg_id, membership_id=request.membership_id)
-    current_amount = att_for_admin.mark_attendance(attendance=attendance, request_id=request.id)
+    attendance = Attendance(
+        member_id=request.member_tg_id, membership_id=request.membership_id
+    )
+    current_amount = att_for_admin.mark_attendance(
+        attendance=attendance, request_id=request.id
+    )
     await callback.message.answer(
         text=_("CHECK_in_ok_admin").format(name=request.member_name),
         reply_markup=ReplyKeyboardRemove(),
     )
     await bot.send_message(
-        chat_id=request.chat_id, text=_("CHECK_in_ok_member").format(current_amount=current_amount)
+        chat_id=request.chat_id,
+        text=_("CHECK_in_ok_member").format(current_amount=current_amount),
     )
     await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
     await callback.answer()

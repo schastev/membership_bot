@@ -15,7 +15,7 @@ async def get_active_membership_or_go_home(
     tg_id: Union[int, None] = None,
     callback: Union[CallbackQuery, None] = None,
     message: Union[Message, None] = None,
-    error_message: Union[str, None] = None
+    error_message: Union[str, None] = None,
 ) -> Union[Membership, None]:
     if callback:
         answer = callback.message
@@ -39,5 +39,5 @@ async def get_active_membership_or_go_home(
 async def greeting(message: Message, user_id: int, user_state: UserState | None = None):
     await message.answer(
         text=_("greeting").format(company_name=config.company_name),
-        reply_markup=main_buttons(user_id=user_id, user_state=user_state)
+        reply_markup=main_buttons(user_id=user_id, user_state=user_state),
     )

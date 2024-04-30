@@ -7,8 +7,12 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from src.model.membership import Membership
 from src.utils import translation
 from config_reader import config
-from src.utils.callback_factories import MBRequestListCallbackFactory, MBRequestValueCallbackFactory, \
-    AttRequestCallbackFactory, FreezeRequestCallbackFactory
+from src.utils.callback_factories import (
+    MBRequestListCallbackFactory,
+    MBRequestValueCallbackFactory,
+    AttRequestCallbackFactory,
+    FreezeRequestCallbackFactory,
+)
 from src.db_calls import user as db_calls_user, mb_for_member, att_for_member
 from src.utils.constants import Action, Modifier
 
@@ -18,7 +22,10 @@ admin = [f"{Action.MANAGE_MEMBERSHIP}", Action.MANAGE_ATTENDANCE]
 registered_with_active_mb = [Action.VIEW_ACTIVE_MEMBERSHIP, Action.CHECK_IN]
 registered_with_attendances = [Action.VIEW_ATTENDANCES]
 registered = [Action.CHANGE_NAME, Action.CHANGE_PHONE, Action.CHANGE_LOCALE]
-membership_management_options = [f"{Modifier.ADMIN}{Action.ADD_MEMBERSHIP}", f"{Modifier.ADMIN}{Action.FREEZE_MEMBERSHIP}"]
+membership_management_options = [
+    f"{Modifier.ADMIN}{Action.ADD_MEMBERSHIP}",
+    f"{Modifier.ADMIN}{Action.FREEZE_MEMBERSHIP}",
+]
 
 
 class UserState:
@@ -35,24 +42,42 @@ class UserState:
             self.is_admin = tg_id in config.admin_ids
             user = db_calls_user.get_user(tg_id=tg_id)
             self.is_registered = bool(user)
-            active_mb = active_mb or mb_for_member.get_active_membership_by_user_id(tg_id=tg_id)
-            self.has_memberships = bool(mb_for_member.get_memberships_by_user_id(tg_id=tg_id))
+            active_mb = active_mb or mb_for_member.get_active_membership_by_user_id(
+                tg_id=tg_id
+            )
+            self.has_memberships = bool(
+                mb_for_member.get_memberships_by_user_id(tg_id=tg_id)
+            )
         if active_mb:
             self.has_usable_membership = True
-            self.has_frozen_membership = bool(active_mb.freeze_date) and active_mb.unfreeze_date > datetime.date.today()
-            self.has_freezable_membership = bool(active_mb.activation_date) and not active_mb.unfreeze_date and not self.has_frozen_membership
+            self.has_frozen_membership = (
+                bool(active_mb.freeze_date)
+                and active_mb.unfreeze_date > datetime.date.today()
+            )
+            self.has_freezable_membership = (
+                bool(active_mb.activation_date)
+                and not active_mb.unfreeze_date
+                and not self.has_frozen_membership
+            )
             if tg_id:
-                attendances = att_for_member.view_attendances_for_active_membership(tg_id=tg_id)
+                attendances = att_for_member.view_attendances_for_active_membership(
+                    tg_id=tg_id
+                )
                 self.has_attendances = bool(attendances)
 
 
 def locale_buttons() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    [builder.add(InlineKeyboardButton(text=locale, callback_data=locale)) for locale in config.locales]
+    [
+        builder.add(InlineKeyboardButton(text=locale, callback_data=locale))
+        for locale in config.locales
+    ]
     return builder.as_markup()
 
 
-def main_buttons(user_id: int, user_state: UserState | None = None) -> InlineKeyboardMarkup:
+def main_buttons(
+    user_id: int, user_state: UserState | None = None
+) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     buttons = []
     if not user_state:
@@ -76,7 +101,14 @@ def main_buttons(user_id: int, user_state: UserState | None = None) -> InlineKey
     else:
         buttons.append(Action.REGISTER)
     for button in buttons:
-        builder.add(InlineKeyboardButton(text=_("{button}{modifier}".format(button=button, modifier=Modifier.BUTTON)), callback_data=f"{button}{Modifier.CALLBACK}"))
+        builder.add(
+            InlineKeyboardButton(
+                text=_(
+                    "{button}{modifier}".format(button=button, modifier=Modifier.BUTTON)
+                ),
+                callback_data=f"{button}{Modifier.CALLBACK}",
+            )
+        )
     builder.adjust(2)
     return builder.as_markup()
 
@@ -84,7 +116,14 @@ def main_buttons(user_id: int, user_state: UserState | None = None) -> InlineKey
 def user_settings_options() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     for button in registered:
-        builder.add(InlineKeyboardButton(text=_("{button}{modifier}".format(button=button, modifier=Modifier.BUTTON)), callback_data=f"{button}{Modifier.CALLBACK}"))
+        builder.add(
+            InlineKeyboardButton(
+                text=_(
+                    "{button}{modifier}".format(button=button, modifier=Modifier.BUTTON)
+                ),
+                callback_data=f"{button}{Modifier.CALLBACK}",
+            )
+        )
     builder.adjust(2)
     return builder.as_markup()
 
@@ -92,7 +131,16 @@ def user_settings_options() -> InlineKeyboardMarkup:
 def mb_management_options() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     for button in membership_management_options:
-        builder.add(InlineKeyboardButton(text=_("{button}{modifier}".format(button=button, modifier=Modifier.BUTTON).replace(Modifier.ADMIN, "")), callback_data=f"{button}{Modifier.CALLBACK}"))
+        builder.add(
+            InlineKeyboardButton(
+                text=_(
+                    "{button}{modifier}".format(
+                        button=button, modifier=Modifier.BUTTON
+                    ).replace(Modifier.ADMIN, "")
+                ),
+                callback_data=f"{button}{Modifier.CALLBACK}",
+            )
+        )
     return builder.as_markup()
 
 
@@ -107,8 +155,8 @@ def membership_request_buttons(request_list: List[dict]) -> InlineKeyboardMarkup
                     member_tg_id=request.get("member").tg_id,
                     member_name=request.get("member").name,
                     chat_id=request.get("request").chat_id,
-                    id=request.get("request").id
-                ).pack()
+                    id=request.get("request").id,
+                ).pack(),
             )
         )
     builder.adjust(2)
@@ -129,7 +177,7 @@ def freeze_membership_request_buttons(request_list: List[dict]) -> InlineKeyboar
                     chat_id=request.get("request").chat_id,
                     id=request.get("request").id,
                     duration=request.get("request").duration,
-                ).pack()
+                ).pack(),
             )
         )
     builder.adjust(2)
@@ -149,7 +197,7 @@ def attendance_request_buttons(request_list: List[dict]) -> InlineKeyboardMarkup
                     chat_id=request.get("request").chat_id,
                     id=request.get("request").id,
                     membership_id=request.get("request").mb_id,
-                ).pack()
+                ).pack(),
             )
         )
     builder.adjust(2)
@@ -157,7 +205,7 @@ def attendance_request_buttons(request_list: List[dict]) -> InlineKeyboardMarkup
 
 
 def membership_value_buttons(
-        member_tg_id: int, member_name: str, chat_id: int, request_id: int
+    member_tg_id: int, member_name: str, chat_id: int, request_id: int
 ) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     membership_values = config.membership_values
@@ -171,16 +219,19 @@ def membership_value_buttons(
                     value=value,
                     chat_id=chat_id,
                     id=request_id,
-                ).pack()))
+                ).pack(),
+            )
+        )
     builder.add(
         InlineKeyboardButton(
             text=_("ADD_MEMBERSHIP_decline_button"),
             callback_data=MBRequestValueCallbackFactory(
                 member_tg_id=member_tg_id,
-                member_name=member_name, value=-1,
+                member_name=member_name,
+                value=-1,
                 chat_id=chat_id,
-                id=request_id
-            ).pack()
+                id=request_id,
+            ).pack(),
         )
     )
     builder.adjust(2)
@@ -189,5 +240,9 @@ def membership_value_buttons(
 
 def cancel_button() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    builder.add(InlineKeyboardButton(text=_("button_cancel"), callback_data=f"{Action.CANCEL}{Modifier.CALLBACK}"))
+    builder.add(
+        InlineKeyboardButton(
+            text=_("button_cancel"), callback_data=f"{Action.CANCEL}{Modifier.CALLBACK}"
+        )
+    )
     return builder.as_markup()

@@ -2,10 +2,9 @@ from typing import Union
 
 from sqlalchemy.orm import Session
 
-from config_reader import config
 
 from src.model.user import User
-from src.db_calls import mb_for_member, att_for_member, database
+from src.db_calls import database
 
 
 def register_user(tg_id: int, name: str, phone: str, locale: str) -> User:

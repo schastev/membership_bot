@@ -32,22 +32,30 @@ class Membership(Base):
         self.member_id = member_id
 
     def __repr__(self):
-        return f"Membership(" \
-               f"total_amount={self.total_amount}, " \
-               f"current_amount={self.current_amount}, " \
-               f"activation_date={self.activation_date}, " \
-               f"purchase_date={self.purchase_date})"
+        return (
+            f"Membership("
+            f"total_amount={self.total_amount}, "
+            f"current_amount={self.current_amount}, "
+            f"activation_date={self.activation_date}, "
+            f"purchase_date={self.purchase_date})"
+        )
 
     def __str__(self):
-        text = _("MB_INFO_general").format(mb_purchase_date=self.purchase_date, mb_total_amount=self.total_amount)
+        text = _("MB_INFO_general").format(
+            mb_purchase_date=self.purchase_date, mb_total_amount=self.total_amount
+        )
         if self.activation_date:
             text += "\n"
             text += _("MB_INFO_active").format(
-                mb_rmn_value=self.current_amount, mb_act_date=self.activation_date, mb_exp_date=self.expiry_date
+                mb_rmn_value=self.current_amount,
+                mb_act_date=self.activation_date,
+                mb_exp_date=self.expiry_date,
             )
             if self.freeze_date:
                 text += "\n"
-                text += _("MB_INFO_frozen").format(mb_freeze_date=self.freeze_date, mb_unfreeze_date=self.unfreeze_date)
+                text += _("MB_INFO_frozen").format(
+                    mb_freeze_date=self.freeze_date, mb_unfreeze_date=self.unfreeze_date
+                )
         return text
 
     def freeze(self, days: int, freeze_date: date = date.today()) -> None:
@@ -61,7 +69,11 @@ class Membership(Base):
         if not self.activation_date:
             raise ValueError(_("FREEZE_MEMBERSHIP_error_not_active"))
         if days > config_reader.config.max_freeze_duration:
-            raise ValueError(_("FREEZE_MEMBERSHIP_error_duration_exceeded").format(days=config_reader.config.max_freeze_duration))
+            raise ValueError(
+                _("FREEZE_MEMBERSHIP_error_duration_exceeded").format(
+                    days=config_reader.config.max_freeze_duration
+                )
+            )
         if days <= 0:
             raise ValueError(_("FREEZE_MEMBERSHIP_error_negative_duration"))
         if self._frozen is False:
@@ -74,7 +86,9 @@ class Membership(Base):
         if self.is_valid_unfreeze_date(unfreeze_date=unfreeze_date):
             self.unfreeze_date = unfreeze_date
             self._frozen = False
-            new_expiry_date = self.original_expiry_date + (unfreeze_date - self.freeze_date)
+            new_expiry_date = self.original_expiry_date + (
+                unfreeze_date - self.freeze_date
+            )
             if self.expiry_date != new_expiry_date:
                 self.expiry_date = new_expiry_date
 
@@ -106,8 +120,12 @@ class Membership(Base):
 
     def _activate(self, activation_date: date) -> None:
         self.activation_date = activation_date
-        self.expiry_date = activation_date + timedelta(days=config_reader.config.membership_duration_days)
-        self.original_expiry_date = activation_date + timedelta(days=config_reader.config.membership_duration_days)
+        self.expiry_date = activation_date + timedelta(
+            days=config_reader.config.membership_duration_days
+        )
+        self.original_expiry_date = activation_date + timedelta(
+            days=config_reader.config.membership_duration_days
+        )
 
     def is_valid(self) -> bool:
         return self.has_uses() and not self.is_expired()
@@ -121,4 +139,8 @@ class Membership(Base):
         return self.current_amount > 0
 
     def past_info(self):
-        return _("MB_INFO_past").format(total=self.total_amount, act_date=self.activation_date, exp_date=self.expiry_date)
+        return _("MB_INFO_past").format(
+            total=self.total_amount,
+            act_date=self.activation_date,
+            exp_date=self.expiry_date,
+        )

@@ -8,7 +8,14 @@ from aiogram.types import CallbackQuery, Message
 
 from config_reader import config
 from src.db_calls.user import check_user_registration_state, update_user_locale
-from src.routers import user, misc, mb_for_admin, mb_for_member, att_for_member, att_for_admin
+from src.routers import (
+    user,
+    misc,
+    mb_for_admin,
+    mb_for_member,
+    att_for_member,
+    att_for_admin,
+)
 from src.routers.helpers import greeting
 from src.utils import translation, bot_helpers
 from src.utils.constants import Action, Modifier
@@ -21,7 +28,12 @@ _ = translation.i18n.gettext
 
 
 @router.callback_query(F.data.in_(config.locales))
-async def locale_handler(callback: CallbackQuery, state: FSMContext, bot: Bot, user_state: UserState | None = None):
+async def locale_handler(
+    callback: CallbackQuery,
+    state: FSMContext,
+    bot: Bot,
+    user_state: UserState | None = None,
+):
     await translation.locale.set_locale(state=state, locale=callback.data)
     if user_id := callback.message.from_user.id == bot.id:
         # this is to correctly display buttons after user changes locale
@@ -51,7 +63,9 @@ async def cancel_handler(callback: CallbackQuery, state: FSMContext) -> None:
     if current_state is None:
         return
     logging.info(_("cancelled_state_log").format(current_state=current_state))
-    await callback.message.answer(_("cancelled"), reply_markup=main_buttons(user_id=callback.from_user.id))
+    await callback.message.answer(
+        _("cancelled"), reply_markup=main_buttons(user_id=callback.from_user.id)
+    )
     await state.set_state(None)
     await callback.answer()
 
@@ -61,7 +75,13 @@ async def main():
     dp = Dispatcher()
     locale.setup(dp)
     dp.include_routers(
-        user.router, mb_for_admin.router, mb_for_member.router, att_for_member.router, att_for_admin.router, router, misc.router
+        user.router,
+        mb_for_admin.router,
+        mb_for_member.router,
+        att_for_member.router,
+        att_for_admin.router,
+        router,
+        misc.router,
     )
     bot = Bot(token=config.bot_token.get_secret_value())
     await dp.start_polling(bot)
