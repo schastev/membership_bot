@@ -8,9 +8,10 @@ from aiogram.types import CallbackQuery, Message
 
 from config_reader import config
 from src.db_calls.user import check_user_registration_state, update_user_locale
-from src.routers import user, mb_for_admin, mb_for_member, att_for_member, att_for_admin
+from src.routers import user, misc, mb_for_admin, mb_for_member, att_for_member, att_for_admin
 from src.routers.helpers import greeting
 from src.utils import translation, bot_helpers
+from src.utils.constants import Action, Modifier
 from src.utils.translation import locale
 from src.utils.menu import main_buttons, UserState, locale_buttons
 
@@ -36,12 +37,23 @@ async def locale_handler(callback: CallbackQuery, state: FSMContext, bot: Bot, u
 @router.message(CommandStart())
 @router.message(F.text.casefold() == "start")
 async def start_handler(message: Message, state: FSMContext):
-    if user := check_user_registration_state(message.from_user.id):
-        await translation.locale.set_locale(state=state, locale=user.locale)
-        await greeting(message=message, user_id=user.tg_id)
+    if member := check_user_registration_state(message.from_user.id):
+        await translation.locale.set_locale(state=state, locale=member.locale)
+        await greeting(message=message, user_id=member.tg_id)
     else:
         greetings = [_("first_greeting", locale=locale) for locale in config.locales]
         await message.answer("\n".join(greetings), reply_markup=locale_buttons())
+
+
+@router.callback_query(F.data == f"{Action.CANCEL}{Modifier.CALLBACK}")
+async def cancel_handler(callback: CallbackQuery, state: FSMContext) -> None:
+    current_state = await state.get_state()
+    if current_state is None:
+        return
+    logging.info(_("cancelled_state_log").format(current_state=current_state))
+    await callback.message.answer(_("cancelled"), reply_markup=main_buttons(user_id=callback.from_user.id))
+    await state.set_state(None)
+    await callback.answer()
 
 
 async def main():
@@ -49,7 +61,7 @@ async def main():
     dp = Dispatcher()
     locale.setup(dp)
     dp.include_routers(
-        user.router, mb_for_admin.router, mb_for_member.router, att_for_member.router, att_for_admin.router, router
+        user.router, mb_for_admin.router, mb_for_member.router, att_for_member.router, att_for_admin.router, router, misc.router
     )
     bot = Bot(token=config.bot_token.get_secret_value())
     await dp.start_polling(bot)

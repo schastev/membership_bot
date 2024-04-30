@@ -5,7 +5,6 @@ from aiogram.types import CallbackQuery, Message
 from config_reader import config
 from src.db_calls import mb_for_member
 from src.model.membership import Membership
-from src.routers.misc import _
 from src.utils import translation
 from src.utils.menu import main_buttons, UserState
 

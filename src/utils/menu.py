@@ -46,7 +46,6 @@ class UserState:
                 self.has_attendances = bool(attendances)
 
 
-
 def locale_buttons() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     [builder.add(InlineKeyboardButton(text=locale, callback_data=locale)) for locale in config.locales]
