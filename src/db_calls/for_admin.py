@@ -4,14 +4,14 @@ from typing import List
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from src.db_calls import database
+from src.db_calls.database import Database
 from src.db_calls.mb_for_admin import TIMER
 from src.model.request import RequestType, Request
 from src.model.user import User
 
 
 def check_existing_requests(tg_id: int, request_type: RequestType) -> List[Request]:
-    with Session(database.ENGINE) as session:
+    with Session(Database().engine) as session:
         query = select(Request).where(
             (Request.tg_id == tg_id) and (Request.type == request_type)
         )
@@ -22,7 +22,7 @@ def check_existing_requests(tg_id: int, request_type: RequestType) -> List[Reque
 async def poll_for_requests(request_type: RequestType) -> list:
     result = []
     timer = TIMER
-    with Session(database.ENGINE) as session:
+    with Session(Database().engine) as session:
         requests = (
             session.query(Request, User)
             .join(User)
@@ -46,7 +46,7 @@ async def poll_for_requests(request_type: RequestType) -> list:
 
 
 def delete_request(request_id: int) -> None:
-    with Session(database.ENGINE) as session:
+    with Session(Database().engine) as session:
         query = select(Request).where(Request.id == request_id)
         db_request = session.scalars(query).first()
         session.delete(db_request)

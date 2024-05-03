@@ -16,6 +16,7 @@ class Settings(BaseSettings, extra=Extra.allow):
     locales: List[str]
     membership_duration_days: int
     max_freeze_duration: int
+    database_file_name: str
 
 
 config = Settings()

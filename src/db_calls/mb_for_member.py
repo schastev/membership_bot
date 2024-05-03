@@ -6,10 +6,11 @@ from sqlalchemy.orm import Session
 from src.model.membership import Membership
 from src.model.request import Request, RequestType
 from src.db_calls import database
+from src.db_calls.database import Database
 
 
 def get_memberships_by_user_id(tg_id: int) -> List[Membership]:
-    with Session(database.ENGINE) as session:
+    with Session(Database().engine) as session:
         memberships = session.scalars(
             database.get_memberships_by_tg_id(tg_id=tg_id)
         ).all()
@@ -17,7 +18,7 @@ def get_memberships_by_user_id(tg_id: int) -> List[Membership]:
 
 
 def get_active_membership_by_user_id(tg_id: int) -> Union[Membership, None]:
-    with Session(database.ENGINE) as session:
+    with Session(Database().engine) as session:
         memberships = session.scalars(
             database.get_memberships_by_tg_id(tg_id=tg_id)
         ).all()
@@ -28,7 +29,7 @@ def get_active_membership_by_user_id(tg_id: int) -> Union[Membership, None]:
 
 
 def request_to_add_membership(tg_id: int, chat_id: int) -> Request:
-    with Session(database.ENGINE) as session:
+    with Session(Database().engine) as session:
         request = Request(
             tg_id=tg_id,
             chat_id=chat_id,
@@ -38,7 +39,7 @@ def request_to_add_membership(tg_id: int, chat_id: int) -> Request:
         )
         session.add(request)
         session.commit()
-    with Session(database.ENGINE) as session:
+    with Session(Database().engine) as session:
         query = select(Request).where(Request.tg_id == tg_id)
         request = session.scalars(query).one()
     assert request is not None
@@ -48,7 +49,7 @@ def request_to_add_membership(tg_id: int, chat_id: int) -> Request:
 def request_to_freeze_membership(
     tg_id: int, chat_id: int, mb_id: int, duration: int
 ) -> Request:
-    with Session(database.ENGINE) as session:
+    with Session(Database().engine) as session:
         request = Request(
             tg_id=tg_id,
             chat_id=chat_id,
@@ -58,7 +59,7 @@ def request_to_freeze_membership(
         )
         session.add(request)
         session.commit()
-    with Session(database.ENGINE) as session:
+    with Session(Database().engine) as session:
         query = select(Request).where(Request.tg_id == tg_id)
         request = session.scalars(query).one()
     assert request is not None
@@ -66,7 +67,7 @@ def request_to_freeze_membership(
 
 
 def unfreeze_membership(mb_id: int):
-    with Session(database.ENGINE) as session:
+    with Session(Database().engine) as session:
         query = select(Membership).where(Membership.id == mb_id)
         mb = session.scalars(query).first()
         mb.unfreeze()

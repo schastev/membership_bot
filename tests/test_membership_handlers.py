@@ -4,8 +4,6 @@ from aiogram_tests.handler import CallbackQueryHandler
 from aiogram_tests.types.dataset import CALLBACK_QUERY, USER, CHAT
 
 import config_reader
-from src.db_calls.mb_for_member import request_to_add_membership
-from src.routers.mb_for_admin import process_membership
 from src.utils import translation
 from src.utils.bot_helpers import IsAdmin
 from src.utils.callback_factories import MBRequestValueCallbackFactory
@@ -13,10 +11,14 @@ from src.utils.translation import locale
 from tests.helper import get_random_locale
 
 _ = translation.i18n.gettext
+config_reader.config.database_file_name = ""
 
 
 @pytest.mark.asyncio
 async def test_process_membership():
+    from src.db_calls.mb_for_member import request_to_add_membership
+    from src.routers.mb_for_admin import process_membership
+
     random_locale = get_random_locale()
     request = request_to_add_membership(tg_id=USER.get("id"), chat_id=CHAT.get("id"))
     handler = CallbackQueryHandler(

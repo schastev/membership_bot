@@ -3,14 +3,13 @@ from sqlalchemy.orm import Session
 
 from config_reader import config
 from src.model.membership import Membership
-from src.db_calls import database
-
+from src.db_calls.database import Database
 
 TIMER = config.polling_timeout_seconds
 
 
 def add_membership(tg_id: int, membership_value: int, request_id: int) -> None:
-    with Session(database.ENGINE) as session:
+    with Session(Database().engine) as session:
         membership = Membership(member_id=tg_id, total_amount=membership_value)
         session.add(membership)
         session.commit()
@@ -20,7 +19,7 @@ def add_membership(tg_id: int, membership_value: int, request_id: int) -> None:
 
 
 def freeze_membership(mb_id: int, days: int, request_id: int) -> str:
-    with Session(database.ENGINE) as session:
+    with Session(Database().engine) as session:
         query = select(Membership).where(Membership.id == mb_id)
         mb = session.scalars(query).first()
         mb.freeze(days=days)

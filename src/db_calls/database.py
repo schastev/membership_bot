@@ -1,14 +1,21 @@
 from sqlalchemy import create_engine, select
 
+import config_reader
 from src.model.declarative_models import Base
 from src.model.membership import Membership
 from src.model.attendance import Attendance
 from src.model.user import User
+from src.utils.decorators import singleton
 
-ENGINE = create_engine("sqlite+pysqlite:///mb_bot.db", echo=True)
 
+@singleton
+class Database:
+    engine = create_engine(
+        f"sqlite+pysqlite:///{config_reader.config.database_file_name}", echo=True
+    )
 
-Base.metadata.create_all(bind=ENGINE)
+    def __init__(self):
+        Base.metadata.create_all(bind=self.engine)
 
 
 def get_user_by_tg_id(tg_id: int):
