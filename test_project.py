@@ -11,7 +11,7 @@ from src.utils import translation
 from src.utils.constants import Action
 from src.utils.menu import UserState, admin
 from project import main_menu, locale_handler, start_handler
-from tests.unit_test.helper import extract_keyboard_entries
+from tests.helper import extract_keyboard_entries
 
 _ = translation.i18n.gettext
 
