@@ -14,6 +14,9 @@ _ = translation.i18n.gettext
 config_reader.config.database_file_name = ""
 
 
+_ = translation.i18n.gettext
+
+
 @pytest.mark.asyncio
 async def test_process_membership():
     from src.db_calls.mb_for_member import request_to_add_membership
