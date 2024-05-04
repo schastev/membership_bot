@@ -10,6 +10,7 @@ A Telegram bot designed to help small businesses (mainly fitness-oriented ones) 
 * Request admin to freeze their active membership
 * Unfreeze their frozen membership
 * Check in after attending
+* Delete member and their data
 * View:
     * active membership data (dates of purchase, activation and expiry, the amount of times the membership can be used)
     * dates of check-in for current active membership

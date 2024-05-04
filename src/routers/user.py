@@ -6,9 +6,9 @@ from aiogram.types import Message, CallbackQuery
 import config_reader
 from src.routers.mb_for_admin import main_buttons
 from src.utils import bot_helpers, translation
-from src.db_calls import user as user_action_utils
+from src.db_calls import user as db_user
 from src.utils.constants import Action, Modifier
-from src.utils.menu import locale_buttons, user_settings_options
+from src.utils.menu import locale_buttons, user_settings_options, cancel_button
 
 router = Router()
 _ = translation.i18n.gettext
@@ -22,11 +22,12 @@ class RegistrationStates(StatesGroup):
 class UserUpdateStates(StatesGroup):
     GET_NAME = State()
     GET_PHONE = State()
+    DELETE_USER = State()
 
 
 @router.callback_query(F.data == f"{Action.REGISTER}{Modifier.CALLBACK}")
 async def register_handler(callback: CallbackQuery, state: FSMContext, bot: Bot):
-    if not user_action_utils.check_user_registration_state(tg_id=callback.from_user.id):
+    if not db_user.check_user_registration_state(tg_id=callback.from_user.id):
         await state.set_state(RegistrationStates.GET_NAME)
         (await callback.message.answer(text=_("welcome")),)
     else:
@@ -61,7 +62,7 @@ async def process_phone(message: Message, state: FSMContext):
     phone = message.text
     await state.update_data(name=None)
     locale = data.get("locale")
-    added_user = user_action_utils.register_user(
+    added_user = db_user.register_user(
         name=name, phone=phone, tg_id=message.from_user.id, locale=locale
     )
     await message.answer(
@@ -89,7 +90,7 @@ async def change_phone_handler(callback: CallbackQuery, state: FSMContext, bot: 
 @router.message(UserUpdateStates.GET_NAME)
 async def process_change_name(message: Message, state: FSMContext):
     name = message.text
-    updated_user = user_action_utils.update_name(
+    updated_user = db_user.update_name(
         new_name=name, tg_id=message.from_user.id
     )
     await message.answer(
@@ -102,7 +103,7 @@ async def process_change_name(message: Message, state: FSMContext):
 @router.message(UserUpdateStates.GET_PHONE)
 async def process_change_phone(message: Message, state: FSMContext):
     phone = int(message.text)
-    updated_user = user_action_utils.update_phone(
+    updated_user = db_user.update_phone(
         new_phone=phone, tg_id=message.from_user.id
     )
     await message.answer(
@@ -121,3 +122,20 @@ async def change_locale_handler(callback: CallbackQuery):
     ]
     await callback.message.answer("\n".join(greetings), reply_markup=menu_buttons)
     await callback.answer()
+
+
+@router.callback_query(F.data == f"{Action.DELETE_USER}{Modifier.CALLBACK}")
+async def delete_user_handler(callback: CallbackQuery, state: FSMContext):
+    await callback.message.answer(_("DELETE_USER_query"), reply_markup=cancel_button())
+    await state.set_state(UserUpdateStates.DELETE_USER)
+    await callback.answer()
+
+
+@router.message(UserUpdateStates.DELETE_USER)
+async def process_delete_user(message: Message, state: FSMContext):
+    if message.text == _("DELETE_USER_confirm"):
+        db_user.delete_user(tg_id=message.from_user.id)
+        await message.answer(_("DELETE_USER_ok"))
+        await state.set_state(None)
+    else:
+        await message.answer(_("DELETE_USER_query"), reply_markup=cancel_button())

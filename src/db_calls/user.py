@@ -1,11 +1,12 @@
 from typing import Union
 
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.orm import Session
 
-
+from src.model.attendance import Attendance
+from src.model.membership import Membership
+from src.model.request import Request
 from src.model.user import User
-from src.db_calls import database
 from src.db_calls.database import Database
 
 
@@ -68,3 +69,15 @@ def check_user_registration_state(tg_id: int) -> Union[User, None]:
 def get_user(tg_id: int) -> Union[User, None]:
     with Session(Database().engine) as session:
         return session.scalars(get_user_by_tg_id(tg_id=tg_id)).first()
+
+
+def delete_user(tg_id: int) -> None:
+    with Session(Database().engine) as session:
+        session.delete(get_user(tg_id=tg_id))
+        membership_query = delete(Membership).where(Membership.tg_id == tg_id)
+        session.execute(membership_query)
+        attendance_query = delete(Attendance).where(Attendance.tg_id == tg_id)
+        session.execute(attendance_query)
+        requests_query = delete(Request).where(Request.tg_id == tg_id)
+        session.execute(requests_query)
+        session.commit()
