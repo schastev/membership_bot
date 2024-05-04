@@ -1,10 +1,18 @@
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine
 
 import config_reader
 from src.model.declarative_models import Base
-from src.model.membership import Membership
-from src.model.user import User
-from src.utils.decorators import singleton
+
+
+def singleton(class_):
+    instances = {}
+
+    def getinstance(*args, **kwargs):
+        if class_ not in instances:
+            instances[class_] = class_(*args, **kwargs)
+        return instances[class_]
+
+    return getinstance
 
 
 @singleton
@@ -15,11 +23,3 @@ class Database:
 
     def __init__(self):
         Base.metadata.create_all(bind=self.engine)
-
-
-def get_user_by_tg_id(tg_id: int):
-    return select(User).where(User.tg_id == tg_id)
-
-
-def get_memberships_by_tg_id(tg_id: int):
-    return select(Membership).where(Membership.member_id == tg_id)

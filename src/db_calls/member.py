@@ -6,8 +6,11 @@ from sqlalchemy.orm import Session
 from src.model.attendance import Attendance
 from src.model.membership import Membership
 from src.model.request import RequestType, Request
-from src.db_calls import database
 from src.db_calls.database import Database
+
+
+def get_memberships_by_tg_id(tg_id: int):
+    return select(Membership).where(Membership.member_id == tg_id)
 
 
 def view_attendances_for_active_membership(tg_id: int) -> List[Attendance]:
@@ -38,7 +41,7 @@ def request_to_add_attendance(tg_id: int, chat_id: int, mb_id: int) -> Request:
 def get_memberships_by_user_id(tg_id: int) -> List[Membership]:
     with Session(Database().engine) as session:
         memberships = session.scalars(
-            database.get_memberships_by_tg_id(tg_id=tg_id)
+            get_memberships_by_tg_id(tg_id=tg_id)
         ).all()
     return list(memberships)
 
@@ -46,7 +49,7 @@ def get_memberships_by_user_id(tg_id: int) -> List[Membership]:
 def get_active_membership_by_user_id(tg_id: int) -> Union[Membership, None]:
     with Session(Database().engine) as session:
         memberships = session.scalars(
-            database.get_memberships_by_tg_id(tg_id=tg_id)
+            get_memberships_by_tg_id(tg_id=tg_id)
         ).all()
     active_mb = [mb for mb in memberships if mb.is_valid()]
     if len(active_mb) == 0:

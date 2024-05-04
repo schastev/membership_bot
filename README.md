@@ -39,18 +39,18 @@ Keeps all database-related code that uses the sqlalchemy library.
 * `admin.py` - functions that make actual database calls as called by admin-side bot handlers.
 * `database.py` - class that defines a database class using a singleton pattern.
 * `member.py` - functions that make actual database calls as called by member-side bot handlers.
-* `user.py` - functions that make actual database calls as called by user setting related (registration, info update) 
+* `user.py` - functions that make actual database calls as called by user setting related (registration, info update).
 bot handlers.
 #### locales
 Keeps all localization/internationalization-related files.
-* `*.po` files are localization sources containing code line numbers and strings that should be there 
+* `*.po` files are localization sources containing code line numbers and strings that should be there.
 as well as lines of translation that the former should be replaced with.
 * `*.mo` files are compiled `*.po` files that the application actually reads.
 * `*.pot` file is a base for future `*.po` files.
 #### model
 Keeps classes that correspond to the tables of the application's database and house actual business logic where applicable.
 * `attendance.py` - simple class, only has a table config and a representation method.
-* declarative_models TODO
+* `declarative_models.py` - a base class for all other models in this module, it ensures that they work with sqlalchemy.
 * `membership.py` - the beefiest of the classes, since the application's main objective is to manage memberships. 
 Handles logic for activation, check-ins, freeze and unfreeze, manages related dates, keeps track of uses the membership has left.
 * `request.py` - simple class that corresponds to all the requests a member can create for the admin to process.
@@ -66,14 +66,13 @@ but cannot be bundled in with any of the handlers.
 * `callback_factories.py` - the bot uses several callback factories to determine which handler should trigger 
 and to pass data between handlers. This is where I define the factories that play a key role in this process.
 * `constants.py` - a couple of enums to ensure I don't make a typo in callback factory names.
-* decorators.py - TODO
 * `menu.py` - houses functions that assemble keyboards for the user to interact with. 
 Some of them are used so many times (like the main menu) that it was silly not to make it it's own function, 
 and others are just too bulky (like the callback factory assembling ones) to have in the actual handler code.
 * `translation.py` - a configuration module for translation of bot's messages. 
 ### tests
-Keeps all the tests for the bot (except tests in test_project.py)
-* `helper.py` - small helper functions that are only helpful in tests
+Keeps all the tests for the bot (except tests in test_project.py).
+* `helper.py` - small helper functions that are only helpful in tests.
 * `test_membership_class.py` - tests for the logic inside the Membership class. 
 There is a lot of it, and it wouldn't be wise to test it together with the handles in test_membership_handles.py.
 * `test_membership_handles.py` - tests for the membership-related handles of the bot.
