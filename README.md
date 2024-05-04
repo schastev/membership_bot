@@ -59,6 +59,15 @@ Takes a enum to determine which type of request it's actually dealing with.
 The app doesn't do any complicated user management, so there is not much here.
 #### routers
 Keeps all routers and handlers - all code that actually defines how the bot will interact with users' messages.
+* `att_for_admin.py` - admin-side handlers related to attendance/check-ins.
+* `att_for_member.py` - member-side handlers related to attendance/check-ins.
+* `for_admin.py` - admin-side handlers that cannot be placed in one other file.
+* `for_member.py` - member-side handlers that cannot be placed in one other file.
+* `helpers.py` - pieces of other functions that I had to reuse several times and thus factored them out in their own functions.
+* `mb_for_admin.py` - admin-side handlers related to memberships.
+* `mb_for_member.py` - member-side handlers related to memberships.
+* `misc.py` - catch-all handlers.
+* `user.py` - handlers related to the user managing their info (registration or updates).
 #### utils
 Keeps additional files and helpers that I couldn't place in any other folder. 
 * `bot_helpers.py` - functions or classes that are directly related to the bot's operation 
