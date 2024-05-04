@@ -32,7 +32,10 @@ async def view_attendances(callback: CallbackQuery, bot: Bot):
 @router.callback_query(F.data == f"{Action.CHECK_IN}{Modifier.CALLBACK}")
 async def request_to_add_attendance(callback: CallbackQuery, bot: Bot):
     await get_active_membership_or_go_home(callback=callback)
-    await for_member.add_request(message=callback.message, tg_id=callback.from_user.id,
-                                 request_type=RequestType.ATTENDANCE)
+    await for_member.add_request(
+        message=callback.message,
+        tg_id=callback.from_user.id,
+        request_type=RequestType.ATTENDANCE,
+    )
     await callback.answer()
     await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)

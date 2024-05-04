@@ -90,9 +90,7 @@ async def change_phone_handler(callback: CallbackQuery, state: FSMContext, bot: 
 @router.message(UserUpdateStates.GET_NAME)
 async def process_change_name(message: Message, state: FSMContext):
     name = message.text
-    updated_user = db_user.update_name(
-        new_name=name, tg_id=message.from_user.id
-    )
+    updated_user = db_user.update_name(new_name=name, tg_id=message.from_user.id)
     await message.answer(
         _("CHANGE_SETTINGS_name_ok").format(name=updated_user.name),
         reply_markup=main_buttons(user_id=message.from_user.id),
@@ -103,9 +101,7 @@ async def process_change_name(message: Message, state: FSMContext):
 @router.message(UserUpdateStates.GET_PHONE)
 async def process_change_phone(message: Message, state: FSMContext):
     phone = int(message.text)
-    updated_user = db_user.update_phone(
-        new_phone=phone, tg_id=message.from_user.id
-    )
+    updated_user = db_user.update_phone(new_phone=phone, tg_id=message.from_user.id)
     await message.answer(
         _("CHANGE_SETTINGS_phone_ok").format(name=updated_user.name),
         reply_markup=main_buttons(user_id=message.from_user.id),
@@ -126,7 +122,10 @@ async def change_locale_handler(callback: CallbackQuery):
 
 @router.callback_query(F.data == f"{Action.DELETE_USER}{Modifier.CALLBACK}")
 async def delete_user_handler(callback: CallbackQuery, state: FSMContext):
-    await callback.message.answer(_("DELETE_USER_query"), reply_markup=cancel_button())
+    await callback.message.answer(
+        _("DELETE_USER_query").format(confirmation_text=_("DELETE_USER_confirm")),
+        reply_markup=cancel_button(),
+    )
     await state.set_state(UserUpdateStates.DELETE_USER)
     await callback.answer()
 
@@ -138,4 +137,7 @@ async def process_delete_user(message: Message, state: FSMContext):
         await message.answer(_("DELETE_USER_ok"))
         await state.set_state(None)
     else:
-        await message.answer(_("DELETE_USER_query"), reply_markup=cancel_button())
+        await message.answer(
+            _("DELETE_USER_query").format(confirmation_text=_("DELETE_USER_confirm")),
+            reply_markup=cancel_button(),
+        )

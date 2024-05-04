@@ -20,7 +20,12 @@ _ = translation.i18n.gettext
 admin = [f"{Action.MANAGE_MEMBERSHIP}", Action.MANAGE_ATTENDANCE]
 registered_with_active_mb = [Action.VIEW_ACTIVE_MEMBERSHIP, Action.CHECK_IN]
 registered_with_attendances = [Action.VIEW_ATTENDANCES]
-registered = [Action.CHANGE_NAME, Action.CHANGE_PHONE, Action.CHANGE_LOCALE, Action.DELETE_USER]
+registered = [
+    Action.CHANGE_NAME,
+    Action.CHANGE_PHONE,
+    Action.CHANGE_LOCALE,
+    Action.DELETE_USER,
+]
 membership_management_options = [
     f"{Modifier.ADMIN}{Action.ADD_MEMBERSHIP}",
     f"{Modifier.ADMIN}{Action.FREEZE_MEMBERSHIP}",

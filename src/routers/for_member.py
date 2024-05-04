@@ -10,7 +10,9 @@ from src.utils import menu
 _ = translation.i18n.gettext
 
 
-async def add_request(message: Message, tg_id: int, request_type: RequestType, duration: int = 0) -> bool:
+async def add_request(
+    message: Message, tg_id: int, request_type: RequestType, duration: int = 0
+) -> bool:
     if request_type == RequestType.ADD_MEMBERSHIP:
         add_function = db_member.request_to_add_membership
         args = {"tg_id": tg_id, "chat_id": message.chat.id}
