@@ -1,11 +1,11 @@
 from typing import List
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import SecretStr, Extra
+from pydantic import SecretStr
 import pathlib
 
 
-class Settings(BaseSettings, extra=Extra.allow):
+class Settings(BaseSettings, extra="allow"):
     bot_token: SecretStr
     model_config = SettingsConfigDict(
         env_file=pathlib.Path(__file__).parent / ".env", env_file_encoding="utf-8"
