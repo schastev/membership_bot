@@ -1,11 +1,11 @@
 from aiogram import Router, F, Bot
 from aiogram.types import ReplyKeyboardRemove, CallbackQuery
+
+from src import db_calls
 from src.model.attendance import Attendance
 from src.model.request import RequestType
 from src.routers import for_admin
 from src.utils import bot_helpers, translation
-from src.db_calls import att_for_admin
-from src.utils.bot_helpers import IsAdmin
 from src.utils.callback_factories import AttRequestCallbackFactory
 from src.utils.constants import Action, Modifier
 
@@ -14,7 +14,7 @@ _ = translation.i18n.gettext
 
 
 @router.callback_query(
-    F.data == f"{Action.MANAGE_ATTENDANCE}{Modifier.CALLBACK}", IsAdmin()
+    F.data == f"{Action.MANAGE_ATTENDANCE}{Modifier.CALLBACK}", bot_helpers.IsAdmin()
 )
 async def manage_attendances(callback: CallbackQuery, bot: Bot):
     await for_admin.poll_for_requests(
@@ -24,7 +24,7 @@ async def manage_attendances(callback: CallbackQuery, bot: Bot):
     await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
 
 
-@router.callback_query(AttRequestCallbackFactory.filter(), IsAdmin())
+@router.callback_query(AttRequestCallbackFactory.filter(), bot_helpers.IsAdmin())
 async def mark_attendance(
     callback: CallbackQuery, callback_data: AttRequestCallbackFactory, bot: Bot
 ):
@@ -36,7 +36,7 @@ async def mark_attendance(
     attendance = Attendance(
         member_id=request.member_tg_id, membership_id=request.membership_id
     )
-    current_amount = att_for_admin.mark_attendance(
+    current_amount = db_calls.admin.mark_attendance(
         attendance=attendance, request_id=request.id
     )
     await callback.message.answer(

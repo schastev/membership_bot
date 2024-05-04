@@ -1,10 +1,10 @@
 from aiogram import Router, F, Bot
 from aiogram.types import ReplyKeyboardRemove, CallbackQuery
 
+from src import db_calls
 from src.model.request import RequestType
 from src.routers import for_admin
 from src.utils import menu, bot_helpers, translation
-from src.db_calls import mb_for_admin
 from src.utils.bot_helpers import IsAdmin
 from src.utils.callback_factories import (
     MembershipRequestCallbackFactory,
@@ -91,7 +91,7 @@ async def process_membership(
             reply_markup=main_buttons(user_id=callback.from_user.id),
         )
     else:
-        mb_for_admin.add_membership(
+        db_calls.admin.add_membership(
             tg_id=request.member_tg_id,
             membership_value=request.value,
             request_id=request.id,
@@ -115,7 +115,7 @@ async def freeze_membership(
     callback: CallbackQuery, callback_data: FreezeRequestCallbackFactory, bot: Bot
 ):
     request = callback_data
-    unfreeze_date = mb_for_admin.freeze_membership(
+    unfreeze_date = db_calls.admin.freeze_membership(
         mb_id=request.membership_id, days=request.duration, request_id=request.id
     )
     await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)

@@ -1,7 +1,7 @@
 from aiogram.types import Message
 
 from config_reader import config
-from src.db_calls import for_admin
+from src import db_calls
 from src.model.request import RequestType
 from src.utils import translation, menu
 
@@ -28,7 +28,7 @@ async def poll_for_requests(message: Message, request_type: RequestType):
             button_name=button_name,
         )
     )
-    requests = await for_admin.poll_for_requests(request_type=request_type)
+    requests = await db_calls.admin.poll_for_requests(request_type=request_type)
     if len(requests) == 0:
         await message.answer(
             text=_("polling_timeout").format(button_name=button_name),

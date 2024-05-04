@@ -1,6 +1,7 @@
 from aiogram.types import Message
 
-from src.db_calls import for_admin, mb_for_member, att_for_member
+from src.db_calls import mb_for_member, att_for_member
+from src import db_calls
 from src.model.request import RequestType
 from src.routers.helpers import get_active_membership_or_go_home
 from src.utils import translation
@@ -52,11 +53,11 @@ async def add_request(
             pending_message = _("pending_freeze")
         else:
             raise ValueError("Unsupported request type")
-    existing_requests = for_admin.check_existing_requests(
+    existing_requests = db_calls.admin.check_existing_requests(
         tg_id=member_id, request_type=request_type
     )
     if existing_requests and existing_requests[0].duration == -1:
-        for_admin.delete_request(existing_requests[0].id)
+        db_calls.admin.delete_request(existing_requests[0].id)
         existing_requests = []
     if len(existing_requests) == 0:
         add_function(**args)
