@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-17 01:54+0500\n"
+"POT-Creation-Date: 2024-05-04 19:26+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,301 +18,328 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: src/model/membership.py:42
+#: test_project.py:121 src/routers/helpers.py:41
+msgid "greeting"
+msgstr ""
+"Здравствуйте! Этот бот поможет вам управлять вашими абонементами у "
+"{company_name}. Выберите одну из опций ниже:"
+
+#: test_project.py:132
+msgid "first_greeting"
+msgstr "Здравствуйте! Выберите язык из списка ниже."
+
+#: tests/test_membership_handlers.py:50 src/routers/mb_for_admin.py:100
+msgid "ADD_MEMBERSHIP_ok_admin"
+msgstr "Абонемент на {mb_value} занятий был добавлен клиенту {member_name}."
+
+#: tests/test_membership_handlers.py:53 src/routers/mb_for_admin.py:107
+msgid "ADD_MEMBERSHIP_ok_member"
+msgstr "Вам был добавлен абонемент на {mb_value} занятий."
+
+#: src/model/membership.py:44
 msgid "MB_INFO_general"
 msgstr ""
 "Данные вашего активного абонемента: \n"
 "Дата покупки: {mb_purchase_date}\n"
 "Количество занятий: {mb_total_amount}"
 
-#: src/model/membership.py:45
+#: src/model/membership.py:49
 msgid "MB_INFO_active"
 msgstr ""
 "Осталось занятий: {mb_rmn_value}\n"
 "Дата активации: {mb_act_date}\n"
 "Срок действия: {mb_exp_date}"
 
-#: src/model/membership.py:50
+#: src/model/membership.py:56
 msgid "MB_INFO_frozen"
 msgstr ""
 "Дата заморозки: {mb_freeze_date}\n"
 "Дата окончания заморозки: {mb_unfreeze_date}"
 
-#: src/model/membership.py:122
-msgid "MB_INFO_past"
-msgstr ""
-"Номинал: {total}. Период использования: {act_date} - {exp_date}"
-
-#: src/model/membership.py:62
+#: src/model/membership.py:70
 msgid "FREEZE_MEMBERSHIP_error_not_active"
 msgstr "Заморозить можно только активированный абонемент."
 
-#: src/model/membership.py:64
-#: src/model/membership.py:88
+#: src/model/membership.py:73 src/model/membership.py:102
+#, fuzzy
 msgid "FREEZE_MEMBERSHIP_error_duration_exceeded"
 msgid_plural "FREEZE_MEMBERSHIP_error_duration_exceeded"
 msgstr[0] "Заморозить абонемент можно не более чем на {days} день."
 msgstr[1] "Заморозить абонемент можно не более чем на {days} дня."
 msgstr[2] "Заморозить абонемент можно не более чем на {days} дней."
 
-#: src/model/membership.py:66
-#: src/model/membership.py:90
+#: src/model/membership.py:78 src/model/membership.py:104
 msgid "FREEZE_MEMBERSHIP_error_negative_duration"
 msgstr "Не положительная продолжительность периода заморозки."
 
-#: src/model/membership.py:68
+#: src/model/membership.py:80
 msgid "FREEZE_MEMBERSHIP_error_second_freeze"
 msgstr "Заморозить один абонемент можно только один раз."
 
-#: src/model/membership.py:70
+#: src/model/membership.py:82
 msgid "FREEZE_MEMBERSHIP_error_already_frozen"
 msgstr "Абонемент уже заморожен."
 
-#: src/model/membership.py:83
+#: src/model/membership.py:97
 msgid "UNFREEZE_MEMBERSHIP_error_not_frozen"
 msgstr "Указанный абонемент не был заморожен."
 
-#: src/model/membership.py:85
+#: src/model/membership.py:99
 msgid "UNFREEZE_MEMBERSHIP_error_unfreeze_before_freeze"
 msgstr "Дата разморозки должна быть позже даты заморозки."
 
-#: src/model/membership.py:97
+#: src/model/membership.py:111
 msgid "CHECK_IN_error_cannot_subtract"
 msgstr "Абонемент полностью использован или истек срок его действия."
 
-#: src/routers/helpers.py:28
+#: src/model/membership.py:142
+msgid "MB_INFO_past"
+msgstr "Номинал: {total}. Период использования: {act_date} - {exp_date}"
+
+#: src/routers/helpers.py:29
 msgid "VIEW_ACTIVE_MEMBERSHIP_error_no"
 msgstr "Нет активного абонемента."
 
-#: src/routers/misc.py:41
-msgid "first_greeting"
-msgstr "Здравствуйте! Выберите язык из списка ниже."
-
-#: src/routers/misc.py:51
-msgid "greeting"
-msgstr ""
-"Здравствуйте! Этот бот поможет вам управлять вашими абонементами у {company_name}. "
-"Выберите одну из опций ниже:"
-
-#: src/routers/misc.py:60
-msgid "cancelled_state_log"
-msgstr "Cancelling state {current_state}"
-
-#: src/routers/misc.py:61
-msgid "cancelled"
-msgstr "Отменено."
-
-#: src/routers/att_for_member.py:20
+#: src/routers/att_for_member.py:22
 msgid "CHECK_IN_none"
 msgstr "Нет посещений по активному абонементу."
 
-#: src/routers/mb_for_admin.py:21
+#: src/routers/mb_for_admin.py:27
 msgid "MANAGE_MEMBERSHIP_options"
 msgstr "Выберите необходимое действие."
 
-#: src/routers/mb_for_admin.py:44 src/routers/mb_for_admin.py:62
+#: src/routers/mb_for_admin.py:62 src/routers/mb_for_admin.py:84
 msgid "ADD_MEMBERSHIP_error_expired"
 msgstr "Этот запрос уже был обработан или истек срок его действия."
 
-#: src/routers/mb_for_admin.py:53
+#: src/routers/mb_for_admin.py:72
 msgid "ADD_MEMBERSHIP_query_value"
 msgstr "Выберите размер абонемента из следующего списка:"
 
-#: src/routers/mb_for_admin.py:68
+#: src/routers/mb_for_admin.py:90
 msgid "ADD_MEMBERSHIP_declined"
 msgstr "Ваша заявка на абонемент была отклонена."
 
-#: src/routers/mb_for_admin.py:74
-msgid "ADD_MEMBERSHIP_ok_admin"
-msgstr "Абонемент на {mb_value} занятий был добавлен клиенту {member_name}."
-
-#: src/routers/mb_for_admin.py:78
-msgid "ADD_MEMBERSHIP_ok_member"
-msgstr "Вам был добавлен абонемент на {mb_value} занятий."
-
-#: src/routers/mb_for_admin.py:89
+#: src/routers/mb_for_admin.py:123
 msgid "FREEZE_MEMBERSHIP_ok_admin"
 msgstr "Абонемент был заморожен до {unfreeze_date}."
 
-#: src/routers/mb_for_admin.py:90
+#: src/routers/mb_for_admin.py:127
 msgid "FREEZE_MEMBERSHIP_ok_member"
 msgstr "Ваш активный абонемент был заморожен до {unfreeze_date}."
 
-#: src/routers/user.py:31
+#: src/routers/user.py:32
 msgid "welcome"
 msgstr "Спасибо, что решили зарегистрироваться! Пожалуйста, введите ваше имя."
 
-#: src/routers/user.py:34
+#: src/routers/user.py:35
 msgid "REGISTER_error_already_registered"
 msgstr ""
 "Вы уже зарегистрированы! Вы можете пользоваться всеми возможностями бота."
 
-#: src/routers/user.py:42
+#: src/routers/user.py:45
 msgid "CHANGE_SETTINGS_text"
 msgstr "Выберите настройки пользователя, которые хотите изменить."
 
-#: src/routers/user.py:50
+#: src/routers/user.py:54
 msgid "CHANGE_SETTINGS_first_phone_query"
 msgstr "Пожалуйста, введите ваш телефон."
 
-#: src/routers/user.py:63
+#: src/routers/user.py:69
 msgid "REGISTER_ok"
-msgstr "Спасибо за регистрацию, {name}! Вы были зарегистрированы с телефоном {phone}."
+msgstr ""
+"Спасибо за регистрацию, {name}! Вы были зарегистрированы с телефоном {phone}."
 
-#: src/routers/user.py:71
+#: src/routers/user.py:77
 msgid "CHANGE_SETTINGS_query_name"
 msgstr "Пожалуйста, введите ваше имя."
 
-#: src/routers/user.py:79
+#: src/routers/user.py:85
 msgid "CHANGE_SETTINGS_query_phone"
 msgstr "Пожалуйста, введите ваш телефон."
 
-#: src/routers/user.py:89
+#: src/routers/user.py:97
 msgid "CHANGE_SETTINGS_name_ok"
 msgstr "{name}, ваше имя было обновлено."
 
-#: src/routers/user.py:100
+#: src/routers/user.py:110
 msgid "CHANGE_SETTINGS_phone_ok"
 msgstr "{name}, ваш телефон был обновлен."
 
-#: src/routers/user.py:109
+#: src/routers/user.py:120
 msgid "CHANGE_LOCALE_text"
 msgstr "Выберите язык из списка ниже."
 
-#: src/routers/att_for_admin.py:27
+#: src/routers/user.py:129 src/routers/user.py:141
+msgid "DELETE_USER_query"
+msgstr "Вы уверены, что хотите удалить все свои данные, имеющиеся у этого бота? Это действие нельзя отменить."
+"Ваши данные включают ваш аккаунт, абонементы, посещения и запросы."
+"Для подтверждения удаления отправьте сообщение с текстом \"{confirmation_text}\" без кавычек."
+
+#: src/routers/user.py:136
+msgid "DELETE_USER_confirm"
+msgstr "Удалить"
+
+#: src/routers/user.py:138
+msgid "DELETE_USER_ok"
+msgstr "Ваш аккаунт и связанные с ним абонементы, посещения и запросы удалены."
+
+#: src/routers/att_for_admin.py:33
 msgid "CHECK_IN_error_expired"
 msgstr "Этот запрос уже был обработан или истек срок его действия."
 
-#: src/routers/att_for_admin.py:33
+#: src/routers/att_for_admin.py:43
 msgid "CHECK_in_ok_admin"
 msgstr "Клиенту {name} была проставлена отметка о посещении."
 
-#: src/routers/att_for_admin.py:37
+#: src/routers/att_for_admin.py:48
 msgid "CHECK_in_ok_member"
 msgstr "Вам была проставлена отметка о посещении."
 
-#: src/routers/mb_for_member.py:35
+#: src/routers/mb_for_member.py:41
 msgid "VIEW_ALL_MEMBERSHIPS_error_no"
 msgstr "У вас еще нет абонементов."
 
-#: src/routers/mb_for_member.py:55 src/routers/mb_for_member.py:70
+#: src/routers/mb_for_member.py:62 src/routers/mb_for_member.py:79
 msgid "FREEZE_MEMBERSHIP_query_duration"
 msgstr ""
 "Введите продолжительность периода заморозки в днях. Максимальное значение - "
 "{max_freeze_duration}."
 
-#: src/routers/mb_for_member.py:79 src/routers/for_member.py:44
-msgid "REQUEST_sent"
-msgstr "Ваш запрос на {request_type} был отправлен администратору."
-
-#: src/routers/mb_for_member.py:88
+#: src/routers/mb_for_member.py:97
 msgid "UNFREEZE_MEMBERSHIP_ok"
 msgstr "Ваш абонемент был разморожен."
 
-#: src/routers/for_member.py:47
+#: src/routers/for_member.py:17 src/routers/for_admin.py:14
+msgid "pending_membership"
+msgstr "абонементы"
+
+#: src/routers/for_member.py:31 src/routers/for_admin.py:18
+msgid "pending_attendance"
+msgstr "отметку о посещении"
+
+#: src/routers/for_member.py:47 src/routers/for_admin.py:22
+msgid "pending_freeze"
+msgstr "заморозку абонемента"
+
+#: src/routers/for_member.py:58
+msgid "REQUEST_sent"
+msgstr "Ваш запрос на {request_type} был отправлен администратору."
+
+#: src/routers/for_member.py:61
 msgid "REQUEST_error_already_existed"
-msgstr "Вы уже отправили запрос такого типа. Подождите, пока администратор его обработает."
+msgstr ""
+"Вы уже отправили запрос такого типа. Подождите, пока администратор его "
+"обработает."
 
 #: src/routers/for_admin.py:13
 msgid "ADD_MEMBERSHIP_button"
 msgstr "Добавить абонемент"
 
-#: src/routers/for_admin.py:14
-msgid "pending_membership"
-msgstr "абонементы"
-
 #: src/routers/for_admin.py:17
 msgid "CHECK_IN_button"
 msgstr "Отметиться"
-
-#: src/routers/for_admin.py:18
-msgid "pending_attendance"
-msgstr "отметку о посещении"
 
 #: src/routers/for_admin.py:21
 msgid "FREEZE_MEMBERSHIP_button"
 msgstr "Заморозить абонемент"
 
-#: src/routers/for_admin.py:22
-msgid "pending_freeze"
-msgstr "заморозку абонемента"
-
-#: src/routers/for_admin.py:24
+#: src/routers/for_admin.py:25
 msgid "polling"
 msgstr ""
 "Ожидаем новые запросы на {request_type_string}. Клиент должен нажать кнопку "
 "\"{button_name}\" в чате с этим ботом в течение следующих {timeout_seconds} "
 "секунд."
 
-#: src/routers/for_admin.py:32
+#: src/routers/for_admin.py:34
 msgid "polling_timeout"
 msgstr ""
 "Новых запросов не найдено. Убедитесь, что клиент нажал на кнопку "
 "\"{button_name}\" в чате с этим ботом."
 
-#: src/routers/for_admin.py:35
+#: src/routers/for_admin.py:40
 msgid "pending_list"
 msgstr "Текущие необработанные запросы на {request_type}:"
 
-#: src/utils/menu.py:92
-#, python-brace-format
-msgid "MANAGE_MEMBERSHIP_button"
-msgstr "Управление абонементами"
+#: src/utils/menu.py:226
+msgid "ADD_MEMBERSHIP_decline_button"
+msgstr "Отклонить"
 
-#: src/utils/menu.py:92
-#, python-brace-format
-msgid "MANAGE_ATTENDANCE_button"
-msgstr "Управление посещениями"
+#: src/utils/menu.py:244
+msgid "button_cancel"
+msgstr "Отменить"
 
-#: src/utils/menu.py:92
-#, python-brace-format
-msgid "CHANGE_SETTINGS_button"
-msgstr "Изменить настройки пользователя"
-
-#: src/utils/menu.py:92
-#, python-brace-format
-msgid "VIEW_ACTIVE_MEMBERSHIP_button"
-msgstr "Активный абонемент"
-
-#: src/utils/menu.py:92
-#, python-brace-format
-msgid "VIEW_ALL_MEMBERSHIPS_button"
-msgstr "Все абонементы"
-
-#: src/utils/menu.py:74
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
 #, python-brace-format
 msgid "{button}{modifier}"
 msgstr ""
 
-#: src/utils/menu.py:74
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
+#, python-brace-format
+msgid "cancelled_state_log"
+msgstr "Cancelling state {current_state}"
+
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
+#, python-brace-format
+msgid "cancelled"
+msgstr "Отменено."
+
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
+#, python-brace-format
+msgid "MANAGE_MEMBERSHIP_button"
+msgstr "Управление абонементами"
+
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
+#, python-brace-format
+msgid "MANAGE_ATTENDANCE_button"
+msgstr "Управление посещениями"
+
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
+#, python-brace-format
+msgid "CHANGE_SETTINGS_button"
+msgstr "Изменить настройки пользователя"
+
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
+#, python-brace-format
+msgid "VIEW_ACTIVE_MEMBERSHIP_button"
+msgstr "Активный абонемент"
+
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
+#, python-brace-format
+msgid "VIEW_ALL_MEMBERSHIPS_button"
+msgstr "Все абонементы"
+
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
 #, python-brace-format
 msgid "VIEW_ATTENDANCES_button"
 msgstr "Мои посещения"
 
-#: src/utils/menu.py:74
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
 #, python-brace-format
 msgid "UNFREEZE_MEMBERSHIP_button"
 msgstr "Разморозить абонемент"
 
-#: src/utils/menu.py:81
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
 #, python-brace-format
 msgid "CHANGE_NAME_button"
 msgstr "Изменить имя"
 
-#: src/utils/menu.py:81
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
 #, python-brace-format
 msgid "CHANGE_PHONE_button"
 msgstr "Изменить телефон"
 
-#: src/utils/menu.py:81
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
 #, python-brace-format
 msgid "CHANGE_LOCALE_button"
 msgstr "Изменить язык"
 
-#: src/utils/menu.py:174
-msgid "ADD_MEMBERSHIP_decline_button"
-msgstr "Отклонить"
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
+#, python-brace-format
+msgid "REGISTER_button"
+msgstr "Зарегистрироваться"
 
-#: src/utils/menu.py:189
-msgid "button_cancel"
-msgstr "Отменить"
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
+#, python-brace-format
+msgid "DELETE_USER_button"
+msgstr "Удалить данные"
