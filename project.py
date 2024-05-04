@@ -53,7 +53,7 @@ async def start_handler(message: Message, state: FSMContext):
         await translation.locale.set_locale(state=state, locale=member.locale)
         await greeting(message=message, user_id=member.tg_id)
     else:
-        greetings = [_("first_greeting", locale=locale) for locale in config.locales]
+        greetings = [_("first_greeting", locale=loc) for loc in config.locales]
         await message.answer("\n".join(greetings), reply_markup=locale_buttons())
 
 
