@@ -79,7 +79,7 @@ def test_main_buttons_with_and_without_active_membership(has_active_mb, expected
     ],
 )
 def test_main_buttons_active_membership_states(frozen, unfrozen, expected):
-    active_mb = Membership(member_id=1, total_amount=8)
+    active_mb = Membership(tg_id=1, total_amount=8)
     active_mb.subtract()
     if frozen:
         active_mb.freeze(days=1)

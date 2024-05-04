@@ -48,11 +48,8 @@ async def view_memberships(callback: CallbackQuery, bot: Bot):
 
 @router.callback_query(F.data == f"{Action.ADD_MEMBERSHIP}{Modifier.CALLBACK}")
 async def request_to_add_membership(callback: CallbackQuery, bot: Bot):
-    await for_member.add_request(
-        message=callback.message,
-        member_id=callback.from_user.id,
-        request_type=RequestType.ADD_MEMBERSHIP,
-    )
+    await for_member.add_request(message=callback.message, tg_id=callback.from_user.id,
+                                 request_type=RequestType.ADD_MEMBERSHIP)
     await callback.answer()
     await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
 
@@ -85,12 +82,8 @@ async def process_freeze_request(message: Message, state: FSMContext):
             reply_markup=cancel_button(),
         )
         return
-    await for_member.add_request(
-        message=message,
-        member_id=message.from_user.id,
-        request_type=RequestType.FREEZE_MEMBERSHIP,
-        duration=duration,
-    )
+    await for_member.add_request(message=message, tg_id=message.from_user.id,
+                                 request_type=RequestType.FREEZE_MEMBERSHIP, duration=duration)
     await state.set_state(None)
 
 

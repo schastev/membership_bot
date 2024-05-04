@@ -34,7 +34,7 @@ async def mark_attendance(
         await callback.answer()
         return
     attendance = Attendance(
-        member_id=request.member_tg_id, membership_id=request.membership_id
+        tg_id=request.member_tg_id, membership_id=request.membership_id
     )
     current_amount = db_admin.mark_attendance(
         attendance=attendance, request_id=request.id

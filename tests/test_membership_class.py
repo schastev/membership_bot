@@ -5,7 +5,7 @@ from src.model.membership import Membership
 
 
 def test_membership_can_subtract():
-    mb = Membership(total_amount=4, member_id=1)
+    mb = Membership(tg_id=1, total_amount=4)
     old_amount = mb.current_amount
     total_amount = mb.total_amount
     mb.subtract()
@@ -14,7 +14,7 @@ def test_membership_can_subtract():
 
 
 def test_membership_freezing_and_unfreezing_delays_expiry():
-    mb = Membership(total_amount=4, member_id=1)
+    mb = Membership(tg_id=1, total_amount=4)
     mb.subtract()
 
     freeze_date = date.today() - timedelta(days=5)
@@ -33,7 +33,7 @@ def test_membership_freezing_and_unfreezing_delays_expiry():
     "delta", [2, -2], ids=["later than planned", "earlier than planned"]
 )
 def test_membership_can_unfreeze_earlier_or_later_than_planned(delta):
-    mb = Membership(total_amount=4, member_id=1)
+    mb = Membership(tg_id=1, total_amount=4)
     mb.subtract()
 
     freeze_date = mb.activation_date + timedelta(days=5)
@@ -48,7 +48,7 @@ def test_membership_can_unfreeze_earlier_or_later_than_planned(delta):
 
 
 def test_membership_cannot_freeze_two_times():
-    mb = Membership(total_amount=4, member_id=1)
+    mb = Membership(tg_id=1, total_amount=4)
     mb.subtract()
 
     freeze_date = mb.activation_date - timedelta(days=5)
@@ -65,7 +65,7 @@ def test_membership_cannot_freeze_two_times():
     "delta", [8, -10], ids=["over two weeks", "negative freeze period"]
 )
 def test_membership_cannot_unfreeze_to_make_freeze_period_invalid(delta):
-    mb = Membership(total_amount=4, member_id=1)
+    mb = Membership(tg_id=1, total_amount=4)
     mb.subtract()
 
     freeze_date = mb.activation_date - timedelta(days=5)
@@ -79,7 +79,7 @@ def test_membership_cannot_unfreeze_to_make_freeze_period_invalid(delta):
 
 
 def test_membership_cannot_freeze_for_over_two_weeks():
-    mb = Membership(total_amount=4, member_id=1)
+    mb = Membership(tg_id=1, total_amount=4)
     mb.subtract()
 
     freeze_date = mb.activation_date - timedelta(days=5)
@@ -89,14 +89,14 @@ def test_membership_cannot_freeze_for_over_two_weeks():
 
 
 def test_membership_cannot_subtract_from_expired_membership():
-    mb = Membership(total_amount=4, member_id=1)
+    mb = Membership(tg_id=1, total_amount=4)
     mb._activate(activation_date=date.today() - timedelta(days=31))
     with pytest.raises(expected_exception=ValueError):
         mb.subtract()
 
 
 def test_membership_cannot_subtract_from_used_up_membership():
-    md = Membership(total_amount=1, member_id=1)
+    md = Membership(tg_id=1, total_amount=1)
     md.subtract()
     with pytest.raises(expected_exception=ValueError):
         md.subtract()

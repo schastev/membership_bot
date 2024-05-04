@@ -10,7 +10,7 @@ from src.db_calls.database import Database
 
 
 def get_memberships_by_tg_id(tg_id: int):
-    return select(Membership).where(Membership.member_id == tg_id)
+    return select(Membership).where(Membership.tg_id == tg_id)
 
 
 def view_attendances_for_active_membership(tg_id: int) -> List[Attendance]:

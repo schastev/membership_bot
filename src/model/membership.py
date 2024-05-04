@@ -14,7 +14,7 @@ _ = translation.i18n.gettext
 class Membership(Base):
     __tablename__ = "membership"
     id: Mapped[int] = mapped_column(primary_key=True)
-    member_id: Mapped[int] = mapped_column(ForeignKey("user.tg_id"))
+    tg_id: Mapped[int] = mapped_column(ForeignKey("user.tg_id"))
     purchase_date: Mapped[date] = date.today()
     activation_date: Mapped[Optional[date]]
     expiry_date: Mapped[Optional[date]]
@@ -25,11 +25,11 @@ class Membership(Base):
     total_amount: Mapped[int]
     current_amount: Mapped[Optional[int]]
 
-    def __init__(self, member_id: int, **kw: Any):
+    def __init__(self, tg_id: int, **kw: Any):
         super().__init__(**kw)
         self.purchase_date = date.today()
         self.current_amount = self.total_amount
-        self.member_id = member_id
+        self.tg_id = tg_id
 
     def __repr__(self):
         return (

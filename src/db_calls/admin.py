@@ -60,7 +60,7 @@ def delete_request(request_id: int) -> None:
 
 def add_membership(tg_id: int, membership_value: int, request_id: int) -> None:
     with Session(Database().engine) as session:
-        membership = Membership(member_id=tg_id, total_amount=membership_value)
+        membership = Membership(tg_id=tg_id, total_amount=membership_value)
         session.add(membership)
         session.commit()
     delete_request(request_id=request_id)
