@@ -3,7 +3,7 @@ from typing import List
 
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-
+from src.db_calls import member as db_member, user as db_user
 from src.model.membership import Membership
 from src.utils import translation
 from config_reader import config
@@ -13,7 +13,6 @@ from src.utils.callback_factories import (
     AttRequestCallbackFactory,
     FreezeRequestCallbackFactory,
 )
-from src.db_calls import user as db_calls_user, mb_for_member, att_for_member
 from src.utils.constants import Action, Modifier
 
 _ = translation.i18n.gettext
@@ -40,13 +39,13 @@ class UserState:
     def __init__(self, tg_id: int, active_mb: Membership | None = None):
         if tg_id:
             self.is_admin = tg_id in config.admin_ids
-            user = db_calls_user.get_user(tg_id=tg_id)
+            user = db_user.get_user(tg_id=tg_id)
             self.is_registered = bool(user)
-            active_mb = active_mb or mb_for_member.get_active_membership_by_user_id(
+            active_mb = active_mb or db_member.get_active_membership_by_user_id(
                 tg_id=tg_id
             )
             self.has_memberships = bool(
-                mb_for_member.get_memberships_by_user_id(tg_id=tg_id)
+                db_member.get_memberships_by_user_id(tg_id=tg_id)
             )
         if active_mb:
             self.has_usable_membership = True
@@ -60,7 +59,7 @@ class UserState:
                 and not self.has_frozen_membership
             )
             if tg_id:
-                attendances = att_for_member.view_attendances_for_active_membership(
+                attendances = db_member.view_attendances_for_active_membership(
                     tg_id=tg_id
                 )
                 self.has_attendances = bool(attendances)

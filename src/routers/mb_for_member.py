@@ -4,11 +4,11 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import CallbackQuery, Message
 
 import config_reader
+from src.db_calls import member as db_member
 from src.model.request import RequestType
 from src.routers import for_member
 from src.routers.helpers import get_active_membership_or_go_home
 from src.utils import translation, bot_helpers
-from src.db_calls import mb_for_member
 from src.utils.constants import Action, Modifier
 from src.utils.menu import main_buttons, cancel_button
 
@@ -33,7 +33,7 @@ async def view_active_membership(callback: CallbackQuery, bot: Bot):
 
 @router.callback_query(F.data == f"{Action.VIEW_ALL_MEMBERSHIPS}{Modifier.CALLBACK}")
 async def view_memberships(callback: CallbackQuery, bot: Bot):
-    if memberships := mb_for_member.get_memberships_by_user_id(
+    if memberships := db_member.get_memberships_by_user_id(
         tg_id=callback.from_user.id
     ):
         text = "\n".join(mb.past_info() for mb in memberships)
@@ -99,7 +99,7 @@ async def unfreeze_membership(callback: CallbackQuery, bot: Bot):
     if active_mb := await get_active_membership_or_go_home(
         tg_id=callback.from_user.id, callback=callback
     ):
-        mb_for_member.unfreeze_membership(mb_id=active_mb.id)
+        db_member.unfreeze_membership(mb_id=active_mb.id)
         await callback.message.answer(
             text=_("UNFREEZE_MEMBERSHIP_ok"),
             reply_markup=main_buttons(user_id=callback.from_user.id),

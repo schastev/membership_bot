@@ -19,7 +19,7 @@ _ = translation.i18n.gettext
 
 @pytest.mark.asyncio
 async def test_process_membership():
-    from src.db_calls.mb_for_member import request_to_add_membership
+    from src.db_calls.member import request_to_add_membership
     from src.routers.mb_for_admin import process_membership
 
     random_locale = get_random_locale()

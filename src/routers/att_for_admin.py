@@ -1,7 +1,7 @@
 from aiogram import Router, F, Bot
 from aiogram.types import ReplyKeyboardRemove, CallbackQuery
 
-from src import db_calls
+from src.db_calls import admin as db_admin
 from src.model.attendance import Attendance
 from src.model.request import RequestType
 from src.routers import for_admin
@@ -36,7 +36,7 @@ async def mark_attendance(
     attendance = Attendance(
         member_id=request.member_tg_id, membership_id=request.membership_id
     )
-    current_amount = db_calls.admin.mark_attendance(
+    current_amount = db_admin.mark_attendance(
         attendance=attendance, request_id=request.id
     )
     await callback.message.answer(

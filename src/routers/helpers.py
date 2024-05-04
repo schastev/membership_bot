@@ -2,8 +2,8 @@ from typing import Union
 
 from aiogram.types import CallbackQuery, Message
 
+from src.db_calls import member as db_member
 from config_reader import config
-from src.db_calls import mb_for_member
 from src.model.membership import Membership
 from src.utils import translation
 from src.utils.menu import main_buttons, UserState
@@ -27,7 +27,7 @@ async def get_active_membership_or_go_home(
         raise ValueError("There should be either a message or a callback!")
     if not error_message:
         error_message = _("VIEW_ACTIVE_MEMBERSHIP_error_no")
-    active_mb = mb_for_member.get_active_membership_by_user_id(tg_id=user_id)
+    active_mb = db_member.get_active_membership_by_user_id(tg_id=user_id)
     if not active_mb:
         await answer.answer(error_message, reply_markup=main_buttons(user_id=user_id))
         if callback:

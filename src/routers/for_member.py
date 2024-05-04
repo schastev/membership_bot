@@ -1,7 +1,6 @@
 from aiogram.types import Message
 
-from src.db_calls import mb_for_member, att_for_member
-from src import db_calls
+from src.db_calls import member as db_member, admin as db_admin
 from src.model.request import RequestType
 from src.routers.helpers import get_active_membership_or_go_home
 from src.utils import translation
@@ -18,7 +17,7 @@ async def add_request(
     duration: int = 0,
 ) -> bool:
     if request_type == RequestType.ADD_MEMBERSHIP:
-        add_function = mb_for_member.request_to_add_membership
+        add_function = db_member.request_to_add_membership
         args = {"tg_id": member_id, "chat_id": message.chat.id}
         pending_message = _("pending_membership")
     else:
@@ -28,7 +27,7 @@ async def add_request(
         if request_type == RequestType.ATTENDANCE:
             if not active_mb:
                 return False
-            add_function = att_for_member.request_to_add_attendance
+            add_function = db_member.request_to_add_attendance
             args = {
                 "tg_id": member_id,
                 "chat_id": message.chat.id,
@@ -36,7 +35,7 @@ async def add_request(
             }
             pending_message = _("pending_attendance")
         elif request_type == RequestType.FREEZE_MEMBERSHIP:
-            add_function = mb_for_member.request_to_freeze_membership
+            add_function = db_member.request_to_freeze_membership
             try:
                 active_mb.is_valid_freeze_date(days=duration)
             except ValueError as error:
@@ -53,11 +52,11 @@ async def add_request(
             pending_message = _("pending_freeze")
         else:
             raise ValueError("Unsupported request type")
-    existing_requests = db_calls.admin.check_existing_requests(
+    existing_requests = db_admin.check_existing_requests(
         tg_id=member_id, request_type=request_type
     )
     if existing_requests and existing_requests[0].duration == -1:
-        db_calls.admin.delete_request(existing_requests[0].id)
+        db_admin.delete_request(existing_requests[0].id)
         existing_requests = []
     if len(existing_requests) == 0:
         add_function(**args)

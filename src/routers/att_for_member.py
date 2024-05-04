@@ -2,10 +2,10 @@ from aiogram import F, Router, Bot
 from aiogram.types import CallbackQuery
 
 from src.model.request import RequestType
+from src.db_calls import member as db_member
 from src.routers import for_member
 from src.routers.helpers import get_active_membership_or_go_home
 from src.utils import translation, bot_helpers
-from src.db_calls import att_for_member
 from src.utils.constants import Action, Modifier
 from src.utils.menu import main_buttons
 
@@ -15,7 +15,7 @@ _ = translation.i18n.gettext
 
 @router.callback_query(F.data == f"{Action.VIEW_ATTENDANCES}{Modifier.CALLBACK}")
 async def view_attendances(callback: CallbackQuery, bot: Bot):
-    attendance_list = att_for_member.view_attendances_for_active_membership(
+    attendance_list = db_member.view_attendances_for_active_membership(
         tg_id=callback.from_user.id
     )
     if len(attendance_list) == 0:
