@@ -1,4 +1,5 @@
 from aiogram import Router, F, Bot
+from aiogram.fsm.context import FSMContext
 from aiogram.types import ReplyKeyboardRemove, CallbackQuery
 
 from src.db_calls import admin as db_admin
@@ -14,6 +15,8 @@ from src.utils.callback_factories import (
 )
 from src.utils.constants import Action, Modifier
 from src.utils.menu import main_buttons
+from babel.dates import format_date
+
 
 router = Router()
 _ = translation.i18n.gettext
@@ -112,18 +115,26 @@ async def process_membership(
 
 @router.callback_query(FreezeRequestCallbackFactory.filter(), IsAdmin())
 async def freeze_membership(
-    callback: CallbackQuery, callback_data: FreezeRequestCallbackFactory, bot: Bot
+    callback: CallbackQuery,
+    callback_data: FreezeRequestCallbackFactory,
+    bot: Bot,
+    state: FSMContext,
 ):
     request = callback_data
     unfreeze_date = db_admin.freeze_membership(
         mb_id=request.membership_id, days=request.duration, request_id=request.id
     )
     await bot_helpers.rm_buttons_from_last_message(callback=callback, bot=bot)
+    data = await state.get_data()
     await callback.message.answer(
-        _("FREEZE_MEMBERSHIP_ok_admin").format(unfreeze_date=unfreeze_date)
+        _("FREEZE_MEMBERSHIP_ok_admin").format(
+            unfreeze_date=format_date(date=unfreeze_date, locale=data.get("locale"))
+        )
     )
     await bot.send_message(
         chat_id=request.chat_id,
-        text=_("FREEZE_MEMBERSHIP_ok_member").format(unfreeze_date=unfreeze_date),
+        text=_("FREEZE_MEMBERSHIP_ok_member").format(
+            unfreeze_date=format_date(date=unfreeze_date, locale=data.get("locale"))
+        ),
     )
     await callback.answer()

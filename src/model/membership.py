@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 from typing import Optional, Any
 
+from babel.dates import format_date
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -40,21 +41,23 @@ class Membership(Base):
             f"purchase_date={self.purchase_date})"
         )
 
-    def __str__(self):
+    def print(self, locale: str):
         text = _("MB_INFO_general").format(
-            mb_purchase_date=self.purchase_date, mb_total_amount=self.total_amount
+            mb_purchase_date=format_date(self.purchase_date, locale=locale),
+            mb_total_amount=self.total_amount
         )
         if self.activation_date:
             text += "\n"
             text += _("MB_INFO_active").format(
                 mb_rmn_value=self.current_amount,
-                mb_act_date=self.activation_date,
-                mb_exp_date=self.expiry_date,
+                mb_act_date=format_date(self.activation_date, locale=locale),
+                mb_exp_date=format_date(self.expiry_date, locale=locale),
             )
             if self.freeze_date:
                 text += "\n"
                 text += _("MB_INFO_frozen").format(
-                    mb_freeze_date=self.freeze_date, mb_unfreeze_date=self.unfreeze_date
+                    mb_freeze_date=format_date(self.freeze_date, locale=locale),
+                    mb_unfreeze_date=format_date(self.unfreeze_date, locale=locale)
                 )
         return text
 
@@ -138,9 +141,9 @@ class Membership(Base):
     def has_uses(self) -> bool:
         return self.current_amount > 0
 
-    def past_info(self):
+    def past_info(self, locale: str):
         return _("MB_INFO_past").format(
             total=self.total_amount,
-            act_date=self.activation_date,
-            exp_date=self.expiry_date,
+            act_date=format_date(self.activation_date, locale=locale),
+            exp_date=format_date(self.expiry_date, locale=locale),
         )

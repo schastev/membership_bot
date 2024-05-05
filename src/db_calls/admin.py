@@ -1,3 +1,4 @@
+import datetime
 import time
 from typing import List
 
@@ -66,7 +67,7 @@ def add_membership(tg_id: int, membership_value: int, request_id: int) -> None:
     delete_request(request_id=request_id)
 
 
-def freeze_membership(mb_id: int, days: int, request_id: int) -> str:
+def freeze_membership(mb_id: int, days: int, request_id: int) -> datetime.date:
     with Session(Database().engine) as session:
         query = select(Membership).where(Membership.id == mb_id)
         mb = session.scalars(query).first()
