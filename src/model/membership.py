@@ -44,7 +44,7 @@ class Membership(Base):
     def print(self, locale: str):
         text = _("MB_INFO_general").format(
             mb_purchase_date=format_date(self.purchase_date, locale=locale),
-            mb_total_amount=self.total_amount
+            mb_total_amount=self.total_amount,
         )
         if self.activation_date:
             text += "\n"
@@ -57,20 +57,22 @@ class Membership(Base):
                 text += "\n"
                 text += _("MB_INFO_frozen").format(
                     mb_freeze_date=format_date(self.freeze_date, locale=locale),
-                    mb_unfreeze_date=format_date(self.unfreeze_date, locale=locale)
+                    mb_unfreeze_date=format_date(self.unfreeze_date, locale=locale),
                 )
         return text
 
     def freeze(self, days: int, freeze_date: date = date.today()) -> None:
-        if self.is_valid_freeze_date(days=days):
+        if self.is_valid_freeze_date(days=days, freeze_date=freeze_date):
             self._frozen = True
             self.freeze_date = freeze_date
             self.unfreeze_date = freeze_date + timedelta(days=days)
             self.expiry_date += timedelta(days=days)
 
-    def is_valid_freeze_date(self, days: int) -> bool:
+    def is_valid_freeze_date(self, days: int, freeze_date: date = date.today()) -> bool:
         if not self.activation_date:
             raise ValueError(_("FREEZE_MEMBERSHIP_error_not_active"))
+        if freeze_date < self.activation_date:
+            raise ValueError(_("FREEZE_MEMBERSHIP_error_freeze_before_activation"))
         if days > config_reader.config.max_freeze_duration:
             raise ValueError(
                 _("FREEZE_MEMBERSHIP_error_duration_exceeded").format(
@@ -98,13 +100,11 @@ class Membership(Base):
     def is_valid_unfreeze_date(self, unfreeze_date: date = date.today()) -> bool:
         if not self._frozen:
             raise ValueError(_("UNFREEZE_MEMBERSHIP_error_not_frozen"))
-        if self.unfreeze_date <= self.freeze_date:
+        if unfreeze_date <= self.freeze_date:
             raise ValueError(_("UNFREEZE_MEMBERSHIP_error_unfreeze_before_freeze"))
         new_expiry_date = self.original_expiry_date + (unfreeze_date - self.freeze_date)
         if new_expiry_date - self.original_expiry_date > timedelta(days=14):
             raise ValueError(_("FREEZE_MEMBERSHIP_error_duration_exceeded"))
-        if (new_expiry_date - self.original_expiry_date).days < 0:
-            raise ValueError(_("FREEZE_MEMBERSHIP_error_negative_duration"))
         return True
 
     def subtract(self) -> None:
