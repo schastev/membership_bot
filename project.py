@@ -88,7 +88,7 @@ async def main():
 
 
 def main_menu(user_id: int, user_state: UserState):
-    # this is a proxy functions, since it makes no sense to me to bring here a functino that assembles menu buttons.
+    # this is a proxy function, since it makes no sense to me to bring here a function that assembles menu buttons.
     # the rest of the functions are somewhat justifiable, since they are at least directly dispatcher/bot related
     # more so then the keyboard buttons anyway
     return main_buttons(user_id=user_id, user_state=user_state)

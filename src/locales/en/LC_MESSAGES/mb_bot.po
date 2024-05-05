@@ -6,216 +6,327 @@
 #, fuzzy
 msgid ""
 msgstr ""
-
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-20 15:50+0500\n"
+"POT-Creation-Date: 2024-05-04 20:14+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: en\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);"
 
-#: src/routers/mb_for_member.py:18 src/routers/mb_for_member.py:19
-msgid "view_memberships_button"
-msgstr "View my memberships"
-
-#: src/routers/mb_for_member.py:23
-msgid "no_active_memberships"
-msgstr "You have no active memberships."
-
-#: src/routers/mb_for_member.py:26
-msgid "membership_info"
-msgstr ""
-"Here is info on your active membership:\n"
-"purchase date: {}\n"
-"activation date: {}\n"
-"expiration date: {}\n"
-"remaining value: {}"
-
-#: src/routers/mb_for_member.py:32 src/routers/mb_for_member.py:33
-msgid "add_membership"
-msgstr "Add membership"
-#: src/routers/mb_for_member.py:38
-msgid "request_sent_mb"
-msgstr "Your request to add a membership has been sent to the admin."
-
-#: src/routers/att_for_member.py:30
-msgid "request_sent_att"
-msgstr "Your request to check in has been sent to the admin."
-
-#: src/routers/mb_for_member.py:41
-msgid "request_already_existed"
-msgstr ""
-"You have already sent a request for membership. Please wait until the admin "
-"processes it."
-#: src/routers/mb_for_admin.py:26 src/routers/mb_for_admin.py:27
-msgid "manage_button"
-msgstr "Manage memberships"
-
-#: src/routers/mb_for_admin.py:30
-msgid "not_admin"
-msgstr "You are not an admin!"
-
-#: src/routers/mb_for_admin.py:32
-msgid "polling_mb"
-msgstr ""
-"Polling for new membership requests. The requesting person needs to press "
-"the \"Add membership\" button in their conversation with this bot. They need "
-"to do so within {} seconds."
-
-#: src/routers/att_for_admin.py:20
-msgid "polling_att"
-msgstr ""
-"Polling for new check-in requests. The requesting person needs to press "
-"the \"Check in\" button in their conversation with this bot. They need "
-"to do so within {} seconds."
-
-#: src/routers/att_for_admin.py:26
-msgid "pending_requests_att"
-msgstr ""
-"Here are pending check-in requests:"
-
-#: src/routers/mb_for_admin.py:35
-msgid "polling_timeout_mb"
-msgstr ""
-"No new requests found. Try again after making sure that the requesting "
-"person pressed the \"Add membership\" button in their conversation with this "
-"bot."
-
-#: src/routers/att_for_admin.py:23
-msgid "polling_timeout_att"
-msgstr ""
-"No new requests found. Try again after making sure that the requesting "
-"person pressed the \"Check-in\" button in their conversation with this "
-"bot."
-
-#: src/routers/mb_for_admin.py:40
-msgid "pending_requests_mb"
-msgstr "Here are pending membership requests:"
-
-#: src/routers/mb_for_admin.py:56
-msgid "select_value"
-msgstr "Please select membership value from the list below:"
-
-#: src/routers/mb_for_admin.py:66
-msgid "decline"
-msgstr "Decline"
-
-#: src/routers/mb_for_admin.py:69
-msgid "membership_not_added_member"
-msgstr "Your membership request was declined."
-
-#: src/routers/mb_for_admin.py:78
-msgid "membership_added_admin"
-msgstr "Membership with value {} for {} added successfully."
-
-
-#: src/routers/mb_for_admin.py:82
-msgid "membership_added_member"
-msgstr "A membership with value {} was added for you."
-
-#: src/routers/misc.py:22
+#: test_project.py:121 src/routers/helpers.py:41
 msgid "greeting"
 msgstr "Hello! This bot will help you manage your memberships with {company_name}. Please pick "
 "one of the options below:"
 
-#: src/routers/user.py:31 src/routers/user.py:32
-msgid "register_button"
-msgstr "Register"
-
-#: src/routers/user.py:36
-msgid "welcome"
-msgstr "Welcome! Please enter your name."
-
-#: src/routers/user.py:38
-msgid "already_registered"
-msgstr "You are already registered! You can go on to the membership management."
-
-#: src/routers/user.py:41 src/routers/user.py:42
-msgid "cancel"
-msgstr "cancel"
-
-#: src/routers/user.py:47
-msgid "cancelled_state_log"
-msgstr "Cancelling state {}"
-
-#: src/routers/user.py:50
-msgid "cancelled"
-msgstr "Cancelled."
-
-#: src/routers/user.py:58 src/routers/user.py:78 src/routers/user.py:85
-msgid "enter_info"
-msgstr "Please enter your {} {}."
-
-#: src/routers/user.py:58 src/routers/user.py:65 src/routers/user.py:85
-#: src/routers/user.py:104 src/routers/user.py:107
-msgid "phone"
-msgstr "phone"
-
-
-#: src/routers/user.py:64 src/routers/user.py:78 src/routers/user.py:92
-#: src/routers/user.py:95
-msgid "name"
-msgstr "name"
-
-#: src/routers/user.py:69
-msgid "successful_registration"
-msgstr ""
-"Thank you for registering, {}! You were registered successfully with phone "
-"number {}."
-
-#: src/routers/user.py:74 src/routers/user.py:75
-msgid "change_name_button"
-msgstr "Change name"
-
-#: src/routers/user.py:78 src/routers/user.py:85
-msgid "new"
-msgstr "new"
-
-#: src/routers/user.py:81
-msgid "change_phone_button"
-msgstr "Change phone"
-
-#: src/utils/menu.py:35
-msgid "change_locale_button"
-msgstr "Change locale"
-
-#: src/utils/menu.py:34
-msgid "add_attendance"
-msgstr "Check in"
-
-#: src/utils/menu.py:36
-msgid "view_attendances_button"
-msgstr "My attendance"
-
-#: src/utils/menu.py:29
-msgid "manage_att_button"
-msgstr "Manage attendance"
-
-
-#: src/routers/user.py:95 src/routers/user.py:107
-msgid "updated_info"
-msgstr "Alright, {}, your {} has been updated."
-
-#: src/routers/user.py:39
-msgid "button_cancel"
-msgstr "Cancel"
-
-#: src/routers/misc.py:30 src/routers/misc.py:39
+#: test_project.py:132
 msgid "first_greeting"
 msgstr "Hello! Please select your locale from the list below."
 
-#: src/routers/mb_for_member.py:22 src/routers/mb_for_member.py:23
-msgid "mb_inactive"
-msgstr "Membership has not been activated yet"
+#: tests/test_membership_handlers.py:50 src/routers/mb_for_admin.py:100
+msgid "ADD_MEMBERSHIP_ok_admin"
+msgstr "Membership with {mb_value} uses for client {member_name} was added successfully."
 
-#: src/routers/mb_for_member.py:22 src/routers/mb_for_admin.py:59
-msgid "request_expired"
+#: tests/test_membership_handlers.py:53 src/routers/mb_for_admin.py:107
+msgid "ADD_MEMBERSHIP_ok_member"
+msgstr "A membership with {mb_value} uses was added for you."
+
+#: src/model/membership.py:44
+msgid "MB_INFO_general"
+msgstr ""
+"Here is your active membership info: \n"
+"Purchase date: {mb_purchase_date}\n"
+"Total uses: {mb_total_amount}"
+
+#: src/model/membership.py:49
+msgid "MB_INFO_active"
+msgstr ""
+"Uses left: {mb_rmn_value}\n"
+"Activation date: {mb_act_date}\n"
+"Expiry date: {mb_exp_date}"
+
+#: src/model/membership.py:56
+msgid "MB_INFO_frozen"
+msgstr ""
+"Freeze date: {mb_freeze_date}\n"
+"Unfreeze date: {mb_unfreeze_date}"
+
+#: src/model/membership.py:70
+msgid "FREEZE_MEMBERSHIP_error_not_active"
+msgstr "You cannot freeze an inactive membership."
+
+#: src/model/membership.py:73 src/model/membership.py:102
+msgid "FREEZE_MEMBERSHIP_error_duration_exceeded"
+msgstr "Freeze duration cannot be longer than {days} days."
+
+#: src/model/membership.py:78 src/model/membership.py:104
+msgid "FREEZE_MEMBERSHIP_error_negative_duration"
+msgstr "Non-positive freeze period duration."
+
+#: src/model/membership.py:80
+msgid "FREEZE_MEMBERSHIP_error_second_freeze"
+msgstr "A membership can only be frozen once."
+
+#: src/model/membership.py:82
+msgid "FREEZE_MEMBERSHIP_error_already_frozen"
+msgstr "This membership is already frozen."
+
+#: src/model/membership.py:97
+msgid "UNFREEZE_MEMBERSHIP_error_not_frozen"
+msgstr "This membership has not been frozen. Cannot unfreeze."
+
+#: src/model/membership.py:99
+msgid "UNFREEZE_MEMBERSHIP_error_unfreeze_before_freeze"
+msgstr "Unfreeze date must be after freeze date."
+
+#: src/model/membership.py:111
+msgid "CHECK_IN_error_cannot_subtract"
+msgstr "Membership expired or used up."
+
+#: src/model/membership.py:142
+msgid "MB_INFO_past"
+msgstr "Total uses: {total}. Used between {act_date} and {exp_date}."
+
+#: src/routers/helpers.py:29
+msgid "VIEW_ACTIVE_MEMBERSHIP_error_no"
+msgstr "No active membership."
+
+#: src/routers/att_for_member.py:22
+msgid "CHECK_IN_none"
+msgstr "No check-ins for this membership yet."
+
+#: src/routers/mb_for_admin.py:27
+msgid "MANAGE_MEMBERSHIP_options"
+msgstr "Please select the desired action."
+
+#: src/routers/mb_for_admin.py:62 src/routers/mb_for_admin.py:84
+msgid "ADD_MEMBERSHIP_error_expired"
 msgstr "This request has already been processed or it is expired."
 
-#: src/routers/user.py:117
-msgid "change_locale"
+#: src/routers/mb_for_admin.py:72
+msgid "ADD_MEMBERSHIP_query_value"
+msgstr "Please select the number of membership uses from the list below:"
+
+#: src/routers/mb_for_admin.py:90
+msgid "ADD_MEMBERSHIP_declined"
+msgstr "Your membership request was declined."
+
+#: src/routers/mb_for_admin.py:123
+msgid "FREEZE_MEMBERSHIP_ok_admin"
+msgstr "The membership was frozen until {unfreeze_date}."
+
+#: src/routers/mb_for_admin.py:127
+msgid "FREEZE_MEMBERSHIP_ok_member"
+msgstr "Your active membership has been frozen until {unfreeze_date}."
+
+#: src/routers/user.py:32
+msgid "welcome"
+msgstr "Welcome! Please enter your name."
+
+#: src/routers/user.py:35
+msgid "REGISTER_error_already_registered"
+msgstr "You are already registered! You can go on to the membership management."
+
+#: src/routers/user.py:45
+msgid "CHANGE_SETTINGS_text"
+msgstr "Please select the settings you would like to change."
+
+#: src/routers/user.py:54
+msgid "CHANGE_SETTINGS_first_phone_query"
+msgstr "Please enter your phone."
+
+#: src/routers/user.py:69
+msgid "REGISTER_ok"
+msgstr "Thank you for registering, {name}! You have been registered with phone {phone}."
+
+#: src/routers/user.py:77
+msgid "CHANGE_SETTINGS_query_name"
+msgstr "Please enter your new name."
+
+#: src/routers/user.py:85
+msgid "CHANGE_SETTINGS_query_phone"
+msgstr "Please enter your new phone."
+
+#: src/routers/user.py:95
+msgid "CHANGE_SETTINGS_name_ok"
+msgstr "Alright, {name}, your name has been updated."
+
+#: src/routers/user.py:106
+msgid "CHANGE_SETTINGS_phone_ok"
+msgstr "Alright, {name}, your phone has been updated."
+
+#: src/routers/user.py:116
+msgid "CHANGE_LOCALE_text"
 msgstr "Please select your locale from the list below."
+
+#: src/routers/user.py:126 src/routers/user.py:141
+msgid "DELETE_USER_query"
+msgstr "Are you sure you would like to delete all your data from this bot? This action cannot be undone.\n"
+"Your data includes your account, memberships, attendance and request records."
+
+#: src/routers/user.py:126 src/routers/user.py:135 src/routers/user.py:141
+msgid "DELETE_USER_confirm"
+msgstr "Delete"
+
+#: src/routers/user.py:137
+msgid "DELETE_USER_ok"
+msgstr "Your account and and related memberships, attendance and request records have been deleted."
+
+#: src/routers/att_for_admin.py:33
+msgid "CHECK_IN_error_expired"
+msgstr "This request has already been processed or it is expired."
+
+#: src/routers/att_for_admin.py:43
+msgid "CHECK_in_ok_admin"
+msgstr "Checked in {name}."
+
+#: src/routers/att_for_admin.py:48
+msgid "CHECK_in_ok_member"
+msgstr "You have successfully checked in."
+
+#: src/routers/mb_for_member.py:39
+msgid "VIEW_ALL_MEMBERSHIPS_error_no"
+msgstr "You don't have any memberships yet."
+
+#: src/routers/mb_for_member.py:63 src/routers/mb_for_member.py:80
+msgid "FREEZE_MEMBERSHIP_query_duration"
+msgstr "Please enter desired freeze period duration. It must be no longer than {max_freeze_duration} days."
+
+#: src/routers/mb_for_member.py:102
+msgid "UNFREEZE_MEMBERSHIP_ok"
+msgstr "Your membership has been unfrozen."
+
+#: src/routers/for_member.py:19 src/routers/for_admin.py:14
+msgid "pending_membership"
+msgstr "membership"
+
+#: src/routers/for_member.py:33 src/routers/for_admin.py:18
+msgid "pending_attendance"
+msgstr "check-in"
+
+#: src/routers/for_member.py:49 src/routers/for_admin.py:22
+msgid "pending_freeze"
+msgstr "membership freeze"
+
+#: src/routers/for_member.py:60
+msgid "REQUEST_sent"
+msgstr "Your request for {request_type} has been sent to the admin."
+
+#: src/routers/for_member.py:63
+msgid "REQUEST_error_already_existed"
+msgstr "you have already sent a request of this type. Please wait until the administrator processes it."
+
+#: src/routers/for_admin.py:13
+msgid "ADD_MEMBERSHIP_button"
+msgstr "Add membership"
+
+#: src/routers/for_admin.py:17
+msgid "CHECK_IN_button"
+msgstr "Check in"
+
+#: src/routers/for_admin.py:21
+msgid "FREEZE_MEMBERSHIP_button"
+msgstr "Freeze membership"
+
+#: src/routers/for_admin.py:25
+msgid "polling"
+msgstr "Polling for new {request_type_string} requests. The requesting person needs to press "
+"the \"{button_name}\" button in their conversation with this bot. They need "
+"to do so within {timeout_seconds} seconds."
+
+#: src/routers/for_admin.py:34
+msgid "polling_timeout"
+msgstr "No new requests found. Try again after making sure that the requesting "
+"person pressed the \"{button_name}\" button in their conversation with this "
+"bot."
+
+#: src/routers/for_admin.py:40
+msgid "pending_list"
+msgstr "Here are pending requests for {request_type}:"
+
+#: src/utils/menu.py:231
+msgid "ADD_MEMBERSHIP_decline_button"
+msgstr "Decline"
+
+#: src/utils/menu.py:249
+msgid "button_cancel"
+msgstr "Cancel"
+
+#: src/utils/menu.py:111 src/utils/menu.py:126 src/utils/menu.py:141
+#, python-brace-format
+msgid "{button}{modifier}"
+msgstr ""
+
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
+#, python-brace-format
+msgid "cancelled_state_log"
+msgstr "Cancelling state {current_state}"
+
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
+#, python-brace-format
+msgid "cancelled"
+msgstr "Cancelled."
+
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
+#, python-brace-format
+msgid "MANAGE_MEMBERSHIP_button"
+msgstr "Manage memberships"
+
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
+#, python-brace-format
+msgid "MANAGE_ATTENDANCE_button"
+msgstr "Manage attendance"
+
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
+#, python-brace-format
+msgid "CHANGE_SETTINGS_button"
+msgstr "Change user settings"
+
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
+#, python-brace-format
+msgid "VIEW_ACTIVE_MEMBERSHIP_button"
+msgstr "View active membership"
+
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
+#, python-brace-format
+msgid "VIEW_ALL_MEMBERSHIPS_button"
+msgstr "View all memberships"
+
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
+#, python-brace-format
+msgid "VIEW_ATTENDANCES_button"
+msgstr "View attendance"
+
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
+#, python-brace-format
+msgid "UNFREEZE_MEMBERSHIP_button"
+msgstr "Unfreeze membership"
+
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
+#, python-brace-format
+msgid "CHANGE_NAME_button"
+msgstr "Change name"
+
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
+#, python-brace-format
+msgid "CHANGE_PHONE_button"
+msgstr "Change phone"
+
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
+#, python-brace-format
+msgid "CHANGE_LOCALE_button"
+msgstr "Change locale"
+
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
+#, python-brace-format
+msgid "REGISTER_button"
+msgstr "Register"
+
+#: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
+#, python-brace-format
+msgid "DELETE_USER_button"
+msgstr "Delete user"
