@@ -21,10 +21,11 @@ class FreezeRequestState(StatesGroup):
 
 
 @router.callback_query(F.data == f"{Action.VIEW_ACTIVE_MEMBERSHIP}{Modifier.CALLBACK}")
-async def view_active_membership(callback: CallbackQuery, bot: Bot):
+async def view_active_membership(callback: CallbackQuery, bot: Bot, state: FSMContext):
     if active_membership := await get_active_membership_or_go_home(callback=callback):
+        data = await state.get_data()
         await callback.message.answer(
-            str(active_membership),
+            active_membership.print(locale=data.get("locale")),
             reply_markup=main_buttons(user_id=callback.from_user.id),
         )
         await callback.answer()
@@ -32,9 +33,10 @@ async def view_active_membership(callback: CallbackQuery, bot: Bot):
 
 
 @router.callback_query(F.data == f"{Action.VIEW_ALL_MEMBERSHIPS}{Modifier.CALLBACK}")
-async def view_memberships(callback: CallbackQuery, bot: Bot):
+async def view_memberships(callback: CallbackQuery, bot: Bot, state: FSMContext):
     if memberships := db_member.get_memberships_by_user_id(tg_id=callback.from_user.id):
-        text = "\n".join(mb.past_info() for mb in memberships)
+        data = await state.get_data()
+        text = "\n".join(mb.past_info(locale=data.get("locale")) for mb in memberships)
     else:
         text = _("VIEW_ALL_MEMBERSHIPS_error_no")
     await callback.message.answer(

@@ -1,4 +1,5 @@
 from aiogram import F, Router, Bot
+from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 
 from src.model.request import RequestType
@@ -14,14 +15,15 @@ _ = translation.i18n.gettext
 
 
 @router.callback_query(F.data == f"{Action.VIEW_ATTENDANCES}{Modifier.CALLBACK}")
-async def view_attendances(callback: CallbackQuery, bot: Bot):
+async def view_attendances(callback: CallbackQuery, bot: Bot, state: FSMContext):
     attendance_list = db_member.view_attendances_for_active_membership(
         tg_id=callback.from_user.id
     )
     if len(attendance_list) == 0:
         text = _("CHECK_IN_none")
     else:
-        text = "\n".join([str(att) for att in attendance_list])
+        data = await state.get_data()
+        text = "\n".join([att.print(locale=data.get("locale")) for att in attendance_list])
     await callback.message.answer(
         text, reply_markup=main_buttons(user_id=callback.from_user.id)
     )

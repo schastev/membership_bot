@@ -1,5 +1,6 @@
 from datetime import date
 
+from babel.dates import format_date
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -13,5 +14,5 @@ class Attendance(Base):
     tg_id: Mapped[int] = mapped_column(ForeignKey("user.tg_id"))
     membership_id: Mapped[int] = mapped_column(ForeignKey("membership.id"))
 
-    def __str__(self):  # todo i18n this
-        return f"{self.attendance_date}"
+    def print(self, locale: str):
+        return format_date(self.attendance_date, locale=locale)
