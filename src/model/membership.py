@@ -88,38 +88,43 @@ class Membership(Base):
         return True
 
     def unfreeze(self, unfreeze_date: date = date.today()) -> None:
-        if self.is_valid_unfreeze_date(unfreeze_date=unfreeze_date):
-            self.unfreeze_date = unfreeze_date
-            self._frozen = False
-            new_expiry_date = self.original_expiry_date + (
-                unfreeze_date - self.freeze_date
-            )
-            if self.expiry_date != new_expiry_date:
-                self.expiry_date = new_expiry_date
+        if not self.is_valid_unfreeze_date(unfreeze_date=unfreeze_date):
+            return
+        self.unfreeze_date = unfreeze_date
+        self._frozen = False
+        new_expiry_date = self.original_expiry_date + (
+            unfreeze_date - self.freeze_date
+        )
+        if self.freeze_date == self.unfreeze_date:
+            self.freeze_date, self.unfreeze_date = None, None
+            self.expiry_date = self.original_expiry_date
+            self._frozen = None
+        if self.expiry_date != new_expiry_date:
+            self.expiry_date = new_expiry_date
 
     def is_valid_unfreeze_date(self, unfreeze_date: date = date.today()) -> bool:
         if not self._frozen:
             raise ValueError(_("UNFREEZE_MEMBERSHIP_error_not_frozen"))
-        if unfreeze_date <= self.freeze_date:
+        if unfreeze_date < self.freeze_date:
             raise ValueError(_("UNFREEZE_MEMBERSHIP_error_unfreeze_before_freeze"))
         new_expiry_date = self.original_expiry_date + (unfreeze_date - self.freeze_date)
         if new_expiry_date - self.original_expiry_date > timedelta(days=14):
             raise ValueError(_("FREEZE_MEMBERSHIP_error_duration_exceeded"))
         return True
 
-    def subtract(self) -> None:
+    def subtract(self, use_date: date = date.today()) -> None:
         if not self.activation_date:
             self._activate(date.today())
         if not self.is_valid():
             raise ValueError(_("CHECK_IN_error_cannot_subtract"))
         self.current_amount -= 1
         if self.current_amount == 0:
-            self.expiry_date = date.today()
+            self.expiry_date = use_date
         if self.activation_date is None:
-            self._activate(activation_date=date.today())
+            self._activate(activation_date=use_date)
             self._frozen = False
         if self._frozen:
-            self.unfreeze(unfreeze_date=date.today())
+            self.unfreeze(unfreeze_date=use_date)
 
     def _activate(self, activation_date: date) -> None:
         self.activation_date = activation_date

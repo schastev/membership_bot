@@ -185,3 +185,28 @@ def test_cannot_make_negative_freeze_duration_with_unfreeze():
     with pytest.raises(expected_exception=ValueError) as error:
         mb.unfreeze(unfreeze_date=date.today() - timedelta(days=3))
     assert error.value.args[0] == _("UNFREEZE_MEMBERSHIP_error_unfreeze_before_freeze")
+
+
+@allure.tag("positive")
+@allure.feature("freeze", "unfreeze")
+@pytest.mark.parametrize("freeze_duration", [1, 5], ids=["one-day freeze", "multiple-day freeze"])
+def test_same_day_freeze_and_unfreeze_do_not_count(freeze_duration):
+    mb = Membership(tg_id=1, total_amount=3)
+    mb.subtract()
+    mb.freeze(days=freeze_duration)
+    assert mb.expiry_date != mb.original_expiry_date
+    mb.unfreeze()
+    assert mb.freeze_date == None
+    assert mb.unfreeze_date == None
+    assert mb.expiry_date == mb.original_expiry_date
+
+
+@allure.tag("positive")
+@allure.feature("freeze")
+def test_can_refreeze_after_same_day_freeze_and_unfreeze():
+    mb = Membership(tg_id=1, total_amount=3)
+    mb.subtract()
+    mb.freeze(days=1)
+    mb.unfreeze()
+    mb.freeze(days=10)
+    assert mb._frozen is True
