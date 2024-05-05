@@ -1,5 +1,3 @@
-from typing import Union
-
 from sqlalchemy import select, delete
 from sqlalchemy.orm import Session
 
@@ -57,7 +55,7 @@ def update_user_locale(tg_id: int, new_locale: str) -> User:
     return updated_user
 
 
-def check_user_registration_state(tg_id: int) -> Union[User, None]:
+def check_user_registration_state(tg_id: int) -> User | None:
     with Session(Database().engine) as session:
         user = session.scalars(get_user_by_tg_id(tg_id=tg_id)).first()
     if user:
@@ -66,7 +64,7 @@ def check_user_registration_state(tg_id: int) -> Union[User, None]:
         return None
 
 
-def get_user(tg_id: int) -> Union[User, None]:
+def get_user(tg_id: int) -> User | None:
     with Session(Database().engine) as session:
         return session.scalars(get_user_by_tg_id(tg_id=tg_id)).first()
 

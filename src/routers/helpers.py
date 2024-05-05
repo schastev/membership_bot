@@ -1,5 +1,3 @@
-from typing import Union
-
 from aiogram.types import CallbackQuery, Message
 
 from src.db_calls import member as db_member
@@ -12,11 +10,11 @@ _ = translation.i18n.gettext
 
 
 async def get_active_membership_or_go_home(
-    tg_id: Union[int, None] = None,
-    callback: Union[CallbackQuery, None] = None,
-    message: Union[Message, None] = None,
-    error_message: Union[str, None] = None,
-) -> Union[Membership, None]:
+    tg_id: int | None = None,
+    callback: CallbackQuery | None = None,
+    message: Message | None = None,
+    error_message: str | None = None,
+) -> Membership | None:
     if callback:
         answer = callback.message
         user_id = tg_id or callback.from_user.id

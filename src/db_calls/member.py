@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -44,7 +44,7 @@ def get_memberships_by_user_id(tg_id: int) -> List[Membership]:
     return list(memberships)
 
 
-def get_active_membership_by_user_id(tg_id: int) -> Union[Membership, None]:
+def get_active_membership_by_user_id(tg_id: int) -> Membership | None:
     with Session(Database().engine) as session:
         memberships = session.scalars(get_memberships_by_tg_id(tg_id=tg_id)).all()
     active_mb = [mb for mb in memberships if mb.is_valid()]
