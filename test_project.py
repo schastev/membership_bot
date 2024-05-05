@@ -1,3 +1,4 @@
+import datetime
 from random import Random
 
 import pytest
@@ -8,7 +9,7 @@ from aiogram_tests.types.dataset import CALLBACK_QUERY, MESSAGE
 from config_reader import config
 from src.model.membership import Membership
 from src.utils import translation
-from src.utils.constants import Action
+from src.utils.constants import Action, Modifier
 from src.utils.menu import UserState, admin
 from project import main_menu, locale_handler, start_handler
 from tests.helper import extract_keyboard_entries
@@ -25,7 +26,7 @@ def test_main_buttons_not_registered():
     expected = [Action.REGISTER]
     if is_admin:
         expected.extend(admin)
-    assert sorted(buttons) == sorted(expected)
+    assert sorted(buttons) == sorted([_(f"{ex}{Modifier.BUTTON}") for ex in expected])
 
 
 def test_main_buttons_registered():
@@ -38,7 +39,7 @@ def test_main_buttons_registered():
     expected = [Action.CHANGE_SETTINGS, Action.ADD_MEMBERSHIP]
     if is_admin:
         expected.extend(admin)
-    assert sorted(buttons) == sorted(expected)
+    assert sorted(buttons) == sorted([_(f"{ex}{Modifier.BUTTON}") for ex in expected])
 
 
 @pytest.mark.parametrize(
@@ -66,7 +67,7 @@ def test_main_buttons_with_and_without_active_membership(has_active_mb, expected
     expected = [Action.CHANGE_SETTINGS, Action.VIEW_ALL_MEMBERSHIPS, *expected]
     if is_admin:
         expected.extend(admin)
-    assert sorted(buttons) == sorted(expected)
+    assert sorted(buttons) == sorted([_(f"{ex}{Modifier.BUTTON}") for ex in expected])
 
 
 @pytest.mark.parametrize(
@@ -80,9 +81,9 @@ def test_main_buttons_with_and_without_active_membership(has_active_mb, expected
 )
 def test_main_buttons_active_membership_states(frozen, unfrozen, expected):
     active_mb = Membership(tg_id=1, total_amount=8)
-    active_mb.subtract()
+    active_mb._activate(activation_date=datetime.date.today() - datetime.timedelta(days=1))
     if frozen:
-        active_mb.freeze(days=1)
+        active_mb.freeze(freeze_date=datetime.date.today() - datetime.timedelta(days=1), days=10)
     if unfrozen:
         active_mb.unfreeze()
     user_state = UserState(tg_id=0, active_mb=active_mb)
@@ -108,7 +109,7 @@ def test_main_buttons_active_membership_states(frozen, unfrozen, expected):
         expected.extend(admin)
     if has_attendances:
         expected.append(Action.VIEW_ATTENDANCES)
-    assert sorted(buttons) == sorted(expected)
+    assert sorted(buttons) == sorted([_(f"{ex}{Modifier.BUTTON}") for ex in expected])
 
 
 @pytest.mark.asyncio
