@@ -15,8 +15,8 @@ from src.routers import (
     mb_for_member,
     att_for_member,
     att_for_admin,
+    helpers,
 )
-from src.routers.helpers import greeting
 from src.utils import translation, bot_helpers
 from src.utils.constants import Action, Modifier
 from src.utils.translation import locale
@@ -38,7 +38,9 @@ async def locale_handler(
     if user_id := callback.message.from_user.id == bot.id:
         # this is to correctly display buttons after user changes locale
         user_id = callback.from_user.id
-    await greeting(message=callback.message, user_id=user_id, user_state=user_state)
+    await helpers.greeting(
+        message=callback.message, user_id=user_id, user_state=user_state
+    )
     member = check_user_registration_state(tg_id=user_id)
     if member:
         update_user_locale(tg_id=user_id, new_locale=callback.data)
@@ -51,7 +53,7 @@ async def locale_handler(
 async def start_handler(message: Message, state: FSMContext):
     if member := check_user_registration_state(message.from_user.id):
         await translation.locale.set_locale(state=state, locale=member.locale)
-        await greeting(message=message, user_id=member.tg_id)
+        await helpers.greeting(message=message, user_id=member.tg_id)
     else:
         greetings = [_("first_greeting", locale=loc) for loc in config.locales]
         await message.answer("\n".join(greetings), reply_markup=locale_buttons())
@@ -84,6 +86,7 @@ async def main():
         misc.router,
     )
     bot = Bot(token=config.bot_token.get_secret_value())
+    await bot_helpers.set_main_menu(bot=bot)
     await dp.start_polling(bot)
 
 

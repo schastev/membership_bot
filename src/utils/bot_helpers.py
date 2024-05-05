@@ -1,8 +1,11 @@
 from aiogram import Bot
 from aiogram.filters import Filter
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, Message, BotCommand
 
 import config_reader
+from src.utils import translation
+
+_ = translation.i18n.gettext
 
 
 async def rm_buttons_from_last_message(callback: CallbackQuery, bot: Bot):
@@ -11,6 +14,11 @@ async def rm_buttons_from_last_message(callback: CallbackQuery, bot: Bot):
         message_id=callback.message.message_id,
         reply_markup=None,
     )
+
+
+async def set_main_menu(bot: Bot):
+    main_menu_commands = [BotCommand(command="/start", description=_("MENU_desc"))]
+    await bot.set_my_commands(main_menu_commands)
 
 
 class IsAdmin(Filter):

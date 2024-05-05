@@ -330,3 +330,7 @@ msgstr "Register"
 #, python-brace-format
 msgid "DELETE_USER_button"
 msgstr "Delete user"
+
+#: src/utils/bot_helpers.py:23
+msgid "MENU_desc"
+msgstr "Show the main menu."
