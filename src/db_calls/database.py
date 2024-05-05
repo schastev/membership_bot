@@ -18,7 +18,7 @@ def singleton(class_):
 @singleton
 class Database:
     engine = create_engine(
-        f"sqlite+pysqlite:///{config_reader.config.database_file_name}", echo=True
+        f"sqlite+pysqlite:///{config_reader.config.database_file_name}", echo=False
     )
 
     def __init__(self):
