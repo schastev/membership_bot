@@ -31,6 +31,7 @@ async def main():
     )
     bot = Bot(token=GlobalSettings().config.bot_token.get_secret_value())
     from src.utils import bot_helpers
+
     await bot_helpers.set_main_menu(bot=bot)
     await dp.start_polling(bot)
 
@@ -40,6 +41,7 @@ def main_menu(user_id: int, user_state: Any):
     # the rest of the functions are somewhat justifiable, since they are at least directly dispatcher/bot related
     # more so then the keyboard buttons anyway
     from src.utils.menu import main_buttons
+
     return main_buttons(user_id=user_id, user_state=user_state)
 
 

@@ -17,7 +17,7 @@ def test_main_buttons_not_registered():
     user_state = UserState(tg_id=0)
     is_admin = Random().choice([True, False])
     user_state.is_admin = is_admin
-    keyboard = main_menu(user_id=0, user_state=user_state).inline_keyboard
+    keyboard = main_menu(user_id=0, user_state=user_state)
     buttons = extract_keyboard_entries(keyboard)
     expected = [Action.REGISTER]
     if is_admin:
@@ -30,7 +30,7 @@ def test_main_buttons_registered():
     is_admin = Random().choice([True, False])
     user_state.is_admin = is_admin
     user_state.is_registered = True
-    keyboard = main_menu(user_id=0, user_state=user_state).inline_keyboard
+    keyboard = main_menu(user_id=0, user_state=user_state)
     buttons = extract_keyboard_entries(keyboard)
     expected = [Action.CHANGE_SETTINGS, Action.ADD_MEMBERSHIP]
     if is_admin:
@@ -58,7 +58,7 @@ def test_main_buttons_with_and_without_active_membership(has_active_mb, expected
         user_state.has_memberships,
         user_state.has_usable_membership,
     ) = True, True, has_active_mb
-    keyboard = main_menu(user_id=0, user_state=user_state).inline_keyboard
+    keyboard = main_menu(user_id=0, user_state=user_state)
     buttons = extract_keyboard_entries(keyboard)
     expected = [Action.CHANGE_SETTINGS, Action.VIEW_ALL_MEMBERSHIPS, *expected]
     if is_admin:
@@ -96,7 +96,7 @@ def test_main_buttons_active_membership_states(frozen, unfrozen, expected):
         user_state.has_memberships,
         user_state.has_attendances,
     ) = is_admin, True, True, True, has_attendances
-    keyboard = main_menu(user_id=0, user_state=user_state).inline_keyboard
+    keyboard = main_menu(user_id=0, user_state=user_state)
     buttons = extract_keyboard_entries(keyboard)
     expected = [
         Action.CHANGE_SETTINGS,
