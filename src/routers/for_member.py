@@ -1,13 +1,13 @@
 from aiogram.types import Message
 
+from config_reader import GlobalSettings
 from src.db_calls import member as db_member, admin as db_admin
 from src.model.request import RequestType
 from src.routers.helpers import get_active_membership_or_go_home
-from src.utils import translation
 from src.utils import menu
 
 
-_ = translation.i18n.gettext
+_ = GlobalSettings().i18n.gettext
 
 
 async def add_request(

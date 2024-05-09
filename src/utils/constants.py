@@ -23,3 +23,24 @@ class Modifier:
     CALLBACK = "_callback"
     MEMBER = "member_"
     ADMIN = "admin_"
+
+
+class MenuButtons:
+    ACTIVE_MB = [Action.VIEW_ACTIVE_MEMBERSHIP, Action.CHECK_IN]
+    CHECK_INS = [Action.VIEW_ATTENDANCES]
+    REGISTERED = [
+        Action.CHANGE_NAME,
+        Action.CHANGE_PHONE,
+        Action.CHANGE_LOCALE,
+        Action.DELETE_USER,
+    ]
+    MANAGE_MB = [
+        f"{Modifier.ADMIN}{Action.ADD_MEMBERSHIP}",
+        f"{Modifier.ADMIN}{Action.FREEZE_MEMBERSHIP}",
+    ]
+    ADMIN = [f"{Action.MANAGE_MEMBERSHIP}", Action.MANAGE_ATTENDANCE]
+
+
+class Environment:
+    PROD = "PROD"
+    TEST = "TEST"

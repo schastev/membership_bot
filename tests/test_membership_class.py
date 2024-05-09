@@ -3,11 +3,10 @@ from datetime import date, timedelta
 import allure
 import pytest
 
-import config_reader
+from config_reader import GlobalSettings
 from src.model.membership import Membership
-from src.utils import translation
 
-_ = translation.i18n.gettext
+_ = GlobalSettings().i18n.gettext
 
 
 @allure.tag("positive")
@@ -111,7 +110,7 @@ def test_membership_cannot_freeze_for_over_max_duration():
     with pytest.raises(expected_exception=ValueError) as error:
         mb.freeze(freeze_date=mb.activation_date, days=planned_freeze_duration)
     assert error.value.args[0] == _("FREEZE_MEMBERSHIP_error_duration_exceeded").format(
-        days=config_reader.config.max_freeze_duration
+        days=GlobalSettings().config.max_freeze_duration
     )
 
 
@@ -189,15 +188,17 @@ def test_cannot_make_negative_freeze_duration_with_unfreeze():
 
 @allure.tag("positive")
 @allure.feature("freeze", "unfreeze")
-@pytest.mark.parametrize("freeze_duration", [1, 5], ids=["one-day freeze", "multiple-day freeze"])
+@pytest.mark.parametrize(
+    "freeze_duration", [1, 5], ids=["one-day freeze", "multiple-day freeze"]
+)
 def test_same_day_freeze_and_unfreeze_do_not_count(freeze_duration):
     mb = Membership(tg_id=1, total_amount=3)
     mb.subtract()
     mb.freeze(days=freeze_duration)
     assert mb.expiry_date != mb.original_expiry_date
     mb.unfreeze()
-    assert mb.freeze_date == None
-    assert mb.unfreeze_date == None
+    assert mb.freeze_date is None
+    assert mb.unfreeze_date is None
     assert mb.expiry_date == mb.original_expiry_date
 
 

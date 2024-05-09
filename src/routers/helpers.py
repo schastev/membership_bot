@@ -1,12 +1,11 @@
 from aiogram.types import CallbackQuery, Message
 
 from src.db_calls import member as db_member
-from config_reader import config
+from config_reader import GlobalSettings
 from src.model.membership import Membership
-from src.utils import translation
 from src.utils.menu import main_buttons, UserState
 
-_ = translation.i18n.gettext
+_ = GlobalSettings().i18n.gettext
 
 
 async def get_active_membership_or_go_home(
@@ -36,6 +35,6 @@ async def get_active_membership_or_go_home(
 
 async def greeting(message: Message, user_id: int, user_state: UserState | None = None):
     await message.answer(
-        text=_("greeting").format(company_name=config.company_name),
+        text=_("greeting").format(company_name=GlobalSettings().config.company_name),
         reply_markup=main_buttons(user_id=user_id, user_state=user_state),
     )

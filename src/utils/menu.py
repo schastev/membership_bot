@@ -5,31 +5,16 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from src.db_calls import member as db_member, user as db_user
 from src.model.membership import Membership
-from src.utils import translation
-from config_reader import config
+from config_reader import GlobalSettings
 from src.utils.callback_factories import (
     MBRequestListCallbackFactory,
     MBRequestValueCallbackFactory,
     AttRequestCallbackFactory,
     FreezeRequestCallbackFactory,
 )
-from src.utils.constants import Action, Modifier
+from src.utils.constants import Action, Modifier, MenuButtons
 
-_ = translation.i18n.gettext
-
-admin = [f"{Action.MANAGE_MEMBERSHIP}", Action.MANAGE_ATTENDANCE]
-registered_with_active_mb = [Action.VIEW_ACTIVE_MEMBERSHIP, Action.CHECK_IN]
-registered_with_attendances = [Action.VIEW_ATTENDANCES]
-registered = [
-    Action.CHANGE_NAME,
-    Action.CHANGE_PHONE,
-    Action.CHANGE_LOCALE,
-    Action.DELETE_USER,
-]
-membership_management_options = [
-    f"{Modifier.ADMIN}{Action.ADD_MEMBERSHIP}",
-    f"{Modifier.ADMIN}{Action.FREEZE_MEMBERSHIP}",
-]
+_ = GlobalSettings().i18n.gettext
 
 
 class UserState:
@@ -43,7 +28,7 @@ class UserState:
 
     def __init__(self, tg_id: int, active_mb: Membership | None = None):
         if tg_id:
-            self.is_admin = tg_id in config.admin_ids
+            self.is_admin = tg_id in GlobalSettings().config.admin_ids
             user = db_user.get_user(tg_id=tg_id)
             self.is_registered = bool(user)
             active_mb = active_mb or db_member.get_active_membership_by_user_id(
@@ -74,7 +59,7 @@ def locale_buttons() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     [
         builder.add(InlineKeyboardButton(text=locale, callback_data=locale))
-        for locale in config.locales
+        for locale in GlobalSettings().config.locales
     ]
     return builder.as_markup()
 
@@ -87,15 +72,15 @@ def main_buttons(
     if not user_state:
         user_state = UserState(tg_id=user_id)
     if user_state.is_admin:
-        buttons.extend(admin)
+        buttons.extend(MenuButtons.ADMIN)
     if user_state.is_registered:
         buttons.append(Action.CHANGE_SETTINGS)
         if user_state.has_memberships:
             buttons.append(Action.VIEW_ALL_MEMBERSHIPS)
         if user_state.has_usable_membership:
-            buttons.extend(registered_with_active_mb)
+            buttons.extend(MenuButtons.ACTIVE_MB)
             if user_state.has_attendances:
-                buttons.extend(registered_with_attendances)
+                buttons.extend(MenuButtons.CHECK_INS)
             if user_state.has_frozen_membership:
                 buttons.append(Action.UNFREEZE_MEMBERSHIP)
             elif user_state.has_freezable_membership:
@@ -119,7 +104,7 @@ def main_buttons(
 
 def user_settings_options() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    for button in registered:
+    for button in MenuButtons.REGISTERED:
         builder.add(
             InlineKeyboardButton(
                 text=_(
@@ -134,7 +119,7 @@ def user_settings_options() -> InlineKeyboardMarkup:
 
 def mb_management_options() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    for button in membership_management_options:
+    for button in MenuButtons.MANAGE_MB:
         builder.add(
             InlineKeyboardButton(
                 text=_(
@@ -212,7 +197,7 @@ def membership_value_buttons(
     member_tg_id: int, member_name: str, chat_id: int, request_id: int
 ) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    membership_values = config.membership_values
+    membership_values = GlobalSettings().config.membership_values
     for value in membership_values:
         builder.add(
             InlineKeyboardButton(

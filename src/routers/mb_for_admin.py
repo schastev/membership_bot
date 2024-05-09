@@ -2,10 +2,11 @@ from aiogram import Router, F, Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.types import ReplyKeyboardRemove, CallbackQuery
 
+from config_reader import GlobalSettings
 from src.db_calls import admin as db_admin
 from src.model.request import RequestType
 from src.routers import for_admin
-from src.utils import menu, bot_helpers, translation
+from src.utils import menu, bot_helpers
 from src.utils.bot_helpers import IsAdmin
 from src.utils.callback_factories import (
     MembershipRequestCallbackFactory,
@@ -19,7 +20,7 @@ from babel.dates import format_date
 
 
 router = Router()
-_ = translation.i18n.gettext
+_ = GlobalSettings().i18n.gettext
 
 
 @router.callback_query(

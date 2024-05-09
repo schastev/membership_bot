@@ -5,7 +5,7 @@ from typing import List
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from config_reader import config
+from config_reader import GlobalSettings
 from src.db_calls.database import Database
 from src.model.attendance import Attendance
 from src.model.membership import Membership
@@ -13,7 +13,7 @@ from src.model.request import RequestType, Request
 from src.model.user import User
 
 
-TIMER = config.polling_timeout_seconds
+TIMER = GlobalSettings().config.polling_timeout_seconds
 
 
 def check_existing_requests(tg_id: int, request_type: RequestType) -> List[Request]:

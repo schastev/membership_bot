@@ -1,22 +1,23 @@
 from aiogram import Router, F, Bot
 from aiogram.types import ReplyKeyboardRemove, CallbackQuery
 
+from config_reader import GlobalSettings
 from src.db_calls import admin as db_admin
 from src.model.attendance import Attendance
 from src.model.request import RequestType
 from src.routers import for_admin
-from src.utils import bot_helpers, translation
+from src.utils import bot_helpers
 from src.utils.callback_factories import AttRequestCallbackFactory
 from src.utils.constants import Action, Modifier
 
 router = Router()
-_ = translation.i18n.gettext
+_ = GlobalSettings().i18n.gettext
 
 
 @router.callback_query(
     F.data == f"{Action.MANAGE_ATTENDANCE}{Modifier.CALLBACK}", bot_helpers.IsAdmin()
 )
-async def manage_attendances(callback: CallbackQuery, bot: Bot):
+async def poll_for_check_in_request(callback: CallbackQuery, bot: Bot):
     await for_admin.poll_for_requests(
         message=callback.message, request_type=RequestType.ATTENDANCE
     )

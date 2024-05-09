@@ -5,11 +5,10 @@ from babel.dates import format_date
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
-import config_reader
+from config_reader import GlobalSettings
 from src.model.declarative_models import Base
-from src.utils import translation
 
-_ = translation.i18n.gettext
+_ = GlobalSettings().i18n.gettext
 
 
 class Membership(Base):
@@ -73,10 +72,10 @@ class Membership(Base):
             raise ValueError(_("FREEZE_MEMBERSHIP_error_not_active"))
         if freeze_date < self.activation_date:
             raise ValueError(_("FREEZE_MEMBERSHIP_error_freeze_before_activation"))
-        if days > config_reader.config.max_freeze_duration:
+        if days > GlobalSettings().config.max_freeze_duration:
             raise ValueError(
                 _("FREEZE_MEMBERSHIP_error_duration_exceeded").format(
-                    days=config_reader.config.max_freeze_duration
+                    days=GlobalSettings().config.max_freeze_duration
                 )
             )
         if days <= 0:
@@ -92,9 +91,7 @@ class Membership(Base):
             return
         self.unfreeze_date = unfreeze_date
         self._frozen = False
-        new_expiry_date = self.original_expiry_date + (
-            unfreeze_date - self.freeze_date
-        )
+        new_expiry_date = self.original_expiry_date + (unfreeze_date - self.freeze_date)
         if self.freeze_date == self.unfreeze_date:
             self.freeze_date, self.unfreeze_date = None, None
             self.expiry_date = self.original_expiry_date
@@ -129,10 +126,10 @@ class Membership(Base):
     def _activate(self, activation_date: date) -> None:
         self.activation_date = activation_date
         self.expiry_date = activation_date + timedelta(
-            days=config_reader.config.membership_duration_days
+            days=GlobalSettings().config.membership_duration_days
         )
         self.original_expiry_date = activation_date + timedelta(
-            days=config_reader.config.membership_duration_days
+            days=GlobalSettings().config.membership_duration_days
         )
 
     def is_valid(self) -> bool:

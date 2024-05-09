@@ -2,16 +2,17 @@ from aiogram import F, Router, Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 
+from config_reader import GlobalSettings
 from src.model.request import RequestType
 from src.db_calls import member as db_member
 from src.routers import for_member
 from src.routers.helpers import get_active_membership_or_go_home
-from src.utils import translation, bot_helpers
+from src.utils import bot_helpers
 from src.utils.constants import Action, Modifier
 from src.utils.menu import main_buttons
 
 router = Router()
-_ = translation.i18n.gettext
+_ = GlobalSettings().i18n.gettext
 
 
 @router.callback_query(F.data == f"{Action.VIEW_ATTENDANCES}{Modifier.CALLBACK}")

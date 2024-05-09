@@ -2,10 +2,9 @@ from aiogram import Bot
 from aiogram.filters import Filter
 from aiogram.types import CallbackQuery, Message, BotCommand
 
-import config_reader
-from src.utils import translation
+from config_reader import GlobalSettings
 
-_ = translation.i18n.gettext
+_ = GlobalSettings().i18n.gettext
 
 
 async def rm_buttons_from_last_message(callback: CallbackQuery, bot: Bot):
@@ -23,4 +22,4 @@ async def set_main_menu(bot: Bot):
 
 class IsAdmin(Filter):
     async def __call__(self, message: Message) -> bool:
-        return message.from_user.id in config_reader.config.admin_ids
+        return message.from_user.id in GlobalSettings().config.admin_ids

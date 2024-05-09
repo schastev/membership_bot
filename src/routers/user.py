@@ -3,15 +3,15 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery
 
-import config_reader
+from config_reader import GlobalSettings
 from src.routers.mb_for_admin import main_buttons
-from src.utils import bot_helpers, translation
+from src.utils import bot_helpers
 from src.db_calls import user as db_user
 from src.utils.constants import Action, Modifier
 from src.utils.menu import locale_buttons, user_settings_options, cancel_button
 
 router = Router()
-_ = translation.i18n.gettext
+_ = GlobalSettings().i18n.gettext
 
 
 class RegistrationStates(StatesGroup):
@@ -114,7 +114,7 @@ async def change_locale_handler(callback: CallbackQuery):
     menu_buttons = locale_buttons()
     greetings = [
         _("CHANGE_LOCALE_text", locale=locale)
-        for locale in config_reader.config.locales
+        for locale in GlobalSettings().config.locales
     ]
     await callback.message.answer("\n".join(greetings), reply_markup=menu_buttons)
     await callback.answer()

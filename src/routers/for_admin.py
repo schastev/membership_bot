@@ -1,11 +1,11 @@
 from aiogram.types import Message
 
-from config_reader import config
+from config_reader import GlobalSettings
 from src.db_calls import admin as db_admin
 from src.model.request import RequestType
-from src.utils import translation, menu
+from src.utils import menu
 
-_ = translation.i18n.gettext
+_ = GlobalSettings().i18n.gettext
 
 
 async def poll_for_requests(message: Message, request_type: RequestType):
@@ -24,7 +24,7 @@ async def poll_for_requests(message: Message, request_type: RequestType):
     await message.answer(
         _("polling").format(
             request_type_string=pending_message,
-            timeout_seconds=config.polling_timeout_seconds,
+            timeout_seconds=GlobalSettings().config.polling_timeout_seconds,
             button_name=button_name,
         )
     )
