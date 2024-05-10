@@ -32,7 +32,7 @@ jobs:
           msgfmt -o ./src/locales/en/LC_MESSAGES/mb_bot.mo ./src/locales/en/LC_MESSAGES/mb_bot.po
       - name: Run Test
         if: always()
-        run: pytest
+        run: pytest --alluredir=allure-results
       - name: Get Allure history
         uses: actions/checkout@v4
         if: always()
