@@ -26,7 +26,7 @@ jobs:
           ruff check
       - name: Run Test
         if: always()
-        run: pytest --alluredir=allure-results
+        run: pytest
 
       - name: Get Allure history
         uses: actions/checkout@v2
