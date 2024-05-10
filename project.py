@@ -3,6 +3,7 @@ import logging
 from typing import Any
 
 from aiogram import Bot, Dispatcher
+from aiogram.types import InlineKeyboardMarkup
 
 from config_reader import GlobalSettings
 
@@ -36,14 +37,24 @@ async def main():
     await dp.start_polling(bot)
 
 
-def main_menu(user_id: int, user_state: Any):
-    # this is a proxy function, since it makes no sense to me to bring here a function that assembles menu buttons.
-    # the rest of the functions are somewhat justifiable, since they are at least directly dispatcher/bot related
-    # more so then the keyboard buttons anyway
-    from src.utils.menu import main_buttons
-
-    return main_buttons(user_id=user_id, user_state=user_state)
-
-
 if __name__ == "__main__":
     asyncio.run(main())
+
+
+def main_menu(user_id: int, user_state: Any) -> InlineKeyboardMarkup:
+    # below are proxy functions, since it makes no sense to me to actually bring here functions that assembles menus.
+    # the rest of the functions are somewhat justifiable, since they are at least directly dispatcher/bot related
+    # more so then the keyboard buttons anyway
+    from src.utils.menu import main_buttons as func
+
+    return func(user_id=user_id, user_state=user_state)
+
+
+def cancel_button() -> InlineKeyboardMarkup:
+    from src.utils.menu import cancel_button as func
+    return func()
+
+
+def locale_buttons() -> InlineKeyboardMarkup:
+    from src.utils.menu import locale_buttons as func
+    return func()
