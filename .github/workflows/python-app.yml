@@ -11,7 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
       - name: Set up Python 3.x
         uses: actions/setup-python@v2
         with:
@@ -24,6 +23,10 @@ jobs:
       - name: Lint with ruff
         run: |
           ruff check
+      - name: Compile translations
+        run: |
+          msgfmt -o src/locales/ru/LC_MESSAGES/mb_bot.po src/locales/ru/LC_MESSAGES/mb_bot.mo
+          msgfmt -o src/locales/en/LC_MESSAGES/mb_bot.po src/locales/en/LC_MESSAGES/mb_bot.mo
       - name: Run Test
         if: always()
         run: pytest
