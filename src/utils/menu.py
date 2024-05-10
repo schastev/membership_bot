@@ -231,7 +231,7 @@ def cancel_button() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.add(
         InlineKeyboardButton(
-            text=_("button_cancel"), callback_data=f"{Action.CANCEL}{Modifier.CALLBACK}"
+            text=_("CANCEL_button"), callback_data=f"{Action.CANCEL}{Modifier.CALLBACK}"
         )
     )
     return builder.as_markup()

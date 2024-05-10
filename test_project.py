@@ -7,7 +7,7 @@ import pytest
 from config_reader import GlobalSettings
 from src.model.membership import Membership
 from src.utils.constants import Action, Modifier, MenuButtons
-from project import main_menu
+from project import main_menu, cancel_button, locale_buttons
 from src.utils.menu import UserState
 from tests.helper import extract_keyboard_entries
 
@@ -115,3 +115,21 @@ def test_main_buttons_active_membership_states(frozen, unfrozen, expected):
         if user_state.has_attendances:
             expected.append(Action.VIEW_ATTENDANCES)
         assert sorted(buttons) == sorted([_(f"{ex}{Modifier.BUTTON}") for ex in expected])
+
+
+def test_cancel_button():
+    with allure.step("Act"):
+        keyboard = cancel_button()
+        buttons = extract_keyboard_entries(keyboard)
+    with allure.step("Assert"):
+        expected = [Action.CANCEL]
+        assert buttons == [_(f"{ex}{Modifier.BUTTON}") for ex in expected]
+
+
+def test_locale_buttons():
+    with allure.step("Act"):
+        keyboard = locale_buttons()
+        buttons = extract_keyboard_entries(keyboard)
+    with allure.step("Assert"):
+        expected = [button for button in GlobalSettings().config.locales]
+        assert sorted(buttons) == sorted(expected)

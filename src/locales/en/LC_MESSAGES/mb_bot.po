@@ -253,7 +253,7 @@ msgid "ADD_MEMBERSHIP_decline_button"
 msgstr "Decline"
 
 #: src/utils/menu.py:249
-msgid "button_cancel"
+msgid "CANCEL_button"
 msgstr "Cancel"
 
 #: src/utils/menu.py:111 src/utils/menu.py:126 src/utils/menu.py:141

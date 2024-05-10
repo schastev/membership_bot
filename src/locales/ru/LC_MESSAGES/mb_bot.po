@@ -266,7 +266,7 @@ msgid "ADD_MEMBERSHIP_decline_button"
 msgstr "Отклонить"
 
 #: src/utils/menu.py:244
-msgid "button_cancel"
+msgid "CANCEL_button"
 msgstr "Отменить"
 
 #: src/utils/menu.py:106 src/utils/menu.py:121 src/utils/menu.py:136
