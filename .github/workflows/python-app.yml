@@ -20,16 +20,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install ruff
           pip install -r requirements.txt
+          sudo apt-get install gettext
       - name: Lint with ruff
         run: |
           ruff check
       - name: Compile translations
         run: |
-          sudo apt-get install gettext
           pwd
           ls
-          msgfmt -o src/locales/ru/LC_MESSAGES/mb_bot.po src/locales/ru/LC_MESSAGES/mb_bot.mo
-          msgfmt -o src/locales/en/LC_MESSAGES/mb_bot.po src/locales/en/LC_MESSAGES/mb_bot.mo
+          msgfmt -o ./src/locales/ru/LC_MESSAGES/mb_bot.po ./src/locales/ru/LC_MESSAGES/mb_bot.mo
+          msgfmt -o ./src/locales/en/LC_MESSAGES/mb_bot.po ./src/locales/en/LC_MESSAGES/mb_bot.mo
       - name: Run Test
         if: always()
         run: pytest
