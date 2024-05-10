@@ -28,12 +28,11 @@ jobs:
         run: |
           pwd
           ls
-          msgfmt -o ./src/locales/ru/LC_MESSAGES/mb_bot.po ./src/locales/ru/LC_MESSAGES/mb_bot.mo
-          msgfmt -o ./src/locales/en/LC_MESSAGES/mb_bot.po ./src/locales/en/LC_MESSAGES/mb_bot.mo
+          msgfmt -o ./src/locales/ru/LC_MESSAGES/mb_bot.mo ./src/locales/ru/LC_MESSAGES/mb_bot.po
+          msgfmt -o ./src/locales/en/LC_MESSAGES/mb_bot.mo ./src/locales/en/LC_MESSAGES/mb_bot.po
       - name: Run Test
         if: always()
         run: pytest
-
       - name: Get Allure history
         uses: actions/checkout@v2
         if: always()
