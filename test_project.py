@@ -7,7 +7,7 @@ import pytest
 from config_reader import GlobalSettings
 from src.model.membership import Membership
 from src.utils.constants import Action, Modifier, MenuButtons
-from project import main_menu, cancel_button, locale_buttons
+from project import main_menu, cancel_button, locale_buttons, mb_management_option_buttons
 from src.utils.menu import UserState
 from tests.helper import extract_keyboard_entries
 
@@ -133,3 +133,12 @@ def test_locale_buttons():
     with allure.step("Assert"):
         expected = [button for button in GlobalSettings().config.locales]
         assert sorted(buttons) == sorted(expected)
+
+
+def test_mb_management_option_buttons():
+    with allure.step("Act"):
+        keyboard = mb_management_option_buttons()
+        buttons = extract_keyboard_entries(keyboard)
+    with allure.step("Assert"):
+        expected = [Action.ADD_MEMBERSHIP, Action.FREEZE_MEMBERSHIP]
+        assert sorted(buttons) == sorted([_(f"{ex}{Modifier.BUTTON}") for ex in expected])
