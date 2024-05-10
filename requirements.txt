@@ -3,6 +3,8 @@ aiogram==3.5.0
 aiogram-tests @ git+https://github.com/k0te1ch/aiogram_tests.git@d713918fad33e2fd0b90b53366e03a252470302b
 aiohttp==3.9.5
 aiosignal==1.3.1
+allure-pytest==2.13.5
+allure-python-commons==2.13.5
 annotated-types==0.6.0
 async-timeout==4.0.3
 attrs==23.2.0
