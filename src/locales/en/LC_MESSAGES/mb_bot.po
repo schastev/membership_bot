@@ -166,7 +166,8 @@ msgstr "Please select your locale from the list below."
 #: src/routers/user.py:126 src/routers/user.py:141
 msgid "DELETE_USER_query"
 msgstr "Are you sure you would like to delete all your data from this bot? This action cannot be undone.\n"
-"Your data includes your account, memberships, attendance and request records."
+"Your data includes your account, memberships, attendance and request records.\n"
+"To confirm deletion, please type in \"{confirmation_text}\" without the quotes."
 
 #: src/routers/user.py:126 src/routers/user.py:135 src/routers/user.py:141
 msgid "DELETE_USER_confirm"

@@ -1,5 +1,5 @@
 # Membership bot
-#### Video demo: TODO
+#### Video demo: https://youtu.be/yI6ehJnBqKM
 ## Description
 A Telegram bot designed to help small businesses (mainly fitness-oriented ones) to keep track of their members and memberships.
 ## Features
