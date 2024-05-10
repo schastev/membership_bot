@@ -26,8 +26,6 @@ jobs:
           ruff check
       - name: Compile translations
         run: |
-          pwd
-          ls
           msgfmt -o ./src/locales/ru/LC_MESSAGES/mb_bot.mo ./src/locales/ru/LC_MESSAGES/mb_bot.po
           msgfmt -o ./src/locales/en/LC_MESSAGES/mb_bot.mo ./src/locales/en/LC_MESSAGES/mb_bot.po
       - name: Run Test
@@ -53,7 +51,7 @@ jobs:
 
       - name: Deploy report to Github Pages
         if: always()
-        uses: peaceiris/actions-gh-pages@v2
+        uses: peaceiris/actions-gh-pages@v4
         env:
           PERSONAL_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PUBLISH_BRANCH: gh-pages
