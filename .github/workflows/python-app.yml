@@ -25,6 +25,7 @@ jobs:
           ruff check
       - name: Compile translations
         run: |
+          apt-get install gettext
           msgfmt -o src/locales/ru/LC_MESSAGES/mb_bot.po src/locales/ru/LC_MESSAGES/mb_bot.mo
           msgfmt -o src/locales/en/LC_MESSAGES/mb_bot.po src/locales/en/LC_MESSAGES/mb_bot.mo
       - name: Run Test
