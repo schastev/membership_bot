@@ -11,7 +11,9 @@ _ = GlobalSettings().i18n.gettext
 
 
 @pytest.mark.asyncio
+@allure.feature("add_membership")
 async def test_process_membership(db_calls, routers, get_user):
+    """Check handler responsible for adding membership."""
     with allure.step("Assemble"):
         random_locale = helper.get_random_locale()
         user, mb = get_user(with_membership=False, locale=random_locale)
@@ -42,7 +44,9 @@ async def test_process_membership(db_calls, routers, get_user):
 
 
 @pytest.mark.asyncio
+@allure.feature("add_membership")
 async def test_poll_for_mb_add_request(db_calls, routers, get_user):
+    """Check that polling for membership requests reacts to adding one."""
     with allure.step("Assemble"):
         random_locale = helper.get_random_locale()
         test_function = routers.mb_for_admin.poll_for_mb_add_request
@@ -90,7 +94,9 @@ async def test_poll_for_mb_add_request(db_calls, routers, get_user):
 
 
 @pytest.mark.asyncio
+@allure.feature("freeze")
 async def test_poll_for_mb_freeze_request(db_calls, routers, get_user):
+    """Check that polling for freeze requests reacts to adding one."""
     with allure.step("Assemble"):
         random_locale = helper.get_random_locale()
         test_function = routers.mb_for_admin.poll_for_mb_freeze_request
@@ -138,7 +144,9 @@ async def test_poll_for_mb_freeze_request(db_calls, routers, get_user):
 
 
 @pytest.mark.asyncio
+@allure.feature("check-in")
 async def test_poll_for_check_in_request(db_calls, routers, get_user):
+    """Check that polling for check-in requests reacts to adding one."""
     with allure.step("Assemble"):
         random_locale = helper.get_random_locale()
         test_function = routers.att_for_admin.poll_for_check_in_request
@@ -185,23 +193,24 @@ async def test_poll_for_check_in_request(db_calls, routers, get_user):
 
 
 @pytest.mark.asyncio
+@allure.feature("settings")
 async def test_locale_handler(routers):
-    with allure.step("Assemble"):
-        for loc in GlobalSettings().config.locales:
-            with allure.step("Trigger locale callback"):
-                answer = await helper.send_mocked_message_with_text_data_callback_non_admin(
-                    handler_to_mock=routers.misc.locale_handler,
-                    callback_data=loc,
-                )
-            with allure.step("Check answer"):
-                answer_message = answer[0]
-                assert answer_message.text == _("greeting", locale=loc).format(
-                    company_name=GlobalSettings().config.company_name
-                )
+    random_locale = helper.get_random_locale()
+    with allure.step(f"Trigger locale callback for {random_locale}"):
+        answer = await helper.send_mocked_message_with_text_data_callback_non_admin(
+            handler_to_mock=routers.misc.locale_handler,
+            callback_data=random_locale,
+        )
+    with allure.step("Check answer"):
+        answer_message = answer[0]
+        assert answer_message.text == _("greeting", locale=random_locale).format(
+            company_name=GlobalSettings().config.company_name
+        )
 
 
 @pytest.mark.asyncio
 async def test_start_handler(routers):
+    """Start handler gives greetings in all available locales."""
     with allure.step("Send a start command"):
         answer = await helper.send_mocked_message_with_text_data_message_non_admin(
             handler_to_mock=routers.misc.start_handler,

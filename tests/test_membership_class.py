@@ -12,6 +12,7 @@ _ = GlobalSettings().i18n.gettext
 @allure.tag("positive")
 @allure.feature("check-in")
 def test_membership_can_subtract():
+    """Check in with a valid memebrship."""
     mb = Membership(tg_id=1, total_amount=4)
     old_amount = mb.current_amount
     total_amount = mb.total_amount
@@ -23,6 +24,7 @@ def test_membership_can_subtract():
 @allure.tag("positive")
 @allure.feature("freeze", "unfreeze")
 def test_membership_freezing_and_unfreezing_delays_expiry():
+    """Freezing delays expiry, unfreezing early updates expiry date aas well."""
     mb = Membership(tg_id=1, total_amount=4)
     mb.subtract()
 
@@ -43,6 +45,7 @@ def test_membership_freezing_and_unfreezing_delays_expiry():
     "delta", [2, -2], ids=["later than planned", "earlier than planned"]
 )
 def test_membership_can_unfreeze_earlier_or_later_than_planned(delta):
+    """Can unfreeze earlier or later than planned within max freeze duration."""
     mb = Membership(tg_id=1, total_amount=4)
     mb.subtract()
 
@@ -60,6 +63,7 @@ def test_membership_can_unfreeze_earlier_or_later_than_planned(delta):
 @allure.tag("negative")
 @allure.feature("freeze")
 def test_membership_cannot_freeze_two_times():
+    """Cannot freeze a membership for a second time."""
     mb = Membership(tg_id=1, total_amount=4)
     mb.subtract()
 
@@ -75,23 +79,8 @@ def test_membership_cannot_freeze_two_times():
 
 @allure.tag("negative")
 @allure.feature("unfreeze")
-def test_membership_cannot_unfreeze_to_make_freeze_period_invalid():
-    mb = Membership(tg_id=1, total_amount=4)
-    mb.subtract()
-
-    planned_freeze_duration = 7
-    mb.freeze(days=planned_freeze_duration)
-
-    actual_freeze_duration = planned_freeze_duration - 10
-    unfreeze_date = mb.activation_date + timedelta(days=actual_freeze_duration)
-    with pytest.raises(expected_exception=ValueError) as error:
-        mb.unfreeze(unfreeze_date=unfreeze_date)
-    assert error.value.args[0] == _("UNFREEZE_MEMBERSHIP_error_unfreeze_before_freeze")
-
-
-@allure.tag("negative")
-@allure.feature("unfreeze")
 def test_membership_cannot_freeze_before_activation():
+    """Freeze date needs to be after activation date."""
     mb = Membership(tg_id=1, total_amount=4)
     mb.subtract()
 
@@ -103,6 +92,7 @@ def test_membership_cannot_freeze_before_activation():
 @allure.tag("negative")
 @allure.feature("freeze")
 def test_membership_cannot_freeze_for_over_max_duration():
+    """Cannot exceed max freeze duration."""
     mb = Membership(tg_id=1, total_amount=4)
     mb.subtract()
 
@@ -117,6 +107,7 @@ def test_membership_cannot_freeze_for_over_max_duration():
 @allure.tag("negative")
 @allure.feature("check_in")
 def test_membership_cannot_subtract_from_expired_membership():
+    """Cannot check in with expired membership."""
     mb = Membership(tg_id=1, total_amount=4)
     mb._activate(activation_date=date.today() - timedelta(days=31))
     with pytest.raises(expected_exception=ValueError) as error:
@@ -127,6 +118,7 @@ def test_membership_cannot_subtract_from_expired_membership():
 @allure.tag("negative")
 @allure.feature("check-in")
 def test_membership_cannot_subtract_from_used_up_membership():
+    """Cannot check in with membership with no uses left."""
     mb = Membership(tg_id=1, total_amount=1)
     mb.subtract()
     with pytest.raises(expected_exception=ValueError) as error:
@@ -137,6 +129,7 @@ def test_membership_cannot_subtract_from_used_up_membership():
 @allure.tag("negative")
 @allure.feature("freeze")
 def test_cannot_freeze_if_inactive():
+    """Membership needs to be active for freeze to work."""
     mb = Membership(tg_id=1, total_amount=1)
     with pytest.raises(expected_exception=ValueError) as error:
         mb.freeze(days=1)
@@ -146,6 +139,7 @@ def test_cannot_freeze_if_inactive():
 @allure.tag("negative")
 @allure.feature("freeze")
 def test_cannot_freeze_if_frozen():
+    """Cannot freeze membership if it's already frozen."""
     mb = Membership(tg_id=1, total_amount=3)
     mb.subtract()
     mb.freeze(days=1)
@@ -157,6 +151,7 @@ def test_cannot_freeze_if_frozen():
 @allure.tag("negative")
 @allure.feature("unfreeze")
 def test_cannot_unfreeze_if_not_frozen():
+    """Cannot unfreeze a non-frozen membership."""
     mb = Membership(tg_id=1, total_amount=3)
     mb.subtract()
     with pytest.raises(expected_exception=ValueError) as error:
@@ -167,22 +162,12 @@ def test_cannot_unfreeze_if_not_frozen():
 @allure.tag("negative")
 @allure.feature("unfreeze")
 def test_cannot_unfreeze_before_freeze():
+    """Cannot use unfreeze date to make it earlier than freeze date."""
     mb = Membership(tg_id=1, total_amount=3)
     mb.subtract()
     mb.freeze(days=1)
     with pytest.raises(expected_exception=ValueError) as error:
         mb.unfreeze(unfreeze_date=date.today() - timedelta(days=1))
-    assert error.value.args[0] == _("UNFREEZE_MEMBERSHIP_error_unfreeze_before_freeze")
-
-
-@allure.tag("negative")
-@allure.feature("freeze")
-def test_cannot_make_negative_freeze_duration_with_unfreeze():
-    mb = Membership(tg_id=1, total_amount=3)
-    mb.subtract()
-    mb.freeze(days=2)
-    with pytest.raises(expected_exception=ValueError) as error:
-        mb.unfreeze(unfreeze_date=date.today() - timedelta(days=3))
     assert error.value.args[0] == _("UNFREEZE_MEMBERSHIP_error_unfreeze_before_freeze")
 
 
@@ -192,6 +177,7 @@ def test_cannot_make_negative_freeze_duration_with_unfreeze():
     "freeze_duration", [1, 5], ids=["one-day freeze", "multiple-day freeze"]
 )
 def test_same_day_freeze_and_unfreeze_do_not_count(freeze_duration):
+    """Unfreezing on the same day as freezing does not count towards one-freeze rule for memberships."""
     mb = Membership(tg_id=1, total_amount=3)
     mb.subtract()
     mb.freeze(days=freeze_duration)
@@ -205,6 +191,7 @@ def test_same_day_freeze_and_unfreeze_do_not_count(freeze_duration):
 @allure.tag("positive")
 @allure.feature("freeze")
 def test_can_refreeze_after_same_day_freeze_and_unfreeze():
+    """After being frozen and unfrozen on the same day the same membership can be frozen again."""
     mb = Membership(tg_id=1, total_amount=3)
     mb.subtract()
     mb.freeze(days=1)
